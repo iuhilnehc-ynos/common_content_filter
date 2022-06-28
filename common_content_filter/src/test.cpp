@@ -164,8 +164,8 @@ create_common_content_filter(
   }
 
   DDSFilterFactory::ReturnCode_t ret = get_common_content_filter_factory()->create_content_filter(
-            "DDSSQL",
-            "type_name",
+            "DDSSQL",    // deprecated
+            "type_name", // deprecated
             type_support,
             options->filter_expression,
             expression_parameters,

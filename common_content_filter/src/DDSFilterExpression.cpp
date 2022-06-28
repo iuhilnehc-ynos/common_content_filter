@@ -62,16 +62,16 @@ bool DDSFilterExpression::evaluate(
     //     return false;
     // }
 
-    // root->reset();
-    // for (auto it = fields.begin();
-    //         it != fields.end() && DDSFilterConditionState::UNDECIDED == root->get_state();
-    //         ++it)
-    // {
-    //     if (!it->second->set_value(*dyn_data_))
-    //     {
-    //         return false;
-    //     }
-    // }
+    root->reset();
+    for (auto it = fields.begin();
+            it != fields.end() && DDSFilterConditionState::UNDECIDED == root->get_state();
+            ++it)
+    {
+        if (!it->second->set_value(payload))
+        {
+            return false;
+        }
+    }
 
     return DDSFilterConditionState::RESULT_TRUE == root->get_state();
 }

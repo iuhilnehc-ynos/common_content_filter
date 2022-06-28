@@ -43,7 +43,7 @@ bool DDSFilterField::set_value(
 
     // uint32_t index = static_cast<uint32_t>(access_path_[n].member_index);
     // auto member_id = data.get_member_id_at_index(index);
-    // bool last_step = access_path_.size() - 1 == n;
+    bool last_step = access_path_.size() - 1 == n;
     bool ret = false;
 
     // if (access_path_[n].array_index < MEMBER_ID_INVALID)
@@ -88,17 +88,17 @@ bool DDSFilterField::set_value(
     //     }
     // }
 
-    // if (ret && last_step)
-    // {
-    //     has_value_ = true;
-    //     value_has_changed();
+    if (ret && last_step)
+    {
+        has_value_ = true;
+        value_has_changed();
 
-    //     // Inform parent predicates
-    //     for (DDSFilterPredicate* parent : parents_)
-    //     {
-    //         parent->value_has_changed();
-    //     }
-    // }
+        // Inform parent predicates
+        for (DDSFilterPredicate* parent : parents_)
+        {
+            parent->value_has_changed();
+        }
+    }
 
     return ret;
 }

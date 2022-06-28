@@ -25,6 +25,8 @@
 
 #include "DDSFilterParseNode.hpp"
 
+#include "rosidl_runtime_c/message_type_support_struct.h"
+
 namespace eprosima_common {
 namespace fastdds {
 namespace dds {
@@ -45,7 +47,7 @@ namespace parser {
 //         const eprosima_common::fastrtps::types::TypeObject* type_object);
 std::unique_ptr<ParseNode> parse_filter_expression(
         const char* expression,
-        const void* type_object);
+        const rosidl_message_type_support_t* type_support);
 
 /**
  * Performs parsing of a string containing a literal value.

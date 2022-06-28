@@ -47,6 +47,8 @@
 #include "DDSFilterPredicate.hpp"
 #include "DDSFilterValue.hpp"
 
+#include "Log.hpp"
+
 namespace eprosima_common {
 namespace fastdds {
 namespace dds {
@@ -442,8 +444,15 @@ IContentFilterFactory::ReturnCode_t DDSFilterFactory::convert_tree<DDSFilterCond
     return convert_tree<DDSFilterPredicate>(state, condition, node);
 }
 
+DDSFilterFactory::DDSFilterFactory()
+{
+  logError(DDSSQLFILTER, "DDSFilterFactory::DDSFilterFactory " << this);
+}
+
 DDSFilterFactory::~DDSFilterFactory()
 {
+  logError(DDSSQLFILTER, "DDSFilterFactory::~DDSFilterFactory " << this);
+
     auto& pool = expression_pool_.collection();
     for (DDSFilterExpression* item : pool)
     {
@@ -455,13 +464,13 @@ DDSFilterFactory::~DDSFilterFactory()
 IContentFilterFactory::ReturnCode_t DDSFilterFactory::create_content_filter(
         const char* filter_class_name,
         const char* type_name,
-        const void* data_type,
+        const rosidl_message_type_support_t* type_support,
         const char* filter_expression,
         const IContentFilterFactory::ParameterSeq& filter_parameters,
         IContentFilter*& filter_instance)
 {
 
-    static_cast<void>(data_type);
+    // static_cast<void>(type_support);
 
     ReturnCode_t ret = ReturnCode_t::RETCODE_UNSUPPORTED;
 
@@ -527,7 +536,7 @@ IContentFilterFactory::ReturnCode_t DDSFilterFactory::create_content_filter(
         // }
         // else
         {
-            auto node = parser::parse_filter_expression(filter_expression, nullptr);
+            auto node = parser::parse_filter_expression(filter_expression, type_support);
             if (node)
             {
                 // auto type_id = TypeObjectFactory::get_instance()->get_type_identifier(type_name, true);

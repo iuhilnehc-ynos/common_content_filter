@@ -97,12 +97,12 @@ using selector = parse_tree::selector <
 
 std::unique_ptr<ParseNode> parse_filter_expression(
         const char* expression,
-        const void* type_object)
+        const rosidl_message_type_support_t* type_support)
 {
     memory_input<> in(expression, "");
     try
     {
-        CurrentIdentifierState identifier_state { type_object, nullptr, {} };
+        CurrentIdentifierState identifier_state { type_support, nullptr, {} };
         return parse_tree::parse< FilterExpressionGrammar, ParseNode, selector >(in, identifier_state);
     }
     catch (const parse_error& e)

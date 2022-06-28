@@ -46,13 +46,13 @@ class DDSFilterFactory final : public IContentFilterFactory
 {
 
 public:
-
+    DDSFilterFactory();
     ~DDSFilterFactory();
 
     ReturnCode_t create_content_filter(
             const char* filter_class_name,
             const char* type_name,
-            const void* data_type,
+            const rosidl_message_type_support_t* data_type,
             const char* filter_expression,
             const ParameterSeq& filter_parameters,
             IContentFilter*& filter_instance) override;

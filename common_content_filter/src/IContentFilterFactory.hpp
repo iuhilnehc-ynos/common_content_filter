@@ -31,6 +31,7 @@
 #include <vector>
 
 #include "IContentFilter.hpp"
+#include "rosidl_runtime_c/message_type_support_struct.h"
 
 namespace eprosima_common {
 namespace fastdds {
@@ -77,7 +78,7 @@ struct IContentFilterFactory
     virtual ReturnCode_t create_content_filter(
             const char* filter_class_name,
             const char* type_name,
-            const void* data_type,
+            const rosidl_message_type_support_t* data_type,
             const char* filter_expression,
             const ParameterSeq& filter_parameters,
             IContentFilter*& filter_instance) = 0;
