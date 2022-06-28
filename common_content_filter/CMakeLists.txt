@@ -1,6 +1,11 @@
 cmake_minimum_required(VERSION 3.8)
 project(common_content_filter)
 
+
+if(NOT CMAKE_CXX_STANDARD)
+  set(CMAKE_CXX_STANDARD 17)
+endif()
+
 if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   add_compile_options(-Wall -Wextra -Wpedantic)
 endif()
@@ -18,7 +23,16 @@ ament_export_dependencies(rcutils)
 ament_export_dependencies(rmw)
 
 add_library(${PROJECT_NAME}_library SHARED
-  src/test.cpp)
+  src/DDSFilterCompoundCondition.cpp
+  src/DDSFilterExpression.cpp
+  src/DDSFilterExpressionParser.cpp
+  src/DDSFilterFactory.cpp
+  src/DDSFilterField.cpp
+  src/DDSFilterParameter.cpp
+  src/DDSFilterPredicate.cpp
+  src/DDSFilterValue.cpp
+  src/test.cpp
+  )
 
 set_target_properties(${PROJECT_NAME}_library
   PROPERTIES OUTPUT_NAME ${PROJECT_NAME})
@@ -30,7 +44,10 @@ target_link_libraries(${PROJECT_NAME}_library PRIVATE
 target_include_directories(${PROJECT_NAME}_library
   PUBLIC
   "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>"
-  "$<INSTALL_INTERFACE:include/${PROJECT_NAME}>")
+  "$<INSTALL_INTERFACE:include/${PROJECT_NAME}>"
+  PRIVATE
+  ${PROJECT_SOURCE_DIR}/thirdparty/taocpp-pegtl
+  )
 
 # # Wait for all rosidl generators to finish before building this library
 # add_dependencies(${PROJECT_NAME}_library

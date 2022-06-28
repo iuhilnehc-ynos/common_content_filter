@@ -17,13 +17,18 @@
 
 #include "common_content_filter/visibility_control.h"
 
+#include "rosidl_runtime_c/message_type_support_struct.h"
+#include "rmw/subscription_content_filter_options.h"
+
+
 #ifdef __cplusplus
 extern "C"
 {
 #endif
 
-typedef void common_content_filter_factory_t;
-typedef void common_content_filter_t;
+COMMON_CONTENT_FILTER_PUBLIC
+void
+test_func_c();
 
 COMMON_CONTENT_FILTER_PUBLIC
 void *
@@ -35,15 +40,22 @@ test_common_content_filter_factory(void *);
 
 COMMON_CONTENT_FILTER_PUBLIC
 void
-test_func_c();
+destroy_common_content_filter_factory(void *);
 
 COMMON_CONTENT_FILTER_PUBLIC
-common_content_filter_t *
-create_common_content_filter();
+void *
+create_common_content_filter(
+  const rosidl_message_type_support_t * type_support,
+  rmw_subscription_content_filter_options_t * options
+);
+
+COMMON_CONTENT_FILTER_PUBLIC
+bool
+common_content_filter_evaluate(void * instance, void * ros_data);
 
 COMMON_CONTENT_FILTER_PUBLIC
 void
-test_common_content_filter(void *);
+destroy_common_content_filter(void *);
 
 #ifdef __cplusplus
 }
