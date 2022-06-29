@@ -56,7 +56,7 @@ namespace DDSSQLFilter {
 
 static IContentFilterFactory::ReturnCode_t transform_enum(
         std::shared_ptr<DDSFilterValue>& value,
-        const void* type,
+        uint8_t type,
         const std::string& string_value)
 {
     // const char* str_value = string_value.c_str();
@@ -76,9 +76,9 @@ static IContentFilterFactory::ReturnCode_t transform_enum(
 
 static IContentFilterFactory::ReturnCode_t transform_enums(
         std::shared_ptr<DDSFilterValue>& left_value,
-        const void* left_type,
+        uint8_t left_type,
         std::shared_ptr<DDSFilterValue>& right_value,
-        const void* right_type)
+        uint8_t right_type)
 {
     if ((DDSFilterValue::ValueKind::ENUM == left_value->kind) &&
             (DDSFilterValue::ValueKind::STRING == right_value->kind))
@@ -223,7 +223,7 @@ IContentFilterFactory::ReturnCode_t DDSFilterFactory::convert_tree<DDSFilterValu
         value = std::make_shared<DDSFilterValue>();
         value->copy_from(*node.value.get(), true);
     }
-    else if (nullptr != node.type_id)
+    else if (0 != node.type_id)
     {
         std::string field_name = node.content();
         auto it = state.filter->fields.find(field_name);

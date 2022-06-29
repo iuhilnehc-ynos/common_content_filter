@@ -67,12 +67,12 @@ public:
      * @param[in]  data_kind     Kind of data the field represents.
      */
     DDSFilterField(
-            const void* type_id,
+            uint8_t type_id,
             const std::vector<FieldAccessor>& access_path,
             ValueKind data_kind)
         : DDSFilterValue(data_kind)
         , access_path_(access_path)
-        // , type_id_(type_id)
+        , type_id_(type_id)
     {
     }
 
@@ -143,7 +143,7 @@ private:
 
     bool has_value_ = false;
     std::vector<FieldAccessor> access_path_;
-    const void* type_id_ = nullptr;
+    uint8_t type_id_ = 0;
     std::unordered_set<DDSFilterPredicate*> parents_;
 };
 

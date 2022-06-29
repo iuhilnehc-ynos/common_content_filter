@@ -44,8 +44,11 @@ struct ParseNode : parse_tree::basic_node< ParseNode >
 
     // When the node is a fieldname, it will hold the access path to the field, the data kind, and the type id
     std::vector<DDSFilterField::FieldAccessor> field_access_path;
+
+    // TODO. why need the following two members?
     DDSFilterValue::ValueKind field_kind = DDSFilterValue::ValueKind::STRING;
-    const void* type_id = nullptr;
+    // filed type in the ros2 primitive type
+    uint8_t type_id = 0;
 
     // When the node is a parameter, it will hold the parameter index
     int32_t parameter_index = 0;

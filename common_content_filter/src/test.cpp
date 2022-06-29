@@ -27,6 +27,13 @@
 #include "Log.hpp"
 
 
+// #include "rosidl_typesupport_introspection_c/identifier.h"
+// #include "rosidl_typesupport_introspection_cpp/identifier.hpp"
+// #include "rosidl_typesupport_introspection_c/message_introspection.h"
+// #include "rosidl_typesupport_introspection_cpp/message_introspection.hpp"
+// #include "rosidl_typesupport_introspection_cpp/field_types.hpp"
+
+
 
 using namespace eprosima_common::fastdds::dds;
 using namespace eprosima_common::fastdds::dds::DDSSQLFilter;
@@ -154,6 +161,9 @@ create_common_content_filter(
     return NULL;
   }
 
+
+
+
   logInfo(DDSSQLFILTER, "create_common_content_filter options: " << options->filter_expression);
 
   IContentFilter * filter_instance;
@@ -177,9 +187,12 @@ create_common_content_filter(
 }
 
 bool
-common_content_filter_evaluate(void * instance, void * ros_data) {
+common_content_filter_evaluate(void * instance, void * ros_data, bool serialized) {
   eprosima_common::fastdds::dds::IContentFilter * content_filter =
     static_cast<eprosima_common::fastdds::dds::IContentFilter *>(instance);
+  if (serialized) {
+    // TODO. deserialize the ros_data
+  }
 
   bool ret = content_filter->evaluate(ros_data);
   return ret;

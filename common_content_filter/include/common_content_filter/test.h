@@ -30,17 +30,17 @@ COMMON_CONTENT_FILTER_PUBLIC
 void
 test_func_c();
 
-COMMON_CONTENT_FILTER_PUBLIC
-void *
-create_common_content_filter_factory();
+// COMMON_CONTENT_FILTER_PUBLIC
+// void *
+// create_common_content_filter_factory();
 
-COMMON_CONTENT_FILTER_PUBLIC
-void
-test_common_content_filter_factory(void *);
+// COMMON_CONTENT_FILTER_PUBLIC
+// void
+// test_common_content_filter_factory(void *);
 
-COMMON_CONTENT_FILTER_PUBLIC
-void
-destroy_common_content_filter_factory(void *);
+// COMMON_CONTENT_FILTER_PUBLIC
+// void
+// destroy_common_content_filter_factory(void *);
 
 COMMON_CONTENT_FILTER_PUBLIC
 void *
@@ -51,7 +51,7 @@ create_common_content_filter(
 
 COMMON_CONTENT_FILTER_PUBLIC
 bool
-common_content_filter_evaluate(void * instance, void * ros_data);
+common_content_filter_evaluate(void * instance, void * ros_data, bool serialized);
 
 COMMON_CONTENT_FILTER_PUBLIC
 void

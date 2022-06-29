@@ -15,12 +15,8 @@ find_package(ament_cmake REQUIRED)
 find_package(rcutils REQUIRED)
 find_package(rcpputils REQUIRED)
 find_package(rmw REQUIRED)
-find_package(rosidl_runtime_cpp REQUIRED)
-
-ament_export_dependencies(ament_cmake_core)
-ament_export_dependencies(rcpputils)
-ament_export_dependencies(rcutils)
-ament_export_dependencies(rmw)
+find_package(rosidl_typesupport_introspection_c REQUIRED)
+find_package(rosidl_typesupport_introspection_cpp REQUIRED)
 
 add_library(${PROJECT_NAME}_library SHARED
   src/DDSFilterCompoundCondition.cpp
@@ -36,11 +32,12 @@ add_library(${PROJECT_NAME}_library SHARED
 
 set_target_properties(${PROJECT_NAME}_library
   PROPERTIES OUTPUT_NAME ${PROJECT_NAME})
-target_link_libraries(${PROJECT_NAME}_library PUBLIC
-  rcutils::rcutils
-  rmw::rmw)
-target_link_libraries(${PROJECT_NAME}_library PRIVATE
-  rcpputils::rcpputils)
+# target_link_libraries(${PROJECT_NAME}_library PUBLIC
+#   rcutils::rcutils
+#   rmw::rmw
+#   )
+# target_link_libraries(${PROJECT_NAME}_library PRIVATE
+#   rcpputils::rcpputils)
 target_include_directories(${PROJECT_NAME}_library
   PUBLIC
   "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>"
@@ -49,6 +46,13 @@ target_include_directories(${PROJECT_NAME}_library
   ${PROJECT_SOURCE_DIR}/thirdparty/taocpp-pegtl
   )
 
+ament_target_dependencies(${PROJECT_NAME}_library
+  "rcpputils"
+  "rcutils"
+  "rmw"
+  "rosidl_typesupport_introspection_c"
+  "rosidl_typesupport_introspection_cpp"
+)
 # # Wait for all rosidl generators to finish before building this library
 # add_dependencies(${PROJECT_NAME}_library
 #   ${PROJECT_NAME})
@@ -76,6 +80,13 @@ ament_export_libraries(${PROJECT_NAME}_library)
 
 # Export modern CMake targets
 ament_export_targets(${PROJECT_NAME}_library)
+
+ament_export_dependencies(ament_cmake_core)
+ament_export_dependencies(rcpputils)
+ament_export_dependencies(rcutils)
+ament_export_dependencies(rmw)
+ament_export_dependencies(rosidl_typesupport_introspection_c)
+ament_export_dependencies(rosidl_typesupport_introspection_cpp)
 
 install(
   DIRECTORY include/

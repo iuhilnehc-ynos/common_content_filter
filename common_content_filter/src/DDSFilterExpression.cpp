@@ -35,6 +35,8 @@
 #include "DDSFilterField.hpp"
 #include "DDSFilterParameter.hpp"
 
+#include "Log.hpp"
+
 namespace eprosima_common {
 namespace fastdds {
 namespace dds {
@@ -61,6 +63,9 @@ bool DDSFilterExpression::evaluate(
     // {
     //     return false;
     // }
+
+
+    logInfo(DDSSQLFILTER, "DDSFilterExpression::evaluate");
 
     root->reset();
     for (auto it = fields.begin();

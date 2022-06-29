@@ -26,6 +26,16 @@
 // #include <fastrtps/types/TypeObject.h>
 // #include <fastrtps/types/TypeObjectFactory.h>
 
+
+// identifiers.hpp need this headers
+#include "rmw/error_handling.h"
+#include "rosidl_typesupport_introspection_c/identifier.h"
+#include "rosidl_typesupport_introspection_cpp/identifier.hpp"
+#include "rosidl_typesupport_introspection_c/message_introspection.h"
+#include "rosidl_typesupport_introspection_cpp/message_introspection.hpp"
+#include "rosidl_typesupport_introspection_cpp/field_types.hpp"
+
+
 #include "pegtl.hpp"
 #include "pegtl/contrib/parse_tree.hpp"
 
@@ -102,7 +112,7 @@ std::unique_ptr<ParseNode> parse_filter_expression(
     memory_input<> in(expression, "");
     try
     {
-        CurrentIdentifierState identifier_state { type_support, nullptr, {} };
+        CurrentIdentifierState identifier_state { type_support, nullptr, 0, {} };
         return parse_tree::parse< FilterExpressionGrammar, ParseNode, selector >(in, identifier_state);
     }
     catch (const parse_error& e)
@@ -126,7 +136,7 @@ std::unique_ptr<ParseNode> parse_literal_value(
     memory_input<> in(expression, "");
     try
     {
-        CurrentIdentifierState identifier_state{ nullptr, nullptr, {} };
+        CurrentIdentifierState identifier_state{ nullptr, nullptr, 0, {} };
         return parse_tree::parse< LiteralGrammar, ParseNode, selector >(in, identifier_state);
     }
     catch (const parse_error& e)

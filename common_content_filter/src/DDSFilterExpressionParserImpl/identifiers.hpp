@@ -20,17 +20,230 @@
  */
 
 
-
 struct CurrentIdentifierState
 {
     // TODO. const rosidl_message_type_support_t * type_support,
     const rosidl_message_type_support_t * type_support;
-    // const void* type_object;
 
-    // ?
-    const void* current_type;
+    // ros2 primitive type
+    const rosidl_message_type_support_t * current_type_support;
+    uint8_t current_type;
+
     std::vector<DDSFilterField::FieldAccessor> access_path;
 };
+
+
+const rosidl_message_type_support_t *
+get_type_support_introspection(
+  const rosidl_message_type_support_t * type_supports)
+{
+  const rosidl_message_type_support_t * type_support =
+    get_message_typesupport_handle(
+    type_supports, rosidl_typesupport_introspection_c__identifier);
+  if (nullptr == type_support) {
+    rcutils_error_string_t prev_error_string = rcutils_get_error_string();
+    rcutils_reset_error();
+
+    type_support =
+      get_message_typesupport_handle(
+      type_supports,
+      rosidl_typesupport_introspection_cpp::typesupport_identifier);
+    if (nullptr == type_support) {
+      rcutils_error_string_t error_string = rcutils_get_error_string();
+      rcutils_reset_error();
+      RMW_SET_ERROR_MSG_WITH_FORMAT_STRING(
+        "Type support not from this implementation. Got:\n"
+        "    %s\n"
+        "    %s\n"
+        "while fetching it",
+        prev_error_string.str, error_string.str);
+      return nullptr;
+    }
+  }
+
+  return type_support;
+}
+
+
+template<typename MembersType>
+void GetTypeIdentifier(
+  CurrentIdentifierState& identifier_state,
+  const std::string & parse_node_name,
+  const MembersType * members, uint32_t index)
+{
+  const auto member = members->members_ + index;
+  std::string name = member->name_;
+
+  if (name == parse_node_name) {
+    logError(DDSSQLFILTER, "find the parse_node_name: " << parse_node_name
+      << " type_id:" << static_cast<int>(member->type_id_)
+      << " member index:" << index
+      << " member member->is_array_:" << member->is_array_
+      << " member member->array_size_:" << member->array_size_
+      << " member member->is_upper_bound_:" << member->is_upper_bound_
+      );
+    // some important information should be saved in the identifier_state
+    identifier_state.current_type = member->type_id_;
+
+    if (member->type_id_ == ::rosidl_typesupport_introspection_cpp::ROS_TYPE_MESSAGE) {
+
+        // const rosidl_message_type_support_t * type_support_intro =
+        //   get_type_support_introspection(member->members_);
+        // const MembersType * sub_members =
+        //   static_cast<const MembersType *>(type_support_intro->data);
+
+      identifier_state.current_type_support = member->members_;
+    }
+
+  }
+
+  std::string type_name;
+  switch (member->type_id_) {
+    case ::rosidl_typesupport_introspection_cpp::ROS_TYPE_FLOAT:
+      {
+        type_name = "float";
+        break;
+      }
+    case ::rosidl_typesupport_introspection_cpp::ROS_TYPE_DOUBLE:
+      {
+        type_name = "double";
+        break;
+      }
+    case ::rosidl_typesupport_introspection_cpp::ROS_TYPE_LONG_DOUBLE:
+      {
+        type_name = "longdouble";
+        break;
+      }
+    case ::rosidl_typesupport_introspection_cpp::ROS_TYPE_CHAR:
+      {
+        type_name = "char";
+        break;
+      }
+    case ::rosidl_typesupport_introspection_cpp::ROS_TYPE_WCHAR:
+      {
+        type_name = "wchar";
+        break;
+      }
+    case ::rosidl_typesupport_introspection_cpp::ROS_TYPE_BOOLEAN:
+      {
+        type_name = "bool";
+        break;
+      }
+    case ::rosidl_typesupport_introspection_cpp::ROS_TYPE_OCTET:
+    case ::rosidl_typesupport_introspection_cpp::ROS_TYPE_UINT8:
+      {
+        type_name = "uint8_t";
+        break;
+      }
+    case ::rosidl_typesupport_introspection_cpp::ROS_TYPE_INT8:
+      {
+        type_name = "int8_t";
+        break;
+      }
+    case ::rosidl_typesupport_introspection_cpp::ROS_TYPE_UINT16:
+      {
+        type_name = "uint16_t";
+        break;
+      }
+    case ::rosidl_typesupport_introspection_cpp::ROS_TYPE_INT16:
+      {
+        type_name = "int16_t";
+        break;
+      }
+    case ::rosidl_typesupport_introspection_cpp::ROS_TYPE_UINT32:
+      {
+        type_name = "uint32_t";
+        break;
+      }
+    case ::rosidl_typesupport_introspection_cpp::ROS_TYPE_INT32:
+      {
+        type_name = "int32_t";
+        break;
+      }
+    case ::rosidl_typesupport_introspection_cpp::ROS_TYPE_UINT64:
+      {
+        type_name = "uint64_t";
+        break;
+      }
+    case ::rosidl_typesupport_introspection_cpp::ROS_TYPE_INT64:
+      {
+        type_name = "int64_t";
+        break;
+      }
+    case ::rosidl_typesupport_introspection_cpp::ROS_TYPE_STRING:
+    case ::rosidl_typesupport_introspection_cpp::ROS_TYPE_WSTRING:
+      {
+        uint32_t bound = member->string_upper_bound_ ?
+          static_cast<uint32_t>(member->string_upper_bound_) : 255;
+        bool wide =
+          (member->type_id_ == ::rosidl_typesupport_introspection_cpp::ROS_TYPE_STRING) ?
+          false : true;
+
+        break;
+      }
+    case ::rosidl_typesupport_introspection_cpp::ROS_TYPE_MESSAGE:
+      {
+        const rosidl_message_type_support_t * type_support_intro =
+          get_type_support_introspection(member->members_);
+        const MembersType * sub_members =
+          static_cast<const MembersType *>(type_support_intro->data);
+
+      }
+      break;
+    default:
+      break;
+  }
+
+  logError(DDSSQLFILTER, "GetTypeIdentifier name:" << name << " type_name:" << type_name);
+}
+
+template<typename MembersType>
+inline bool
+add_type_object(
+  CurrentIdentifierState& identifier_state,
+  const std::string & parse_node_name,
+  const void * untype_members)
+{
+  const MembersType * members = static_cast<const MembersType *>(untype_members);
+  if (!members) {
+    return false;
+  }
+
+  for (uint32_t i = 0; i < members->member_count_; ++i) {
+    GetTypeIdentifier(identifier_state, parse_node_name, members, i);
+  }
+
+  return true;
+}
+
+bool test_type_support(
+  CurrentIdentifierState& identifier_state,
+  const std::string & parse_node_name,
+  const rosidl_message_type_support_t * type_supports)
+{
+  const rosidl_message_type_support_t * type_support_intro =
+    get_type_support_introspection(type_supports);
+  if (!type_support_intro) {
+    return false;
+  }
+
+  bool ret = false;
+  logError(DDSSQLFILTER, "test_type_support: " << type_support_intro->typesupport_identifier);
+  if (type_support_intro->typesupport_identifier ==
+    rosidl_typesupport_introspection_c__identifier)
+  {
+    ret = add_type_object<rosidl_typesupport_introspection_c__MessageMembers>(
+      identifier_state, parse_node_name, type_support_intro->data);
+  } else {
+    ret = add_type_object<rosidl_typesupport_introspection_cpp::MessageMembers>(
+      identifier_state, parse_node_name, type_support_intro->data);
+  }
+
+  return ret;
+}
+
+
+
 
 struct identifier_processor
     : parse_tree::apply< identifier_processor >
@@ -55,51 +268,70 @@ struct identifier_processor
     }
 
     // static bool type_should_be_indexed(
-    //         const TypeIdentifier& ti,
+    //         CurrentIdentifierState& identifier_state,
     //         const TypeIdentifier*& out_type,
     //         size_t& max_size)
     // {
-        // max_size = 0;
+    //     max_size = 0;
 
-        // switch (ti._d())
-        // {
-        //     case TI_PLAIN_ARRAY_SMALL:
-        //         out_type = ti.array_sdefn().element_identifier();
-        //         max_size = process_bounds(ti.array_sdefn().array_bound_seq());
-        //         return true;
+    //     switch (identifier_state.current_type_support)
+    //     {
+    //         case TI_PLAIN_ARRAY_SMALL:
+    //             out_type = ti.array_sdefn().element_identifier();
+    //             max_size = process_bounds(ti.array_sdefn().array_bound_seq());
+    //             return true;
 
-        //     case TI_PLAIN_ARRAY_LARGE:
-        //         out_type = ti.array_ldefn().element_identifier();
-        //         max_size = process_bounds(ti.array_ldefn().array_bound_seq());
-        //         return true;
+    //         case TI_PLAIN_ARRAY_LARGE:
+    //             out_type = ti.array_ldefn().element_identifier();
+    //             max_size = process_bounds(ti.array_ldefn().array_bound_seq());
+    //             return true;
 
-        //     case TI_PLAIN_SEQUENCE_SMALL:
-        //         out_type = ti.seq_sdefn().element_identifier();
-        //         max_size = process_bound(ti.seq_sdefn().bound());
-        //         return true;
+    //         case TI_PLAIN_SEQUENCE_SMALL:
+    //             out_type = ti.seq_sdefn().element_identifier();
+    //             max_size = process_bound(ti.seq_sdefn().bound());
+    //             return true;
 
-        //     case TI_PLAIN_SEQUENCE_LARGE:
-        //         out_type = ti.seq_ldefn().element_identifier();
-        //         max_size = process_bound(ti.seq_ldefn().bound());
-        //         return true;
-        // }
+    //         case TI_PLAIN_SEQUENCE_LARGE:
+    //             out_type = ti.seq_ldefn().element_identifier();
+    //             max_size = process_bound(ti.seq_ldefn().bound());
+    //             return true;
+    //     }
 
-        // out_type = &ti;
+    //     out_type = &ti;
     //     return false;
     // }
 
     static void add_member_access(
             std::unique_ptr< ParseNode >& n,
-            CurrentIdentifierState& identifier_state)
+            CurrentIdentifierState& identifier_state,
+            const rosidl_message_type_support_t * type_support)
     {
         // if (TK_STRUCTURE != complete._d())
         // {
         //     throw parse_error("trying to access field on a non-struct type", n->begin());
         // }
 
+        /*
+            idl
+            msg1
+               string data
+
+            msg2
+               string data
+               msg1   m1;
+
+            msg2 topic message type, and use  `m1.data = 'test'`
+
+        */
+
         const ParseNode& name_node = n->left();
         std::string name = name_node.content();
-        size_t member_index;
+
+        logError(DDSSQLFILTER, "identifiers add_member_access: " << name);
+
+        test_type_support(identifier_state, name, identifier_state.type_support);
+
+        size_t member_index = 0;
         // const CompleteStructMemberSeq& members = complete.struct_type().member_seq();
         // for (member_index = 0; member_index < members.size(); ++member_index)
         // {
@@ -115,22 +347,22 @@ struct identifier_processor
         // }
 
         // const TypeIdentifier& ti = members[member_index].common().member_type_id();
-        // bool has_index = n->children.size() > 1;
-        // size_t max_size = 0;
+        bool has_index = n->children.size() > 1;
+        size_t max_size = 0;
         size_t array_index = std::numeric_limits<size_t>::max();
-        // if (type_should_be_indexed(ti, identifier_state.current_type, max_size))
-        // {
-        //     if (!has_index)
-        //     {
-        //         throw parse_error("field should have an index (i.e. [n])", n->left().end());
-        //     }
+        // if (type_should_be_indexed(ti, identifier_state, max_size))
+        {
+            // if (!has_index)
+            // {
+            //     throw parse_error("field should have an index (i.e. [n])", n->left().end());
+            // }
 
-        //     array_index = static_cast<size_t>(std::stoul(n->right().left().content()));
-        //     if (max_size <= array_index)
-        //     {
-        //         throw parse_error("index is greater than maximum size", n->right().end());
-        //     }
-        // }
+            // array_index = static_cast<size_t>(std::stoul(n->right().left().content()));
+            // if (max_size <= array_index)
+            // {
+            //     throw parse_error("index is greater than maximum size", n->right().end());
+            // }
+        }
         // else
         // {
         //     if (has_index)
@@ -142,55 +374,53 @@ struct identifier_processor
         identifier_state.access_path.emplace_back(DDSFilterField::FieldAccessor{ member_index, array_index });
     }
 
-    // static DDSFilterValue::ValueKind get_value_kind(
-    //         const TypeIdentifier& ti,
-    //         const position& pos)
-    // {
-        // switch (ti._d())
-        // {
-        //     case TK_BOOLEAN:
-        //         return DDSFilterValue::ValueKind::BOOLEAN;
+    static DDSFilterValue::ValueKind get_value_kind(
+            uint8_t type_id,
+            const position& pos)
+    {
+      logError(DDSSQLFILTER, "get_value_kind type_id:" << type_id);
+        switch (type_id)
+        {
+            case ::rosidl_typesupport_introspection_cpp::ROS_TYPE_BOOLEAN:
+                return DDSFilterValue::ValueKind::BOOLEAN;
 
-        //     case TK_CHAR8:
-        //         return DDSFilterValue::ValueKind::CHAR;
+            case ::rosidl_typesupport_introspection_cpp::ROS_TYPE_CHAR:
+            case ::rosidl_typesupport_introspection_cpp::ROS_TYPE_WCHAR:
+                return DDSFilterValue::ValueKind::CHAR;
 
-        //     case TK_STRING8:
-        //     case TI_STRING8_SMALL:
-        //     case TI_STRING8_LARGE:
-        //         return DDSFilterValue::ValueKind::STRING;
+            case ::rosidl_typesupport_introspection_cpp::ROS_TYPE_STRING:
+            case ::rosidl_typesupport_introspection_cpp::ROS_TYPE_WSTRING:
+                return DDSFilterValue::ValueKind::STRING;
 
-        //     case TK_INT16:
-        //     case TK_INT32:
-        //     case TK_INT64:
-        //         return DDSFilterValue::ValueKind::SIGNED_INTEGER;
+            case ::rosidl_typesupport_introspection_cpp::ROS_TYPE_INT8:
+            case ::rosidl_typesupport_introspection_cpp::ROS_TYPE_INT16:
+            case ::rosidl_typesupport_introspection_cpp::ROS_TYPE_INT32:
+            case ::rosidl_typesupport_introspection_cpp::ROS_TYPE_INT64:
+                return DDSFilterValue::ValueKind::SIGNED_INTEGER;
 
-        //     case TK_BYTE:
-        //     case TK_UINT16:
-        //     case TK_UINT32:
-        //     case TK_UINT64:
-        //         return DDSFilterValue::ValueKind::UNSIGNED_INTEGER;
+            case ::rosidl_typesupport_introspection_cpp::ROS_TYPE_OCTET:
+            case ::rosidl_typesupport_introspection_cpp::ROS_TYPE_UINT16:
+            case ::rosidl_typesupport_introspection_cpp::ROS_TYPE_UINT32:
+            case ::rosidl_typesupport_introspection_cpp::ROS_TYPE_UINT64:
+                return DDSFilterValue::ValueKind::UNSIGNED_INTEGER;
 
-        //     case TK_FLOAT32:
-        //         return DDSFilterValue::ValueKind::FLOAT_FIELD;
+            case ::rosidl_typesupport_introspection_cpp::ROS_TYPE_FLOAT:
+                return DDSFilterValue::ValueKind::FLOAT_FIELD;
 
-        //     case TK_FLOAT64:
-        //         return DDSFilterValue::ValueKind::DOUBLE_FIELD;
+            case ::rosidl_typesupport_introspection_cpp::ROS_TYPE_DOUBLE:
+                return DDSFilterValue::ValueKind::DOUBLE_FIELD;
 
-        //     case TK_FLOAT128:
-        //         return DDSFilterValue::ValueKind::LONG_DOUBLE_FIELD;
+            case ::rosidl_typesupport_introspection_cpp::ROS_TYPE_LONG_DOUBLE:
+                return DDSFilterValue::ValueKind::LONG_DOUBLE_FIELD;
 
-        //     case EK_COMPLETE:
-        //         const TypeObject* type_object = TypeObjectFactory::get_instance()->get_type_object(&ti);
-        //         if (TK_ENUM == type_object->complete()._d())
-        //         {
-        //             return DDSFilterValue::ValueKind::ENUM;
-        //         }
-        //         break;
+            case ::rosidl_typesupport_introspection_cpp::ROS_TYPE_MESSAGE:
+                break;
 
-        // }
+        }
+
 
         // throw parse_error("type is not primitive", pos);
-    // }
+    }
 
     template< typename ... States >
     static void transform(
@@ -198,26 +428,33 @@ struct identifier_processor
             CurrentIdentifierState& state,
             States&&... /*st*/)
     {
+        logError(DDSSQLFILTER, "identifiers transform name:" << n->content());
 
         if (n->is<fieldname>())
         {
+          logError(DDSSQLFILTER, "identifiers transform n->is<fieldname>()");
+
             // Set data for fieldname node
-            // n->field_kind = get_value_kind(*state.current_type, n->end());
+            n->field_kind = get_value_kind(state.current_type, n->end());
             n->field_access_path = state.access_path;
             n->type_id = state.current_type;
 
             // Reset parser state
             state.access_path.clear();
-            state.current_type = nullptr;
+            state.current_type = 0;
         }
         else
         {
-            if (nullptr == state.current_type)
+            if (0 == state.current_type)
             {
-                add_member_access(n, state);
+              logError(DDSSQLFILTER, "identifiers transform 0 == state.current_type");
+
+                add_member_access(n, state, state.type_support);
             }
             else
             {
+              logError(DDSSQLFILTER, "identifiers transform 0 != state.current_type");
+
                 // if (EK_COMPLETE != state.current_type->_d())
                 // {
                 //     throw parse_error("trying to access field on a non-complete type", n->begin());
@@ -229,7 +466,7 @@ struct identifier_processor
                 //     throw parse_error("could not find type object definition", n->begin());
                 // }
 
-                add_member_access(n, state);
+                add_member_access(n, state, state.current_type_support);
             }
         }
 
