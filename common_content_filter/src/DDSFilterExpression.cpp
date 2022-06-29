@@ -65,7 +65,7 @@ bool DDSFilterExpression::evaluate(
     // }
 
 
-    logInfo(DDSSQLFILTER, "DDSFilterExpression::evaluate");
+    logInfo(DDSSQLFILTER, "DDSFilterExpression::evaluate fields size:" << fields.size());
 
     root->reset();
     for (auto it = fields.begin();

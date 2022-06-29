@@ -30,6 +30,8 @@
 #include "DDSFilterPredicate.hpp"
 #include "DDSFilterValue.hpp"
 
+#include "Log.hpp"
+
 namespace eprosima_common {
 namespace fastdds {
 namespace dds {
@@ -44,6 +46,17 @@ bool DDSFilterField::set_value(
     // uint32_t index = static_cast<uint32_t>(access_path_[n].member_index);
     // auto member_id = data.get_member_id_at_index(index);
     bool last_step = access_path_.size() - 1 == n;
+
+    logError(DDSSQLFILTER, "DDSFilterField::set_value "
+      << "access_path_.size():" << access_path_.size()
+    );
+
+    for (auto & access_path : access_path_) {
+      logError(DDSSQLFILTER, "DDSFilterField::set_value "
+            << "      access_path.member_index:" << access_path.member_index
+            << "      access_path.array_index:" << access_path.array_index
+          );
+    }
     bool ret = false;
 
     // if (access_path_[n].array_index < MEMBER_ID_INVALID)
@@ -105,7 +118,7 @@ bool DDSFilterField::set_value(
 
 bool DDSFilterField::set_value(
         const void * data,
-        int member_id)
+        float member_id)
 {
     // using namespace eprosima_common::fastrtps::types;
 

@@ -109,7 +109,7 @@ public:
     inline bool set_value(
             const void * data_value)
     {
-        return set_value(data_value, 0);
+        return set_value(data_value, (size_t)0);
     }
 
     /**
@@ -139,7 +139,7 @@ private:
 
     bool set_value(
             const void * data_value,
-            int member_id);
+            float member_id);
 
     bool has_value_ = false;
     std::vector<FieldAccessor> access_path_;
