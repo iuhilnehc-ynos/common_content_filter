@@ -78,6 +78,7 @@ void GetTypeIdentifier(
     logError(DDSSQLFILTER, "find the parse_node_name: " << parse_node_name
       << " type_id:" << static_cast<int>(member->type_id_)
       << " member index:" << index
+      << " member member->offset_:" << member->offset_
       << " member member->is_array_:" << member->is_array_
       << " member member->array_size_:" << member->array_size_
       << " member member->is_upper_bound_:" << member->is_upper_bound_

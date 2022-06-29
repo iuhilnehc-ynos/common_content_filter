@@ -59,47 +59,23 @@ bool DDSFilterField::set_value(
     }
     bool ret = false;
 
-    // if (access_path_[n].array_index < MEMBER_ID_INVALID)
-    // {
-    //     DynamicData* array_data = data.loan_value(member_id);
-    //     if (nullptr != array_data)
-    //     {
-    //         member_id = static_cast<MemberId>(access_path_[n].array_index);
-    //         if (array_data->get_item_count() > member_id)
-    //         {
-    //             if (last_step)
-    //             {
-    //                 ret = set_value(array_data, member_id);
-    //             }
-    //             else
-    //             {
-    //                 DynamicData* struct_data = array_data->loan_value(member_id);
-    //                 if (nullptr != struct_data)
-    //                 {
-    //                     ret = set_value(*struct_data, n + 1);
-    //                     array_data->return_loaned_value(struct_data);
-    //                 }
-    //             }
-    //         }
-    //         data.return_loaned_value(array_data);
-    //     }
-    // }
-    // else
-    // {
-    //     if (last_step)
-    //     {
-    //         ret = set_value(&data, member_id);
-    //     }
-    //     else
-    //     {
-    //         DynamicData* struct_data = data.loan_value(member_id);
-    //         if (nullptr != struct_data)
-    //         {
-    //             ret = set_value(*struct_data, n + 1);
-    //             data.return_loaned_value(struct_data);
-    //         }
-    //     }
-    // }
+    if (access_path_[n].array_index < std::numeric_limits<size_t>::max())
+    {
+        size_t array_index = access_path_[n].array_index;
+
+    }
+    else
+    {
+        if (last_step)
+        {
+            ret = set_value(data, .0f);
+        }
+        else
+        {
+            const void * addr = data;  // need to calculate the addr
+            ret = set_value(addr, n + 1);
+        }
+    }
 
     if (ret && last_step)
     {
@@ -123,6 +99,10 @@ bool DDSFilterField::set_value(
     // using namespace eprosima_common::fastrtps::types;
 
     bool ret = true;
+
+    // just a test, content_filtering_subscriber use float msg
+    float_value = *(float*)data;
+
     // try
     // {
     //     switch (type_id_->_d())
