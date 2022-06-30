@@ -28,6 +28,12 @@
 // #include <fastrtps/types/TypeIdentifier.h>
 // #include <fastrtps/types/TypesBase.h>
 
+#include "rosidl_typesupport_introspection_c/identifier.h"
+#include "rosidl_typesupport_introspection_cpp/identifier.hpp"
+#include "rosidl_typesupport_introspection_c/message_introspection.h"
+#include "rosidl_typesupport_introspection_cpp/message_introspection.hpp"
+#include "rosidl_typesupport_introspection_cpp/field_types.hpp"
+
 #include "DDSFilterPredicate.hpp"
 #include "DDSFilterValue.hpp"
 
@@ -57,6 +63,8 @@ public:
 
         /// Element index for array / sequence members
         size_t array_index;
+
+        const rosidl_message_type_support_t * type_support_intro;
     };
 
     /**
@@ -95,6 +103,14 @@ public:
     {
         has_value_ = false;
     }
+
+
+    template<typename MembersType>
+    inline bool
+    test_member(
+      const void * untype_members,
+      FieldAccessor& accessor,
+      const void *& data);
 
     /**
      * Perform the deserialization of the field represented by this DDSFilterField.
@@ -137,9 +153,8 @@ protected:
 
 private:
 
-    bool set_value(
-            const void * data_value,
-            float member_id);
+    bool set_member(
+            const void * data_value);
 
     bool has_value_ = false;
     std::vector<FieldAccessor> access_path_;

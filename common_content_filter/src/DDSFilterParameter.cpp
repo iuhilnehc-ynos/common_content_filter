@@ -20,6 +20,8 @@
 
 #include "DDSFilterExpressionParser.hpp"
 
+#include "Log.hpp"
+
 namespace eprosima_common {
 namespace fastdds {
 namespace dds {
@@ -29,8 +31,11 @@ bool DDSFilterParameter::set_value(
         const char* parameter)
 {
     auto node = parser::parse_literal_value(parameter);
+
     if (!node)
     {
+      logError(DDSSQLFILTER, "PARSE ERROR: parser::parse_literal_value");
+
         return false;
     }
 

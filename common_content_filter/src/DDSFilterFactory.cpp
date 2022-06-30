@@ -151,6 +151,8 @@ static bool check_value_compatibility(
             }
     }
 
+    logError(DDSSQLFILTER, "check_value_compatibility return false ,"
+      << static_cast<uint32_t>(left) << " " << static_cast<uint32_t>(right));
     return false;
 }
 
@@ -539,6 +541,7 @@ IContentFilterFactory::ReturnCode_t DDSFilterFactory::create_content_filter(
             auto node = parser::parse_filter_expression(filter_expression, type_support);
             if (node)
             {
+              logError(DDSSQLFILTER, "parser::parse_filter_expression success ");
                 // auto type_id = TypeObjectFactory::get_instance()->get_type_identifier(type_name, true);
                 // auto dyn_type = TypeObjectFactory::get_instance()->build_dynamic_type(type_name, type_id, type_object);
                 DDSFilterExpression* expr = get_expression();
@@ -564,6 +567,7 @@ IContentFilterFactory::ReturnCode_t DDSFilterFactory::create_content_filter(
             }
             else
             {
+                logError(DDSSQLFILTER, "parser::parse_filter_expression failed ");
                 ret = ReturnCode_t::RETCODE_BAD_PARAMETER;
             }
         }

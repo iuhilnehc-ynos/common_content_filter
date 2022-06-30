@@ -166,22 +166,26 @@ create_common_content_filter(
 
   logInfo(DDSSQLFILTER, "create_common_content_filter options: " << options->filter_expression);
 
-  IContentFilter * filter_instance;
+  IContentFilter * filter_instance = nullptr;
 
   std::vector<std::string> expression_parameters;
   for (size_t i = 0; i < options->expression_parameters.size; ++i) {
     expression_parameters.push_back(options->expression_parameters.data[i]);
   }
 
-  DDSFilterFactory::ReturnCode_t ret = get_common_content_filter_factory()->create_content_filter(
-            "DDSSQL",    // deprecated
-            "type_name", // deprecated
-            type_support,
-            options->filter_expression,
-            expression_parameters,
-            filter_instance);
+  try {
+    DDSFilterFactory::ReturnCode_t ret = get_common_content_filter_factory()->create_content_filter(
+              "DDSSQL",    // deprecated
+              "type_name", // deprecated
+              type_support,
+              options->filter_expression,
+              expression_parameters,
+              filter_instance);
 
-  logInfo(DDSSQLFILTER, "factory.create_content_filter ret: " << ret);
+    logInfo(DDSSQLFILTER, "factory.create_content_filter xx ret: " << ret);
+  } catch (const std::runtime_error& e) {
+    logInfo(DDSSQLFILTER, "failed to create_content_filter: " << e.what());
+  }
 
   return filter_instance;
 }
