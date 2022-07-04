@@ -178,7 +178,7 @@ void DDSFilterValue::copy_from(
             break;
 
         case ValueKind::STRING:
-            memcpy(string_value, other.string_value, sizeof(string_value));
+            strncpy(string_value, other.string_value, sizeof(string_value));
             break;
 
         default:
