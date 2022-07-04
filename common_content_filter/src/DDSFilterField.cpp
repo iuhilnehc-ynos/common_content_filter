@@ -43,7 +43,7 @@ namespace DDSSQLFilter {
 
 
 template<typename MembersType>
-void
+bool
 DDSFilterField::get_msg_data_address(
   const void * untype_members,
   FieldAccessor& accessor,
@@ -51,7 +51,7 @@ DDSFilterField::get_msg_data_address(
 {
   const MembersType * members = static_cast<const MembersType *>(untype_members);
   if (!members) {
-    throw std::runtime_error("The data in the type support introspection is invalid.");
+    return false;
   }
 
   const auto member = members->members_ + accessor.member_index;
@@ -75,7 +75,7 @@ DDSFilterField::get_msg_data_address(
     }
 
     if (accessor.array_index >= array_size) {
-      throw std::runtime_error("The array index should be less than array size.");
+      return false;
     }
 
     data = member->get_function(
@@ -83,6 +83,8 @@ DDSFilterField::get_msg_data_address(
   } else {
     data = reinterpret_cast<void *>(addr + member->offset_);
   }
+
+  return true;
 }
 
 bool DDSFilterField::set_value(
@@ -91,7 +93,6 @@ bool DDSFilterField::set_value(
 {
     bool last_step = access_path_.size() - 1 == n;
     bool ret = false;
-    const void * addr = data;
     bool is_c_type_support;
 
     // logDebug(
@@ -104,26 +105,20 @@ bool DDSFilterField::set_value(
       rosidl_typesupport_introspection_c__identifier)
     {
       is_c_type_support = true;
-      get_msg_data_address<rosidl_typesupport_introspection_c__MessageMembers>(
-        type_support_introspection->data, access_path_[n], addr);
+      ret = get_msg_data_address<rosidl_typesupport_introspection_c__MessageMembers>(
+        type_support_introspection->data, access_path_[n], data);
 
     } else {
       is_c_type_support = false;
-      get_msg_data_address<rosidl_typesupport_introspection_cpp::MessageMembers>(
-        type_support_introspection->data, access_path_[n], addr);
+      ret = get_msg_data_address<rosidl_typesupport_introspection_cpp::MessageMembers>(
+        type_support_introspection->data, access_path_[n], data);
     }
 
-    if (last_step)
+    if (ret)
     {
-        ret = set_member(addr, is_c_type_support);
-    }
-    else
-    {
-        ret = set_value(addr, n + 1);
-    }
+      if (last_step) {
+        ret = set_member(data, is_c_type_support);
 
-    if (ret && last_step)
-    {
         has_value_ = true;
         value_has_changed();
 
@@ -132,6 +127,11 @@ bool DDSFilterField::set_value(
         {
             parent->value_has_changed();
         }
+      }
+      else
+      {
+          ret = set_value(data, n + 1);
+      }
     }
 
     return ret;
@@ -147,83 +147,76 @@ bool DDSFilterField::set_member(
     //   "DDSFilterField::set_member " << "type_id_:" << (uint32_t)type_id_;
     // );
 
-    try
+    switch (type_id_)
     {
-        switch (type_id_)
-        {
-            case ::rosidl_typesupport_introspection_cpp::ROS_TYPE_FLOAT:
-                float_value = *(float*)data;
-                break;
+        case ::rosidl_typesupport_introspection_cpp::ROS_TYPE_FLOAT:
+            float_value = *reinterpret_cast<const float *>(data);
+            break;
 
-            case ::rosidl_typesupport_introspection_cpp::ROS_TYPE_DOUBLE:
-                float_value = *(double*)data;
-                break;
+        case ::rosidl_typesupport_introspection_cpp::ROS_TYPE_DOUBLE:
+            float_value = *reinterpret_cast<const double *>(data);
+            break;
 
-            case ::rosidl_typesupport_introspection_cpp::ROS_TYPE_LONG_DOUBLE:
-                float_value = *(long double*)data;
-                break;
+        case ::rosidl_typesupport_introspection_cpp::ROS_TYPE_LONG_DOUBLE:
+            float_value = *reinterpret_cast<const long double *>(data);
+            break;
 
-            case ::rosidl_typesupport_introspection_cpp::ROS_TYPE_CHAR:
-                char_value = *(char*)data;
-                break;
+        case ::rosidl_typesupport_introspection_cpp::ROS_TYPE_CHAR:
+            char_value = *reinterpret_cast<const char *>(data);
+            break;
 
-            case ::rosidl_typesupport_introspection_cpp::ROS_TYPE_BOOLEAN:
-                boolean_value = *(bool*)data;
-                break;
+        case ::rosidl_typesupport_introspection_cpp::ROS_TYPE_BOOLEAN:
+            boolean_value = *reinterpret_cast<const bool *>(data);
+            break;
 
-            case ::rosidl_typesupport_introspection_cpp::ROS_TYPE_OCTET:
-            case ::rosidl_typesupport_introspection_cpp::ROS_TYPE_UINT8:
-                unsigned_integer_value = *(uint8_t*)data;
-                break;
+        case ::rosidl_typesupport_introspection_cpp::ROS_TYPE_OCTET:
+        case ::rosidl_typesupport_introspection_cpp::ROS_TYPE_UINT8:
+            unsigned_integer_value = *reinterpret_cast<const uint8_t *>(data);
+            break;
 
-            case ::rosidl_typesupport_introspection_cpp::ROS_TYPE_INT8:
-                signed_integer_value = *(int8_t*)data;
-                break;
+        case ::rosidl_typesupport_introspection_cpp::ROS_TYPE_INT8:
+            signed_integer_value = *reinterpret_cast<const int8_t *>(data);
+            break;
 
-            case ::rosidl_typesupport_introspection_cpp::ROS_TYPE_UINT16:
-                unsigned_integer_value = *(uint16_t*)data;
-                break;
+        case ::rosidl_typesupport_introspection_cpp::ROS_TYPE_UINT16:
+            unsigned_integer_value = *reinterpret_cast<const uint16_t *>(data);
+            break;
 
-            case ::rosidl_typesupport_introspection_cpp::ROS_TYPE_INT16:
-                signed_integer_value = *(int16_t*)data;
-                break;
+        case ::rosidl_typesupport_introspection_cpp::ROS_TYPE_INT16:
+            signed_integer_value = *reinterpret_cast<const int16_t *>(data);
+            break;
 
-            case ::rosidl_typesupport_introspection_cpp::ROS_TYPE_UINT32:
-                unsigned_integer_value = *(uint32_t*)data;
-                break;
+        case ::rosidl_typesupport_introspection_cpp::ROS_TYPE_UINT32:
+            unsigned_integer_value = *reinterpret_cast<const uint32_t *>(data);
+            break;
 
-            case ::rosidl_typesupport_introspection_cpp::ROS_TYPE_INT32:
-                signed_integer_value = *(int32_t*)data;
-                break;
+        case ::rosidl_typesupport_introspection_cpp::ROS_TYPE_INT32:
+            signed_integer_value = *reinterpret_cast<const int32_t *>(data);
+            break;
 
-            case ::rosidl_typesupport_introspection_cpp::ROS_TYPE_UINT64:
-                unsigned_integer_value = *(uint64_t*)data;
-                break;
+        case ::rosidl_typesupport_introspection_cpp::ROS_TYPE_UINT64:
+            unsigned_integer_value = *reinterpret_cast<const uint64_t *>(data);
+            break;
 
-            case ::rosidl_typesupport_introspection_cpp::ROS_TYPE_INT64:
-                signed_integer_value = *(int64_t*)data;
-                break;
+        case ::rosidl_typesupport_introspection_cpp::ROS_TYPE_INT64:
+            signed_integer_value = *reinterpret_cast<const int64_t *>(data);
+            break;
 
-            case ::rosidl_typesupport_introspection_cpp::ROS_TYPE_STRING:
+        case ::rosidl_typesupport_introspection_cpp::ROS_TYPE_STRING:
 
-                if (is_c_type_support) {
-                  strncpy(string_value, (char*)data, sizeof(string_value));
-                } else {
-                  auto string = reinterpret_cast<const std::string *>(data);
-                  strncpy(string_value, (char*)string->c_str(), sizeof(string_value));
-                }
-                break;
+            if (is_c_type_support) {
+              strncpy(string_value, reinterpret_cast<const char *>(data), sizeof(string_value));
+            } else {
+              auto string = reinterpret_cast<const std::string *>(data);
+              strncpy(string_value, (char*)string->c_str(), sizeof(string_value));
+            }
+            break;
 
-            case ::rosidl_typesupport_introspection_cpp::ROS_TYPE_WCHAR:
-            case ::rosidl_typesupport_introspection_cpp::ROS_TYPE_WSTRING:
-            default:
-                ret = false;
-                break;
-        }
-    }
-    catch (...)
-    {
-        ret = false;
+        case ::rosidl_typesupport_introspection_cpp::ROS_TYPE_WCHAR:
+        case ::rosidl_typesupport_introspection_cpp::ROS_TYPE_WSTRING:
+        default:
+            ret = false;
+            break;
     }
 
     return ret;

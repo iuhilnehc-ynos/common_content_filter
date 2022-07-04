@@ -147,7 +147,7 @@ protected:
 private:
 
     template<typename MembersType>
-    void
+    bool
     get_msg_data_address(
       const void * untype_members,
       FieldAccessor& accessor,
