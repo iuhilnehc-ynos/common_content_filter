@@ -33,7 +33,7 @@ struct CurrentIdentifierState
 };
 
 
-const rosidl_message_type_support_t *
+static const rosidl_message_type_support_t *
 get_type_support_introspection(
   const rosidl_message_type_support_t * type_supports)
 {
@@ -68,41 +68,28 @@ get_type_support_introspection(
 
 
 template<typename MembersType>
-inline bool
-add_type_object(
+inline void
+add_access_path(
   CurrentIdentifierState& identifier_state,
   std::unique_ptr< ParseNode >& n,
-  const void * untype_members,
-  size_t & member_index,
-  size_t & array_index)
+  const rosidl_message_type_support_t * type_support_introspection)
 {
-  const MembersType * members = static_cast<const MembersType *>(untype_members);
+  const MembersType * members = static_cast<const MembersType *>(type_support_introspection->data);
   if (!members) {
-    return false;
+    throw std::runtime_error("The members in the type support introspection is invalid.");
   }
+
+  size_t member_index = 0;
+  size_t array_index = std::numeric_limits<size_t>::max();
 
   const ParseNode& name_node = n->left();
   std::string parse_node_name = name_node.content();
 
   for (uint32_t i = 0; i < members->member_count_; ++i) {
-    // GetTypeIdentifier(identifier_state, parse_node_name, members, i);
-
     const auto member = members->members_ + i;
-    std::string name = member->name_;
 
-    if (name == parse_node_name) {
-
-      member_index = i;
-
-      logError(DDSSQLFILTER, "find the parse_node_name: " << parse_node_name
-        << " type_id:" << static_cast<int>(member->type_id_)
-        << " member index:" << i
-        << " member member->offset_:" << member->offset_
-        << " member member->is_array_:" << member->is_array_
-        << " member member->array_size_:" << member->array_size_
-        << " member member->is_upper_bound_:" << member->is_upper_bound_
-        );
-
+    if (member->name_ == parse_node_name) {
+        member_index = i;
         bool has_index = n->children.size() > 1;
         if (member->is_array_)
         {
@@ -113,16 +100,12 @@ add_type_object(
 
             array_index = static_cast<size_t>(std::stoul(n->right().left().content()));
 
-
-
             if (member->array_size_ && !member->is_upper_bound_) {
               if (member->array_size_ <= array_index)
               {
                   throw parse_error("index is greater than maximum size", n->right().end());
               }
             }
-
-
         }
         else
         {
@@ -132,138 +115,45 @@ add_type_object(
             }
         }
 
-
-      // some important information should be saved in the identifier_state
       identifier_state.current_type = member->type_id_;
 
-
       if (member->type_id_ == ::rosidl_typesupport_introspection_cpp::ROS_TYPE_MESSAGE) {
-
-          // const rosidl_message_type_support_t * type_support_introspection =
-          //   get_type_support_introspection(member->members_);
-          // const MembersType * sub_members =
-          //   static_cast<const MembersType *>(type_support_introspection->data);
-
         identifier_state.current_type_support = member->members_;
       }
 
+      identifier_state.access_path.emplace_back(
+        DDSFilterField::FieldAccessor{ member_index, array_index, type_support_introspection });
 
-
-      return true;
+      return;
     }
   }
   throw parse_error("field not found", name_node.begin());
-
-  return false;
 }
-
-bool test_type_support(
-  CurrentIdentifierState& identifier_state,
-  std::unique_ptr< ParseNode >& n,
-  const rosidl_message_type_support_t * type_supports,
-  size_t & member_index,
-  size_t & array_index,
-  const rosidl_message_type_support_t *& type_support_introspection)
-{
-  type_support_introspection =
-    get_type_support_introspection(type_supports);
-  if (!type_support_introspection) {
-    return false;
-  }
-
-  bool ret = false;
-  logError(DDSSQLFILTER, "test_type_support: " << type_support_introspection->typesupport_identifier);
-  if (type_support_introspection->typesupport_identifier ==
-    rosidl_typesupport_introspection_c__identifier)
-  {
-    ret = add_type_object<rosidl_typesupport_introspection_c__MessageMembers>(
-      identifier_state, n, type_support_introspection->data,
-      member_index, array_index);
-  } else {
-    ret = add_type_object<rosidl_typesupport_introspection_cpp::MessageMembers>(
-      identifier_state, n, type_support_introspection->data,
-      member_index, array_index);
-  }
-
-  return ret;
-}
-
-
-
 
 struct identifier_processor
     : parse_tree::apply< identifier_processor >
 {
-    template<typename _TSize>
-    static constexpr size_t process_bound(
-            _TSize bound)
-    {
-        return 0 == bound ? std::numeric_limits<size_t>::max() : static_cast<size_t>(bound);
-    }
-
-    template<typename _BSeq>
-    static size_t process_bounds(
-            const _BSeq& bound_seq)
-    {
-        if (1 != bound_seq.size())
-        {
-            return 0;
-        }
-
-        return process_bound(bound_seq[0]);
-    }
-
-    // static bool type_should_be_indexed(
-    //         CurrentIdentifierState& identifier_state,
-    //         const TypeIdentifier*& out_type,
-    //         size_t& max_size)
-    // {
-    //     max_size = 0;
-
-    //     switch (identifier_state.current_type_support)
-    //     {
-    //         case TI_PLAIN_ARRAY_SMALL:
-    //             out_type = ti.array_sdefn().element_identifier();
-    //             max_size = process_bounds(ti.array_sdefn().array_bound_seq());
-    //             return true;
-
-    //         case TI_PLAIN_ARRAY_LARGE:
-    //             out_type = ti.array_ldefn().element_identifier();
-    //             max_size = process_bounds(ti.array_ldefn().array_bound_seq());
-    //             return true;
-
-    //         case TI_PLAIN_SEQUENCE_SMALL:
-    //             out_type = ti.seq_sdefn().element_identifier();
-    //             max_size = process_bound(ti.seq_sdefn().bound());
-    //             return true;
-
-    //         case TI_PLAIN_SEQUENCE_LARGE:
-    //             out_type = ti.seq_ldefn().element_identifier();
-    //             max_size = process_bound(ti.seq_ldefn().bound());
-    //             return true;
-    //     }
-
-    //     out_type = &ti;
-    //     return false;
-    // }
 
     static void add_member_access(
             std::unique_ptr< ParseNode >& n,
             CurrentIdentifierState& identifier_state,
-            const rosidl_message_type_support_t * type_support)
+            const rosidl_message_type_support_t * type_supports)
     {
-        size_t member_index = 0;
-        size_t max_size = 0;
-        size_t array_index = std::numeric_limits<size_t>::max();
-        bool is_array;
-        size_t array_size;
-        const rosidl_message_type_support_t * type_support_introspection;
+        const rosidl_message_type_support_t * type_support_introspection =
+          get_type_support_introspection(type_supports);
+        if (!type_support_introspection) {
+          throw std::runtime_error("failed to get type support introspection");
+        }
 
-        bool ret = test_type_support(identifier_state, n, type_support,
-          member_index, array_index, type_support_introspection);
-
-        identifier_state.access_path.emplace_back(
-          DDSFilterField::FieldAccessor{ member_index, array_index, type_support_introspection });
+        if (type_support_introspection->typesupport_identifier ==
+          rosidl_typesupport_introspection_c__identifier)
+        {
+          add_access_path<rosidl_typesupport_introspection_c__MessageMembers>(
+            identifier_state, n, type_support_introspection);
+        } else {
+          add_access_path<rosidl_typesupport_introspection_cpp::MessageMembers>(
+            identifier_state, n, type_support_introspection);
+        }
     }
 
     static DDSFilterValue::ValueKind get_value_kind(
