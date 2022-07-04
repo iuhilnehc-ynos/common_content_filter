@@ -19,19 +19,13 @@
 #ifndef COMMON_CONTENT_FILTER__ICONTENTFILTERFACTORY_HPP_
 #define COMMON_CONTENT_FILTER__ICONTENTFILTERFACTORY_HPP_
 
-// #include <fastrtps/fastrtps_dll.h>
-
-// #include <fastdds/dds/core/LoanableTypedCollection.hpp>
-// #include <fastdds/dds/topic/IContentFilter.hpp>
-// #include <fastdds/dds/topic/TopicDataType.hpp>
-
-// #include <fastrtps/types/TypesBase.h>
+#include <rosidl_runtime_c/message_type_support_struct.h>
 
 #include <string>
 #include <vector>
 
 #include "IContentFilter.hpp"
-#include "rosidl_runtime_c/message_type_support_struct.h"
+
 
 namespace eprosima_common {
 namespace fastdds {

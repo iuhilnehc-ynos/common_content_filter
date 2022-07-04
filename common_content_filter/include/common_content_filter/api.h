@@ -26,6 +26,12 @@ extern "C"
 {
 #endif
 
+/// Create a common content filter instance to filter data.
+/**
+ * \param[in] type_support Type support of the topic data being filtered
+ * \param[in] options the filter options
+ * \return a valid address if success, or NULL on failure
+ */
 COMMON_CONTENT_FILTER_PUBLIC
 void *
 create_common_content_filter(
@@ -33,13 +39,24 @@ create_common_content_filter(
   rmw_subscription_content_filter_options_t * options
 );
 
+/// Use the content filter instance to evalute the data.
+/**
+ * \param[in] instance The content filter instance
+ * \param[in] data The ros2 payload
+ * \param[in] serialized Indicate the ros2 payload is serialized or not
+ * \return true if evaluate successfully, or false
+ */
 COMMON_CONTENT_FILTER_PUBLIC
 bool
-common_content_filter_evaluate(void * instance, void * ros_data, bool serialized);
+common_content_filter_evaluate(void * instance, void * data, bool serialized);
 
+/// Destroy the content filter instance.
+/**
+ * \param[in] instance The content filter instance
+ */
 COMMON_CONTENT_FILTER_PUBLIC
 void
-destroy_common_content_filter(void *);
+destroy_common_content_filter(void * instance);
 
 #ifdef __cplusplus
 }

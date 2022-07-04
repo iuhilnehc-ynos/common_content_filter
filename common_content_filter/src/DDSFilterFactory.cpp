@@ -24,11 +24,9 @@
 
 #include "IContentFilter.hpp"
 #include "IContentFilterFactory.hpp"
-
 #include "DDSFilterGrammar.hpp"
 #include "DDSFilterExpressionParser.hpp"
 #include "DDSFilterParseNode.hpp"
-
 #include "DDSFilterExpression.hpp"
 #include "DDSFilterCompoundCondition.hpp"
 #include "DDSFilterCondition.hpp"
@@ -39,7 +37,6 @@
 #include "DDSFilterParameter.hpp"
 #include "DDSFilterPredicate.hpp"
 #include "DDSFilterValue.hpp"
-
 #include "Log.hpp"
 
 namespace eprosima_common {

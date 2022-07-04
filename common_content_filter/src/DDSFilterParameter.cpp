@@ -19,7 +19,6 @@
 #include "DDSFilterParameter.hpp"
 
 #include "DDSFilterExpressionParser.hpp"
-
 #include "Log.hpp"
 
 namespace eprosima_common {

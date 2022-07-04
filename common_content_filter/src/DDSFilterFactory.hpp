@@ -23,9 +23,9 @@
 
 #include "IContentFilter.hpp"
 
-#include "ObjectPool.hpp"
 #include "DDSFilterEmptyExpression.hpp"
 #include "DDSFilterExpression.hpp"
+#include "ObjectPool.hpp"
 
 namespace eprosima_common {
 namespace fastdds {

@@ -19,11 +19,10 @@
 #ifndef COMMON_CONTENT_FILTER__DDSFILTEREXPRESSIONPARSER_HPP_
 #define COMMON_CONTENT_FILTER__DDSFILTEREXPRESSIONPARSER_HPP_
 
+#include <rosidl_runtime_c/message_type_support_struct.h>
 #include <memory>
-
 #include "DDSFilterParseNode.hpp"
 
-#include "rosidl_runtime_c/message_type_support_struct.h"
 
 namespace eprosima_common {
 namespace fastdds {

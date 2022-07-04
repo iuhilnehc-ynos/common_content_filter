@@ -25,7 +25,6 @@
 #include <vector>
 
 #include "IContentFilter.hpp"
-
 #include "DDSFilterCondition.hpp"
 #include "DDSFilterField.hpp"
 #include "DDSFilterParameter.hpp"
