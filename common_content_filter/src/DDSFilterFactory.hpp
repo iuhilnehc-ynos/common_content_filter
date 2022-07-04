@@ -16,13 +16,8 @@
  * @file DDSFilterFactory.hpp
  */
 
-#ifndef _FASTDDS_TOPIC_DDSSQLFILTER_DDSFILTERFACTORY_HPP_
-#define _FASTDDS_TOPIC_DDSSQLFILTER_DDSFILTERFACTORY_HPP_
-
-// #include <fastdds/dds/topic/IContentFilter.hpp>
-// #include <fastdds/dds/topic/IContentFilterFactory.hpp>
-// #include <fastdds/dds/topic/TopicDataType.hpp>
-
+#ifndef COMMON_CONTENT_FILTER__DDSFILTERFACTORY_HPP_
+#define COMMON_CONTENT_FILTER__DDSFILTERFACTORY_HPP_
 
 #include "IContentFilterFactory.hpp"
 
@@ -36,8 +31,6 @@ namespace eprosima_common {
 namespace fastdds {
 namespace dds {
 namespace DDSSQLFilter {
-
-// class IContentFilter;
 
 /**
  * An IContentFilterFactory that processes DDS-SQL filter expressions.
@@ -101,4 +94,4 @@ private:
 }  // namespace fastdds
 }  // namespace eprosima_common
 
-#endif  // _FASTDDS_TOPIC_DDSSQLFILTER_DDSFILTERFACTORY_HPP_
+#endif  // COMMON_CONTENT_FILTER__DDSFILTERFACTORY_HPP_

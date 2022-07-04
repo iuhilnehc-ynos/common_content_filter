@@ -22,13 +22,6 @@
 #include <string>
 #include <vector>
 
-// #include <fastdds/dds/topic/IContentFilter.hpp>
-// #include <fastdds/dds/topic/IContentFilterFactory.hpp>
-// #include <fastdds/dds/topic/TopicDataType.hpp>
-
-// #include <fastrtps/types/TypeObject.h>
-// #include <fastrtps/types/TypeObjectFactory.h>
-
 #include "IContentFilter.hpp"
 #include "IContentFilterFactory.hpp"
 
@@ -62,7 +55,7 @@ static IContentFilterFactory::ReturnCode_t transform_enum(
     static_cast<void>(value);
     static_cast<void>(type);
     static_cast<void>(string_value);
-    // TODO. after enum supported in the rosidl
+    // TODO. when enum supported in the rosidl
 
     return IContentFilterFactory::ReturnCode_t::RETCODE_BAD_PARAMETER;
 }

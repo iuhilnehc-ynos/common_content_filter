@@ -20,14 +20,7 @@
 
 #include <memory>
 
-#include "Log.hpp"
-
-// #include <fastrtps/types/TypeIdentifier.h>
-// #include <fastrtps/types/TypeObject.h>
-// #include <fastrtps/types/TypeObjectFactory.h>
-
-
-// identifiers.hpp need this headers
+// header files needed by identifiers.hpp
 #include "rmw/error_handling.h"
 #include "rosidl_typesupport_introspection_c/identifier.h"
 #include "rosidl_typesupport_introspection_cpp/identifier.hpp"
@@ -35,15 +28,15 @@
 #include "rosidl_typesupport_introspection_cpp/message_introspection.hpp"
 #include "rosidl_typesupport_introspection_cpp/field_types.hpp"
 
-
 #include "pegtl.hpp"
 #include "pegtl/contrib/parse_tree.hpp"
 
 #include "DDSFilterGrammar.hpp"
 #include "DDSFilterParseNode.hpp"
-
 #include "DDSFilterValue.hpp"
 #include "DDSFilterField.hpp"
+
+#include "Log.hpp"
 
 namespace eprosima_common {
 namespace fastdds {
@@ -52,7 +45,6 @@ namespace DDSSQLFilter {
 namespace parser {
 
 using namespace tao::TAO_PEGTL_NAMESPACE;
-// using namespace eprosima_common::fastrtps::types;
 
 #include "DDSFilterExpressionParserImpl/rearrange.hpp"
 #include "DDSFilterExpressionParserImpl/literal_values.hpp"

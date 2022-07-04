@@ -16,8 +16,8 @@
  * @file DDSFilterConditionState.hpp
  */
 
-#ifndef _FASTDDS_TOPIC_DDSSQLFILTER_DDSFILTERCONDITIONSTATE_HPP_
-#define _FASTDDS_TOPIC_DDSSQLFILTER_DDSFILTERCONDITIONSTATE_HPP_
+#ifndef COMMON_CONTENT_FILTER__DDSFILTERCONDITIONSTATE_HPP_
+#define COMMON_CONTENT_FILTER__DDSFILTERCONDITIONSTATE_HPP_
 
 namespace eprosima_common {
 namespace fastdds {
@@ -44,4 +44,4 @@ enum class DDSFilterConditionState : char
 }  // namespace fastdds
 }  // namespace eprosima_common
 
-#endif  // _FASTDDS_TOPIC_DDSSQLFILTER_DDSFILTERCONDITIONSTATE_HPP_
+#endif  // COMMON_CONTENT_FILTER__DDSFILTERCONDITIONSTATE_HPP_

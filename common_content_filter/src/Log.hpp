@@ -1,3 +1,7 @@
+// license
+
+#ifndef COMMON_CONTENT_FILTER__LOG_HPP_
+#define COMMON_CONTENT_FILTER__LOG_HPP_
 
 // TODO. use rcutil log instead
 #include <iostream>
@@ -13,3 +17,5 @@
 #define logInfo common_content_filter_log_
 #define logWarning common_content_filter_log_
 #define logError common_content_filter_log_
+
+#endif  // COMMON_CONTENT_FILTER__LOG_HPP_

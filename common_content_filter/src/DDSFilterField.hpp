@@ -16,17 +16,12 @@
  * @file DDSFilterField.hpp
  */
 
-#ifndef _FASTDDS_TOPIC_DDSSQLFILTER_DDSFILTERFIELD_HPP_
-#define _FASTDDS_TOPIC_DDSSQLFILTER_DDSFILTERFIELD_HPP_
+#ifndef COMMON_CONTENT_FILTER__DDSFILTERFIELD_HPP_
+#define COMMON_CONTENT_FILTER__DDSFILTERFIELD_HPP_
 
 #include <cassert>
 #include <unordered_set>
 #include <vector>
-
-// #include <fastdds/rtps/common/SerializedPayload.h>
-// #include <fastrtps/types/DynamicData.h>
-// #include <fastrtps/types/TypeIdentifier.h>
-// #include <fastrtps/types/TypesBase.h>
 
 #include "rosidl_typesupport_introspection_c/identifier.h"
 #include "rosidl_typesupport_introspection_cpp/identifier.hpp"
@@ -55,16 +50,14 @@ public:
      */
     struct FieldAccessor final
     {
-        // TODO. use pos instead, the `array_index` might be used
-
-
         /// Index of the member to access
         size_t member_index;
 
         /// Element index for array / sequence members
         size_t array_index;
 
-        const rosidl_message_type_support_t * type_support_intro;
+        /// Type support introspection information for current field
+        const rosidl_message_type_support_t * type_support_introspection;
     };
 
     /**
@@ -168,4 +161,4 @@ private:
 }  // namespace fastdds
 }  // namespace eprosima_common
 
-#endif  // _FASTDDS_TOPIC_DDSSQLFILTER_DDSFILTERFIELD_HPP_
+#endif  // COMMON_CONTENT_FILTER__DDSFILTERFIELD_HPP_

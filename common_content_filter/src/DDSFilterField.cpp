@@ -22,19 +22,10 @@
 #include <unordered_set>
 #include <vector>
 
-// #include <fastdds/rtps/common/SerializedPayload.h>
-// #include <fastrtps/types/DynamicData.h>
-// #include <fastrtps/types/TypeIdentifier.h>
-// #include <fastrtps/types/TypesBase.h>
-
-#include "rosidl_typesupport_introspection_cpp/field_types.hpp"
-
 #include "DDSFilterPredicate.hpp"
 #include "DDSFilterValue.hpp"
 
 #include "Log.hpp"
-
-
 
 namespace eprosima_common {
 namespace fastdds {
@@ -100,7 +91,8 @@ bool DDSFilterField::set_value(
     //   "DDSFilterField::set_value " << "access_path size:" << access_path_.size()
     // );
 
-    const rosidl_message_type_support_t * type_support_introspection = access_path_[n].type_support_intro;
+    const rosidl_message_type_support_t * type_support_introspection =
+      access_path_[n].type_support_introspection;
     if (type_support_introspection->typesupport_identifier ==
       rosidl_typesupport_introspection_c__identifier)
     {

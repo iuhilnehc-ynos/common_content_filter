@@ -16,8 +16,8 @@
  * @file DDSFilterGrammar.hpp
  */
 
-#ifndef _FASTDDS_TOPIC_DDSSQLFILTER_DDSFILTERGRAMMAR_HPP_
-#define _FASTDDS_TOPIC_DDSSQLFILTER_DDSFILTERGRAMMAR_HPP_
+#ifndef COMMON_CONTENT_FILTER__DDSFILTERGRAMMAR_HPP_
+#define COMMON_CONTENT_FILTER__DDSFILTERGRAMMAR_HPP_
 
 #include "pegtl.hpp"
 
@@ -119,4 +119,4 @@ struct LiteralGrammar : must< Literal, tao::TAO_PEGTL_NAMESPACE::eof > {};
 }  // namespace fastdds
 }  // namespace eprosima_common
 
-#endif  // _FASTDDS_TOPIC_DDSSQLFILTER_DDSFILTERGRAMMAR_HPP_
+#endif  // COMMON_CONTENT_FILTER__DDSFILTERGRAMMAR_HPP_

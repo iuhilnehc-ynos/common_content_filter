@@ -16,19 +16,9 @@
  * @file IContentFilter.hpp
  */
 
-#ifndef _FASTDDS_DDS_TOPIC_ICONTENTFILTER_HPP_
-#define _FASTDDS_DDS_TOPIC_ICONTENTFILTER_HPP_
+#ifndef COMMON_CONTENT_FILTER__ICONTENTFILTER_HPP_
+#define COMMON_CONTENT_FILTER__ICONTENTFILTER_HPP_
 
-// #include <fastrtps/fastrtps_dll.h>
-
-// #include <fastdds/dds/core/LoanableTypedCollection.hpp>
-
-// #include <fastdds/rtps/common/Guid.h>
-// #include <fastdds/rtps/common/SampleIdentity.h>
-// #include <fastdds/rtps/common/SerializedPayload.h>
-
-// #include <fastrtps/types/TypesBase.h>
-// #include <fastrtps/types/TypeDescriptor.h>
 
 namespace eprosima_common {
 namespace fastdds {
@@ -54,4 +44,4 @@ struct IContentFilter
 } // namespace fastdds
 } // namespace eprosima_common
 
-#endif  // _FASTDDS_DDS_TOPIC_ICONTENTFILTER_HPP_
+#endif  // COMMON_CONTENT_FILTER__ICONTENTFILTER_HPP_

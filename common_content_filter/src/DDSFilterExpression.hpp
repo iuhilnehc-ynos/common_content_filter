@@ -16,18 +16,13 @@
  * @file DDSFilterExpression.hpp
  */
 
-#ifndef _FASTDDS_TOPIC_DDSSQLFILTER_DDSFILTEREXPRESSION_HPP_
-#define _FASTDDS_TOPIC_DDSSQLFILTER_DDSFILTEREXPRESSION_HPP_
+#ifndef COMMON_CONTENT_FILTER__DDSFILTEREXPRESSION_HPP_
+#define COMMON_CONTENT_FILTER__DDSFILTEREXPRESSION_HPP_
 
 #include <map>
 #include <memory>
 #include <string>
 #include <vector>
-
-// #include <fastdds/dds/topic/IContentFilter.hpp>
-// #include <fastrtps/types/DynamicData.h>
-// #include <fastrtps/types/DynamicDataFactory.h>
-// #include <fastrtps/types/DynamicTypePtr.h>
 
 #include "IContentFilter.hpp"
 
@@ -56,40 +51,12 @@ public:
      */
     void clear();
 
-    /**
-     * Set the DynamicType to be used when evaluating this expression.
-     *
-     * @param [in] type  The DynamicType to assign.
-     */
-    // void set_type(
-    //         const void * type);
-
     /// The root condition of the expression tree.
     std::unique_ptr<DDSFilterCondition> root;
     /// The fields referenced by this expression.
     std::map<std::string, std::shared_ptr<DDSFilterField>> fields;
     /// The parameters referenced by this expression.
     std::vector<std::shared_ptr<DDSFilterParameter>> parameters;
-
-private:
-
-    // class DynDataDeleter
-    // {
-
-    // public:
-
-    //     void operator ()(
-    //             eprosima_common::fastrtps::types::DynamicData* ptr)
-    //     {
-    //         eprosima_common::fastrtps::types::DynamicDataFactory::get_instance()->delete_data(ptr);
-    //     }
-
-    // };
-
-    /// The Dynamic type used to deserialize the payloads
-    // eprosima_common::fastrtps::types::DynamicType_ptr dyn_type_;
-    /// The Dynamic data used to deserialize the payloads
-    // std::unique_ptr<eprosima_common::fastrtps::types::DynamicData, DynDataDeleter> dyn_data_;
 };
 
 }  // namespace DDSSQLFilter
@@ -97,4 +64,4 @@ private:
 }  // namespace fastdds
 }  // namespace eprosima_common
 
-#endif  // _FASTDDS_TOPIC_DDSSQLFILTER_DDSFILTEREXPRESSION_HPP_
+#endif  // COMMON_CONTENT_FILTER__DDSFILTEREXPRESSION_HPP_

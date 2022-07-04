@@ -23,15 +23,7 @@
 #include <string>
 #include <vector>
 
-// #include <fastdds/dds/topic/IContentFilter.hpp>
-// #include <fastrtps/types/DynamicData.h>
-// #include <fastrtps/types/DynamicDataFactory.h>
-// #include <fastrtps/types/DynamicTypePtr.h>
-// #include <fastcdr/Cdr.h>
-// #include <fastcdr/FastBuffer.h>
-
 #include "DDSFilterCondition.hpp"
-
 #include "DDSFilterField.hpp"
 #include "DDSFilterParameter.hpp"
 
@@ -63,19 +55,11 @@ bool DDSFilterExpression::evaluate(
 
 void DDSFilterExpression::clear()
 {
-    // dyn_data_.reset();
-    // dyn_type_.reset();
     parameters.clear();
     fields.clear();
     root.reset();
 }
 
-// void DDSFilterExpression::set_type(
-//         const void * type)
-// {
-//     // dyn_type_ = type;
-//     // dyn_data_.reset(eprosima_common::fastrtps::types::DynamicDataFactory::get_instance()->create_data(type));
-// }
 
 }  // namespace DDSSQLFilter
 }  // namespace dds

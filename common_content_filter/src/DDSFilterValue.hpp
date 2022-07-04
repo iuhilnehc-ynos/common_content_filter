@@ -16,13 +16,11 @@
  * @file DDSFilterValue.hpp
  */
 
-#ifndef _FASTDDS_TOPIC_DDSSQLFILTER_DDSFILTERVALUE_HPP_
-#define _FASTDDS_TOPIC_DDSSQLFILTER_DDSFILTERVALUE_HPP_
+#ifndef COMMON_CONTENT_FILTER__DDSFILTERVALUE_HPP_
+#define COMMON_CONTENT_FILTER__DDSFILTERVALUE_HPP_
 
 #include <memory>
 #include <regex>
-
-// #include <fastrtps/utils/fixed_size_string.hpp>
 
 namespace eprosima_common {
 namespace fastdds {
@@ -230,4 +228,4 @@ private:
 }  // namespace fastdds
 }  // namespace eprosima_common
 
-#endif  // _FASTDDS_TOPIC_DDSSQLFILTER_DDSFILTERVALUE_HPP_
+#endif  // COMMON_CONTENT_FILTER__DDSFILTERVALUE_HPP_

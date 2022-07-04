@@ -16,13 +16,11 @@
  * @file DDSFilterParseNode.hpp
  */
 
-#ifndef _FASTDDS_TOPIC_DDSSQLFILTER_DDSFILTERPARSENODE_HPP_
-#define _FASTDDS_TOPIC_DDSSQLFILTER_DDSFILTERPARSENODE_HPP_
+#ifndef COMMON_CONTENT_FILTER__DDSFILTERPARSENODE_HPP_
+#define COMMON_CONTENT_FILTER__DDSFILTERPARSENODE_HPP_
 
 #include <memory>
 #include <vector>
-
-// #include <fastrtps/types/TypeIdentifier.h>
 
 #include "pegtl/contrib/parse_tree.hpp"
 
@@ -44,10 +42,8 @@ struct ParseNode : parse_tree::basic_node< ParseNode >
 
     // When the node is a fieldname, it will hold the access path to the field, the data kind, and the type id
     std::vector<DDSFilterField::FieldAccessor> field_access_path;
-
-    // TODO. why need the following two members?
     DDSFilterValue::ValueKind field_kind = DDSFilterValue::ValueKind::STRING;
-    // filed type in the ros2 primitive type
+    // ros2 primitive type id
     uint8_t type_id = 0;
 
     // When the node is a parameter, it will hold the parameter index
@@ -71,4 +67,4 @@ struct ParseNode : parse_tree::basic_node< ParseNode >
 }  // namespace fastdds
 }  // namespace eprosima_common
 
-#endif  // _FASTDDS_TOPIC_DDSSQLFILTER_DDSFILTERPARSENODE_HPP_
+#endif  // COMMON_CONTENT_FILTER__DDSFILTERPARSENODE_HPP_

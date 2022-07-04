@@ -16,12 +16,10 @@
  * @file DDSFilterExpressionParser.hpp
  */
 
-#ifndef _FASTDDS_TOPIC_DDSSQLFILTER_DDSFILTEREXPRESSIONPARSER_HPP_
-#define _FASTDDS_TOPIC_DDSSQLFILTER_DDSFILTEREXPRESSIONPARSER_HPP_
+#ifndef COMMON_CONTENT_FILTER__DDSFILTEREXPRESSIONPARSER_HPP_
+#define COMMON_CONTENT_FILTER__DDSFILTEREXPRESSIONPARSER_HPP_
 
 #include <memory>
-
-// #include <fastrtps/types/TypeObject.h>
 
 #include "DDSFilterParseNode.hpp"
 
@@ -37,14 +35,11 @@ namespace parser {
  * Performs parsing of a string containing a DDS-SQL filter expression.
  *
  * @param[in]  expression   The string to parse.
- * @param[in]  type_object  The TypeObject representing the type of the topic being filtered.
+ * @param[in]  type_support  The type support representing the type of the data being filtered.
  *
  * @return nullptr when there is a parsing error.
  * @return A pointer to the root node of the AST tree for the expression.
  */
-// std::unique_ptr<ParseNode> parse_filter_expression(
-//         const char* expression,
-//         const eprosima_common::fastrtps::types::TypeObject* type_object);
 std::unique_ptr<ParseNode> parse_filter_expression(
         const char* expression,
         const rosidl_message_type_support_t* type_support);
@@ -67,4 +62,4 @@ std::unique_ptr<ParseNode> parse_literal_value(
 }  // namespace fastdds
 }  // namespace eprosima_common
 
-#endif  // _FASTDDS_TOPIC_DDSSQLFILTER_DDSFILTEREXPRESSIONPARSER_HPP_
+#endif  // COMMON_CONTENT_FILTER__DDSFILTEREXPRESSIONPARSER_HPP_

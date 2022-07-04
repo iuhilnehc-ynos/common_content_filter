@@ -17,8 +17,8 @@
  *
  */
 
-#ifndef FASTRTPS_UTILS_COLLECTIONS_OBJECTPOOL_HPP_
-#define FASTRTPS_UTILS_COLLECTIONS_OBJECTPOOL_HPP_
+#ifndef COMMON_CONTENT_FILTER_OBJECTPOOL_HPP_
+#define COMMON_CONTENT_FILTER_OBJECTPOOL_HPP_
 
 #include <memory>
 #include <type_traits>
@@ -97,4 +97,4 @@ private:
 }  // namespace fastdds
 }  // namespace eprosima_common
 
-#endif /* FASTRTPS_UTILS_COLLECTIONS_OBJECTPOOL_HPP_ */
+#endif  // COMMON_CONTENT_FILTER_OBJECTPOOL_HPP_
