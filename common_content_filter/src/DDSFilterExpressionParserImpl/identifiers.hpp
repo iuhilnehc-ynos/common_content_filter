@@ -24,7 +24,6 @@ struct CurrentIdentifierState
 {
     const rosidl_message_type_support_t * type_support;
 
-    // ros2 primitive type
     const rosidl_message_type_support_t * current_type_support;
 
     uint8_t current_type;
@@ -32,112 +31,111 @@ struct CurrentIdentifierState
     std::vector<DDSFilterField::FieldAccessor> access_path;
 };
 
-
-static const rosidl_message_type_support_t *
-get_type_support_introspection(
-  const rosidl_message_type_support_t * type_supports)
-{
-  const rosidl_message_type_support_t * type_support =
-    get_message_typesupport_handle(
-    type_supports, rosidl_typesupport_introspection_c__identifier);
-  if (nullptr == type_support) {
-    rcutils_error_string_t prev_error_string = rcutils_get_error_string();
-    rcutils_reset_error();
-
-    type_support =
-      get_message_typesupport_handle(
-      type_supports,
-      rosidl_typesupport_introspection_cpp::typesupport_identifier);
-    if (nullptr == type_support) {
-      rcutils_error_string_t error_string = rcutils_get_error_string();
-      rcutils_reset_error();
-      RMW_SET_ERROR_MSG_WITH_FORMAT_STRING(
-        "Type support not from this implementation. Got:\n"
-        "    %s\n"
-        "    %s\n"
-        "while fetching it",
-        prev_error_string.str, error_string.str);
-      return nullptr;
-    }
-  }
-
-  return type_support;
-}
-
-template<typename MembersType>
-inline void
-add_access_path(
-  CurrentIdentifierState& identifier_state,
-  std::unique_ptr< ParseNode >& n,
-  const rosidl_message_type_support_t * type_support_introspection)
-{
-  const MembersType * members = static_cast<const MembersType *>(type_support_introspection->data);
-  if (!members) {
-    throw std::runtime_error("The data in the type support introspection is invalid.");
-  }
-
-  size_t member_index = 0;
-  size_t array_index = std::numeric_limits<size_t>::max();
-
-  const ParseNode& name_node = n->left();
-  std::string parse_node_name = name_node.content();
-
-  for (uint32_t i = 0; i < members->member_count_; ++i) {
-    const auto member = members->members_ + i;
-
-    if (member->name_ == parse_node_name) {
-        member_index = i;
-        bool has_index = n->children.size() > 1;
-        if (member->is_array_)
-        {
-            if (!has_index)
-            {
-                throw parse_error("field should have an index (i.e. [n])", n->left().end());
-            }
-
-            array_index = static_cast<size_t>(std::stoul(n->right().left().content()));
-
-            if (member->array_size_ && !member->is_upper_bound_) {
-              if (member->array_size_ <= array_index)
-              {
-                  throw parse_error("index is greater than maximum size", n->right().end());
-              }
-            }
-        }
-        else
-        {
-            if (has_index)
-            {
-                throw parse_error("field is not an array or sequence", n->right().begin());
-            }
-        }
-
-      identifier_state.current_type = member->type_id_;
-
-      if (member->type_id_ == ::rosidl_typesupport_introspection_cpp::ROS_TYPE_MESSAGE) {
-        identifier_state.current_type_support = member->members_;
-      }
-
-      identifier_state.access_path.emplace_back(
-        DDSFilterField::FieldAccessor{ member_index, array_index, type_support_introspection });
-
-      return;
-    }
-  }
-  throw parse_error("field not found", name_node.begin());
-}
-
 struct identifier_processor
     : parse_tree::apply< identifier_processor >
 {
 
+    static const rosidl_message_type_support_t *
+    get_type_support_introspection(
+      const rosidl_message_type_support_t * type_support)
+    {
+      const rosidl_message_type_support_t * type_support_introspection =
+        get_message_typesupport_handle(
+        type_support, rosidl_typesupport_introspection_c__identifier);
+      if (nullptr == type_support_introspection) {
+        rcutils_error_string_t prev_error_string = rcutils_get_error_string();
+        rcutils_reset_error();
+
+        type_support_introspection =
+          get_message_typesupport_handle(
+          type_support,
+          rosidl_typesupport_introspection_cpp::typesupport_identifier);
+        if (nullptr == type_support_introspection) {
+          rcutils_error_string_t error_string = rcutils_get_error_string();
+          rcutils_reset_error();
+          RMW_SET_ERROR_MSG_WITH_FORMAT_STRING(
+            "Type support not from this implementation. Got:\n"
+            "    %s\n"
+            "    %s\n"
+            "while fetching it",
+            prev_error_string.str, error_string.str);
+          return nullptr;
+        }
+      }
+
+      return type_support_introspection;
+    }
+
+    template<typename MembersType>
+    static void
+    add_access_path(
+      CurrentIdentifierState& identifier_state,
+      std::unique_ptr< ParseNode >& n,
+      const rosidl_message_type_support_t * type_support_introspection)
+    {
+      const MembersType * members = static_cast<const MembersType *>(type_support_introspection->data);
+      if (!members) {
+        throw std::runtime_error("The data in the type support introspection is invalid.");
+      }
+
+      size_t member_index = 0;
+      size_t array_index = std::numeric_limits<size_t>::max();
+
+      const ParseNode& name_node = n->left();
+      std::string parse_node_name = name_node.content();
+
+      for (uint32_t i = 0; i < members->member_count_; ++i) {
+        const auto member = members->members_ + i;
+
+        if (member->name_ == parse_node_name) {
+            member_index = i;
+            bool has_index = n->children.size() > 1;
+            if (member->is_array_)
+            {
+                if (!has_index)
+                {
+                    throw parse_error("field should have an index (i.e. [n])", n->left().end());
+                }
+
+                array_index = static_cast<size_t>(std::stoul(n->right().left().content()));
+
+                if (member->array_size_ && !member->is_upper_bound_) {
+                  if (member->array_size_ <= array_index)
+                  {
+                      throw parse_error("index is greater than maximum size", n->right().end());
+                  }
+                }
+            }
+            else
+            {
+                if (has_index)
+                {
+                    throw parse_error("field is not an array or sequence", n->right().begin());
+                }
+            }
+
+          identifier_state.current_type = member->type_id_;
+
+          if (member->type_id_ == ::rosidl_typesupport_introspection_cpp::ROS_TYPE_MESSAGE) {
+            identifier_state.current_type_support = member->members_;
+          }
+
+          identifier_state.access_path.emplace_back(
+            DDSFilterField::FieldAccessor{ member_index, array_index, type_support_introspection });
+
+          return;
+        }
+      }
+      throw parse_error("field not found", name_node.begin());
+    }
+
     static void add_member_access(
             std::unique_ptr< ParseNode >& n,
             CurrentIdentifierState& identifier_state,
-            const rosidl_message_type_support_t * type_supports)
+            const rosidl_message_type_support_t * type_support)
     {
         const rosidl_message_type_support_t * type_support_introspection =
-          get_type_support_introspection(type_supports);
+          get_type_support_introspection(type_support);
         if (!type_support_introspection) {
           throw std::runtime_error("failed to get type support introspection");
         }

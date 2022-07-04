@@ -39,31 +39,12 @@ namespace dds {
  */
 struct IContentFilter
 {
-    // using SerializedPayload = eprosima_common::fastrtps::rtps::SerializedPayload_t;
-    // using GUID_t = fastrtps::rtps::GUID_t;
-
     /**
-     * Selected information from the cache change that is passed to the content filter object on
-     * payload evaluation.
-     */
-    // struct FilterSampleInfo
-    // {
-    //     using SampleIdentity = eprosima_common::fastrtps::rtps::SampleIdentity;
-
-    //     /// Identity of the sample being filtered.
-    //     SampleIdentity sample_identity;
-    //     /// Identity of a sample related to the one being filtered.
-    //     SampleIdentity related_sample_identity;
-    // };
-
-    /**
-     * Evaluate if a serialized payload should be accepted by certain reader.
+     * Evaluate if a de-serialized payload should be accepted by certain reader.
      *
-     * @param [in]  payload      The serialized payload of the sample being evaluated.
-     * @param [in]  sample_info  The accompanying sample information.
-     * @param [in]  reader_guid  The GUID of the reader for which the filter is being evaluated.
+     * @param [in]  payload      The de-serialized payload of the sample being evaluated.
      *
-     * @return whether the sample should be accepted for the specified reader.
+     * @return whether the sample should be accepted.
      */
     virtual bool evaluate(
             const void * payload) const = 0;

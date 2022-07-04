@@ -62,17 +62,7 @@ static IContentFilterFactory::ReturnCode_t transform_enum(
     static_cast<void>(value);
     static_cast<void>(type);
     static_cast<void>(string_value);
-    // const char* str_value = string_value.c_str();
-    // auto type_obj = eprosima_common::fastrtps::types::TypeObjectFactory::get_instance()->get_type_object(type);
-    // for (const auto& enum_value : type_obj->complete().enumerated_type().literal_seq())
-    // {
-    //     if (enum_value.detail().name() == str_value)
-    //     {
-    //         value->kind = DDSFilterValue::ValueKind::SIGNED_INTEGER;
-    //         value->signed_integer_value = enum_value.common().value();
-    //         return IContentFilterFactory::ReturnCode_t::RETCODE_OK;
-    //     }
-    // }
+    // TODO. after enum supported in the rosidl
 
     return IContentFilterFactory::ReturnCode_t::RETCODE_BAD_PARAMETER;
 }
@@ -154,8 +144,6 @@ static bool check_value_compatibility(
             }
     }
 
-    logError(DDSSQLFILTER, "check_value_compatibility return false ,"
-      << static_cast<uint32_t>(left) << " " << static_cast<uint32_t>(right));
     return false;
 }
 
@@ -530,11 +518,7 @@ IContentFilterFactory::ReturnCode_t DDSFilterFactory::create_content_filter(
         if (node)
         {
             // logDebug(DDSSQLFILTER, "parser::parse_filter_expression success ");
-            // auto type_id = TypeObjectFactory::get_instance()->get_type_identifier(type_name, true);
-            // auto dyn_type = TypeObjectFactory::get_instance()->build_dynamic_type(type_name, type_id, type_object);
             DDSFilterExpression* expr = get_expression();
-            // TODO. set `const rosidl_message_type_support_t * type_support` from subscription in the rcl.
-            // expr->set_type(dyn_type);
             size_t n_params = filter_parameters.size();
             expr->parameters.reserve(n_params);
             while (expr->parameters.size() < n_params)
@@ -555,7 +539,6 @@ IContentFilterFactory::ReturnCode_t DDSFilterFactory::create_content_filter(
         }
         else
         {
-            logError(DDSSQLFILTER, "parser::parse_filter_expression failed ");
             ret = ReturnCode_t::RETCODE_BAD_PARAMETER;
         }
     }

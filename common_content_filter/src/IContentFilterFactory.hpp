@@ -42,14 +42,13 @@ namespace dds {
  */
 struct IContentFilterFactory
 {
-  enum ReturnCode_t {
-    RETCODE_OK,
-    RETCODE_BAD_PARAMETER,
-    RETCODE_UNSUPPORTED,
-  };
+    enum ReturnCode_t {
+      RETCODE_OK,
+      RETCODE_BAD_PARAMETER,
+      RETCODE_UNSUPPORTED,
+    };
 
     using ParameterSeq = std::vector<std::string>;
-    // using TypeDescriptor = eprosima_common::fastrtps::types::TypeDescriptor;
 
     /**
      * Create or update an IContentFilter instance.
@@ -57,7 +56,7 @@ struct IContentFilterFactory
      * @param [in]       filter_class_name   Filter class name for which the factory is being called.
      *                                       Allows using the same factory for different filter classes.
      * @param [in]       type_name           Type name of the topic being filtered.
-     * @param [in]       data_type           Type support object of the topic being filtered.
+     * @param [in]       type_support        Type support of the topic data being filtered.
      * @param [in]       filter_expression   Content filter expression.
      *                                       May be nullptr when updating the parameters of a filter instance.
      * @param [in]       filter_parameters   Values to set for the filter parameters (%n on the filter expression).
@@ -78,7 +77,7 @@ struct IContentFilterFactory
     virtual ReturnCode_t create_content_filter(
             const char* filter_class_name,
             const char* type_name,
-            const rosidl_message_type_support_t* data_type,
+            const rosidl_message_type_support_t* type_support,
             const char* filter_expression,
             const ParameterSeq& filter_parameters,
             IContentFilter*& filter_instance) = 0;
