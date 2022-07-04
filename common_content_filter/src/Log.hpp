@@ -9,6 +9,7 @@
             std::cout << "[" << #cat << "] " << log_ss_tmp__.str() << std::endl;                 \
     }
 
+#define logDebug common_content_filter_log_
 #define logInfo common_content_filter_log_
 #define logWarning common_content_filter_log_
 #define logError common_content_filter_log_

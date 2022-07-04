@@ -12,35 +12,19 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef COMMON_CONTENT_FILTER__TEST_HPP_
-#define COMMON_CONTENT_FILTER__TEST_HPP_
+#ifndef COMMON_CONTENT_FILTER__API_HPP_
+#define COMMON_CONTENT_FILTER__API_HPP_
 
 #include "common_content_filter/visibility_control.h"
 
-#include "rosidl_runtime_c/message_type_support_struct.h"
-#include "rmw/subscription_content_filter_options.h"
+#include <rmw/subscription_content_filter_options.h>
+#include <rosidl_runtime_c/message_type_support_struct.h>
 
 
 #ifdef __cplusplus
 extern "C"
 {
 #endif
-
-COMMON_CONTENT_FILTER_PUBLIC
-void
-test_func_c();
-
-// COMMON_CONTENT_FILTER_PUBLIC
-// void *
-// create_common_content_filter_factory();
-
-// COMMON_CONTENT_FILTER_PUBLIC
-// void
-// test_common_content_filter_factory(void *);
-
-// COMMON_CONTENT_FILTER_PUBLIC
-// void
-// destroy_common_content_filter_factory(void *);
 
 COMMON_CONTENT_FILTER_PUBLIC
 void *
@@ -61,5 +45,4 @@ destroy_common_content_filter(void *);
 }
 #endif
 
-
-#endif  // COMMON_CONTENT_FILTER__TEST_HPP_
+#endif  // COMMON_CONTENT_FILTER__API_HPP_

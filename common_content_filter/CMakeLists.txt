@@ -19,6 +19,7 @@ find_package(rosidl_typesupport_introspection_c REQUIRED)
 find_package(rosidl_typesupport_introspection_cpp REQUIRED)
 
 add_library(${PROJECT_NAME}_library SHARED
+  src/api.cpp
   src/DDSFilterCompoundCondition.cpp
   src/DDSFilterExpression.cpp
   src/DDSFilterExpressionParser.cpp
@@ -27,7 +28,6 @@ add_library(${PROJECT_NAME}_library SHARED
   src/DDSFilterParameter.cpp
   src/DDSFilterPredicate.cpp
   src/DDSFilterValue.cpp
-  src/test.cpp
   )
 
 set_target_properties(${PROJECT_NAME}_library
