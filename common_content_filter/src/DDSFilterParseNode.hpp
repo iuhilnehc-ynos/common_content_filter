@@ -51,7 +51,7 @@ struct ParseNode : parse_tree::basic_node< ParseNode >
     uint8_t type_id = 0;
 
     // When the node is a parameter, it will hold the parameter index
-    int32_t parameter_index = 0;
+    size_t parameter_index = 0;
 
     const ParseNode& left() const
     {

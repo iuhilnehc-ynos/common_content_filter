@@ -59,6 +59,9 @@ static IContentFilterFactory::ReturnCode_t transform_enum(
         uint8_t type,
         const std::string& string_value)
 {
+    static_cast<void>(value);
+    static_cast<void>(type);
+    static_cast<void>(string_value);
     // const char* str_value = string_value.c_str();
     // auto type_obj = eprosima_common::fastrtps::types::TypeObjectFactory::get_instance()->get_type_object(type);
     // for (const auto& enum_value : type_obj->complete().enumerated_type().literal_seq())
@@ -446,15 +449,8 @@ IContentFilterFactory::ReturnCode_t DDSFilterFactory::convert_tree<DDSFilterCond
     return convert_tree<DDSFilterPredicate>(state, condition, node);
 }
 
-DDSFilterFactory::DDSFilterFactory()
-{
-  logError(DDSSQLFILTER, "DDSFilterFactory::DDSFilterFactory " << this);
-}
-
 DDSFilterFactory::~DDSFilterFactory()
 {
-  logError(DDSSQLFILTER, "DDSFilterFactory::~DDSFilterFactory " << this);
-
     auto& pool = expression_pool_.collection();
     for (DDSFilterExpression* item : pool)
     {
@@ -472,7 +468,7 @@ IContentFilterFactory::ReturnCode_t DDSFilterFactory::create_content_filter(
         IContentFilter*& filter_instance)
 {
 
-    // static_cast<void>(type_support);
+    static_cast<void>(type_name);
 
     ReturnCode_t ret = ReturnCode_t::RETCODE_UNSUPPORTED;
 
@@ -530,46 +526,37 @@ IContentFilterFactory::ReturnCode_t DDSFilterFactory::create_content_filter(
     }
     else
     {
-        // auto type_object = TypeObjectFactory::get_instance()->get_type_object(type_name, true);
-        // if (!type_object)
-        // {
-        //     logError(DDSSQLFILTER, "No TypeObject found for type " << type_name);
-        //     ret = ReturnCode_t::RETCODE_BAD_PARAMETER;
-        // }
-        // else
+        auto node = parser::parse_filter_expression(filter_expression, type_support);
+        if (node)
         {
-            auto node = parser::parse_filter_expression(filter_expression, type_support);
-            if (node)
+            // logDebug(DDSSQLFILTER, "parser::parse_filter_expression success ");
+            // auto type_id = TypeObjectFactory::get_instance()->get_type_identifier(type_name, true);
+            // auto dyn_type = TypeObjectFactory::get_instance()->build_dynamic_type(type_name, type_id, type_object);
+            DDSFilterExpression* expr = get_expression();
+            // TODO. set `const rosidl_message_type_support_t * type_support` from subscription in the rcl.
+            // expr->set_type(dyn_type);
+            size_t n_params = filter_parameters.size();
+            expr->parameters.reserve(n_params);
+            while (expr->parameters.size() < n_params)
             {
-              logError(DDSSQLFILTER, "parser::parse_filter_expression success ");
-                // auto type_id = TypeObjectFactory::get_instance()->get_type_identifier(type_name, true);
-                // auto dyn_type = TypeObjectFactory::get_instance()->build_dynamic_type(type_name, type_id, type_object);
-                DDSFilterExpression* expr = get_expression();
-                // TODO. set `const rosidl_message_type_support_t * type_support` from subscription in the rcl.
-                // expr->set_type(dyn_type);
-                size_t n_params = filter_parameters.size();
-                expr->parameters.reserve(n_params);
-                while (expr->parameters.size() < n_params)
-                {
-                    expr->parameters.emplace_back();
-                }
-                ExpressionParsingState state{ nullptr, filter_parameters, expr };
-                ret = convert_tree<DDSFilterCondition>(state, expr->root, *(node->children[0]));
-                if (ReturnCode_t::RETCODE_OK == ret)
-                {
-                    delete_content_filter(filter_class_name, filter_instance);
-                    filter_instance = expr;
-                }
-                else
-                {
-                    delete_content_filter(filter_class_name, expr);
-                }
+                expr->parameters.emplace_back();
+            }
+            ExpressionParsingState state{ nullptr, filter_parameters, expr };
+            ret = convert_tree<DDSFilterCondition>(state, expr->root, *(node->children[0]));
+            if (ReturnCode_t::RETCODE_OK == ret)
+            {
+                delete_content_filter(filter_class_name, filter_instance);
+                filter_instance = expr;
             }
             else
             {
-                logError(DDSSQLFILTER, "parser::parse_filter_expression failed ");
-                ret = ReturnCode_t::RETCODE_BAD_PARAMETER;
+                delete_content_filter(filter_class_name, expr);
             }
+        }
+        else
+        {
+            logError(DDSSQLFILTER, "parser::parse_filter_expression failed ");
+            ret = ReturnCode_t::RETCODE_BAD_PARAMETER;
         }
     }
 

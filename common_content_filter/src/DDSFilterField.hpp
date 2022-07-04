@@ -105,13 +105,6 @@ public:
     }
 
 
-    template<typename MembersType>
-    inline bool
-    test_member(
-      const void * untype_members,
-      FieldAccessor& accessor,
-      const void *& data);
-
     /**
      * Perform the deserialization of the field represented by this DDSFilterField.
      * Will notify the predicates where this DDSFilterField is being used.
@@ -153,8 +146,16 @@ protected:
 
 private:
 
+    template<typename MembersType>
+    void
+    get_msg_data_address(
+      const void * untype_members,
+      FieldAccessor& accessor,
+      const void *& data);
+
     bool set_member(
-            const void * data_value);
+            const void * data_value,
+            bool is_c_type_support);
 
     bool has_value_ = false;
     std::vector<FieldAccessor> access_path_;

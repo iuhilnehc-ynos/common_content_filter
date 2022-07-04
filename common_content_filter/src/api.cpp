@@ -24,7 +24,7 @@
 
 namespace common_content_filter {
 
-const int MAGIC = 0x333644;  // 'C','F','T'
+const int MAGIC = 0x434654;  // 'C','F','T'
 const char* FILTER_CLASS_NAME = "DDSSQL";
 
 using DDSFilterFactory = eprosima_common::fastdds::dds::DDSSQLFilter::DDSFilterFactory;
@@ -46,23 +46,20 @@ public:
       filter_expression_(filter_expression),
       expression_parameters_(expression_parameters)
   {
-    logDebug(DDSSQLFILTER, "ContentFilterWrapper ctor : " << this);
+    // logDebug(DDSSQLFILTER, "ContentFilterWrapper ctor : " << this);
 
-    try {
-      std::lock_guard<std::mutex> lock(mutex_);
-      DDSFilterFactory::ReturnCode_t ret = get_common_content_filter_factory()->create_content_filter(
-        FILTER_CLASS_NAME,    // deprecated
-        "",                   // deprecated
-        type_support_,
-        filter_expression_.c_str(),
-        expression_parameters_,
-        filter_instance_);
-
-      logInfo(DDSSQLFILTER, "factory.create_content_filter xx ret: " << ret);
-    } catch (const std::runtime_error& e) {
-      logInfo(DDSSQLFILTER, "failed to create_content_filter: " << e.what());
+    std::lock_guard<std::mutex> lock(mutex_);
+    DDSFilterFactory::ReturnCode_t ret = get_common_content_filter_factory()->create_content_filter(
+      FILTER_CLASS_NAME,    // deprecated
+      "",                   // deprecated
+      type_support_,
+      filter_expression_.c_str(),
+      expression_parameters_,
+      filter_instance_);
+    if (ret != DDSFilterFactory::RETCODE_OK) {
+      logError(DDSSQLFILTER, "create_content_filter ret: " << ret);
+      throw std::runtime_error("Failed to create content filter instance.");
     }
-
   }
 
   ~ContentFilterWrapper() {
@@ -75,7 +72,7 @@ public:
     }
 
     filter_instance_ = nullptr;
-    logDebug(DDSSQLFILTER, "ContentFilterWrapper dtor : " << this);
+    // logDebug(DDSSQLFILTER, "ContentFilterWrapper dtor : " << this);
   }
 
   bool evaluate(void * ros_data, bool serialized) {
@@ -88,16 +85,16 @@ public:
     if (filter_instance_) {
       ret = filter_instance_->evaluate(ros_data);
     }
-    logDebug(DDSSQLFILTER, "evaluate ret: " << ret);
+    // logDebug(DDSSQLFILTER, "evaluate ret: " << ret);
     return ret;
   }
 
   bool set_filter_expression() {
-
+    return false;
   }
 
   bool get_filter_expression() {
-
+    return false;
   }
 
   IContentFilter * filter_instance() {
@@ -162,7 +159,13 @@ common_content_filter_evaluate(void * instance, void * ros_data, bool serialized
     return false;
   }
 
-  bool ret = content_filter_wrapper->evaluate(ros_data, serialized);
+  bool ret = false;
+  try {
+    ret = content_filter_wrapper->evaluate(ros_data, serialized);
+  } catch (const std::runtime_error& e) {
+    logError(DDSSQLFILTER, "Failed to evaluate: " << e.what());
+  }
+
   return ret;
 }
 

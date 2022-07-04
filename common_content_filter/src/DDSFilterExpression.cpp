@@ -45,27 +45,7 @@ namespace DDSSQLFilter {
 bool DDSFilterExpression::evaluate(
         const void * payload) const
 {
-    // static_cast<void>(sample_info);
-    // static_cast<void>(reader_guid);
-
-    // using namespace eprosima_common::fastrtps::types;
-    // using namespace eprosima_common::fastcdr;
-
-    // dyn_data_->clear_all_values();
-    // try
-    // {
-    //     FastBuffer fastbuffer(reinterpret_cast<char*>(payload.data), payload.length);
-    //     Cdr deser(fastbuffer, eprosima_common::fastcdr::Cdr::DEFAULT_ENDIAN, eprosima_common::fastcdr::Cdr::DDS_CDR);
-    //     deser.read_encapsulation();
-    //     dyn_data_->deserialize(deser);
-    // }
-    // catch (eprosima_common::fastcdr::exception::NotEnoughMemoryException& /*exception*/)
-    // {
-    //     return false;
-    // }
-
-
-    logInfo(DDSSQLFILTER, "DDSFilterExpression::evaluate fields size:" << fields.size());
+    // logDebug(DDSSQLFILTER, "DDSFilterExpression::evaluate fields size:" << fields.size());
 
     root->reset();
     for (auto it = fields.begin();
@@ -90,12 +70,12 @@ void DDSFilterExpression::clear()
     root.reset();
 }
 
-void DDSFilterExpression::set_type(
-        const void * type)
-{
-    // dyn_type_ = type;
-    // dyn_data_.reset(eprosima_common::fastrtps::types::DynamicDataFactory::get_instance()->create_data(type));
-}
+// void DDSFilterExpression::set_type(
+//         const void * type)
+// {
+//     // dyn_type_ = type;
+//     // dyn_data_.reset(eprosima_common::fastrtps::types::DynamicDataFactory::get_instance()->create_data(type));
+// }
 
 }  // namespace DDSSQLFilter
 }  // namespace dds

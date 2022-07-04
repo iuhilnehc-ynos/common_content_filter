@@ -34,6 +34,8 @@
 
 #include "Log.hpp"
 
+
+
 namespace eprosima_common {
 namespace fastdds {
 namespace dds {
@@ -41,95 +43,84 @@ namespace DDSSQLFilter {
 
 
 template<typename MembersType>
-bool
-DDSFilterField::test_member(
+void
+DDSFilterField::get_msg_data_address(
   const void * untype_members,
   FieldAccessor& accessor,
   const void *& data)
 {
   const MembersType * members = static_cast<const MembersType *>(untype_members);
   if (!members) {
-    return false;
+    throw std::runtime_error("The data in the type support introspection is invalid.");
   }
 
   const auto member = members->members_ + accessor.member_index;
+  // logDebug(DDSSQLFILTER, "DDSFilterField::get_msg_data_address "
+  //       << " accessor.member_index:" << accessor.member_index
+  //       << " accessor.array_index:" << accessor.array_index
+  //       << " member member->name:" << member->name_
+  //       << " member member->type_id_:" << static_cast<int>(member->type_id_)
+  //       << " member member->offset_:" << member->offset_
+  //       << " member member->is_array_:" << member->is_array_
+  //       << " member member->array_size_:" << member->array_size_
+  //       << " member member->is_upper_bound_:" << member->is_upper_bound_
+  //   );
 
-  logError(DDSSQLFILTER, "DDSFilterField::test_member "
-      << " accessor.member_index:" << accessor.member_index
-      << " accessor.array_index:" << accessor.array_index
-
-        << " member member->name:" << member->name_
-        << " member member->type_id_:" << static_cast<int>(member->type_id_)
-        << " member member->offset_:" << member->offset_
-        << " member member->is_array_:" << member->is_array_
-        << " member member->array_size_:" << member->array_size_
-        << " member member->is_upper_bound_:" << member->is_upper_bound_
-    );
-
-  // data = data+member->offset_
+  uint64_t addr = reinterpret_cast<uint64_t>(data);
   if (member->is_array_) {
-    data = member->get_function((void *)(data + member->offset_), accessor.array_index);
+    size_t array_size = member->array_size_;
+    if (array_size == 0) {
+      array_size = member->size_function(
+        reinterpret_cast<void *>(addr + member->offset_));
+    }
+
+    if (accessor.array_index >= array_size) {
+      throw std::runtime_error("The array index should be less than array size.");
+    }
+
+    data = member->get_function(
+      reinterpret_cast<void *>(addr + member->offset_), accessor.array_index);
   } else {
-    data = data + member->offset_;
+    data = reinterpret_cast<void *>(addr + member->offset_);
   }
-
-  return true;
 }
-
-
 
 bool DDSFilterField::set_value(
         const void * data,
         size_t n)
 {
-    // using namespace eprosima_common::fastrtps::types;
-
-    // uint32_t index = static_cast<uint32_t>(access_path_[n].member_index);
-    // auto member_id = data.get_member_id_at_index(index);
     bool last_step = access_path_.size() - 1 == n;
-    void * addr;
-
-    logError(DDSSQLFILTER, "DDSFilterField::set_value "
-      << "access_path_.size():" << access_path_.size()
-    );
-
-    // for (auto & access_path : access_path_) {
-    //   logError(DDSSQLFILTER, "DDSFilterField::set_value "
-    //         << "      access_path.member_index:" << access_path.member_index
-    //         << "      access_path.array_index:" << access_path.array_index
-    //       );
-    // }
     bool ret = false;
+    const void * addr = data;
+    bool is_c_type_support;
 
-    const void * data_updated = data;
-    const rosidl_message_type_support_t * type_support_intro = access_path_[n].type_support_intro;
-    if (type_support_intro->typesupport_identifier ==
+    // logDebug(
+    //   DDSSQLFILTER,
+    //   "DDSFilterField::set_value " << "access_path size:" << access_path_.size()
+    // );
+
+    const rosidl_message_type_support_t * type_support_introspection = access_path_[n].type_support_intro;
+    if (type_support_introspection->typesupport_identifier ==
       rosidl_typesupport_introspection_c__identifier)
     {
-      ret = test_member<rosidl_typesupport_introspection_c__MessageMembers>(
-        type_support_intro->data, access_path_[n], data_updated);
+      is_c_type_support = true;
+      get_msg_data_address<rosidl_typesupport_introspection_c__MessageMembers>(
+        type_support_introspection->data, access_path_[n], addr);
+
     } else {
-      ret = test_member<rosidl_typesupport_introspection_cpp::MessageMembers>(
-        type_support_intro->data, access_path_[n], data_updated);
+      is_c_type_support = false;
+      get_msg_data_address<rosidl_typesupport_introspection_cpp::MessageMembers>(
+        type_support_introspection->data, access_path_[n], addr);
     }
 
-    // if (access_path_[n].array_index < std::numeric_limits<size_t>::max())
-    // {
-    //     size_t array_index = access_path_[n].array_index;
-    //     // member
-
-    // }
-    // else
-    // {
-        if (last_step)
-        {
-            ret = set_member(data_updated);
-        }
-        else
-        {
-            ret = set_value(data_updated, n + 1);
-        }
-    // }
+    if (last_step)
+    {
+        ret = set_member(addr, is_c_type_support);
+    }
+    else
+    {
+        ret = set_value(addr, n + 1);
+    }
 
     if (ret && last_step)
     {
@@ -147,82 +138,84 @@ bool DDSFilterField::set_value(
 }
 
 bool DDSFilterField::set_member(
-        const void * data)
+        const void * data,
+        bool is_c_type_support)
 {
-    // using namespace eprosima_common::fastrtps::types;
-
     bool ret = true;
-
-    // just a test, content_filtering_subscriber use float msg
-    // float_value = *(float*)data;
-
-    logError(DDSSQLFILTER, "DDSFilterField::set_member "
-      << "type_id_:" << type_id_
-    );
-
+    // logDebug(
+    //   DDSSQLFILTER,
+    //   "DDSFilterField::set_member " << "type_id_:" << (uint32_t)type_id_;
+    // );
 
     try
     {
         switch (type_id_)
         {
-            case ::rosidl_typesupport_introspection_cpp::ROS_TYPE_BOOLEAN:
-                // boolean_value = data->get_bool_value(member_id);
-                break;
-
-            case ::rosidl_typesupport_introspection_cpp::ROS_TYPE_CHAR:
-            case ::rosidl_typesupport_introspection_cpp::ROS_TYPE_WCHAR:
-                // char_value = data->get_char8_value(member_id);
-                break;
-
-            case ::rosidl_typesupport_introspection_cpp::ROS_TYPE_STRING:
-            case ::rosidl_typesupport_introspection_cpp::ROS_TYPE_WSTRING:
-                // string_value = data->get_string_value(member_id);
-                break;
-
-            // case TK_INT16:
-            //     signed_integer_value = data->get_int16_value(member_id);
-            //     break;
-
-            // case TK_INT32:
-            //     signed_integer_value = data->get_int32_value(member_id);
-            //     break;
-
-            // case TK_INT64:
-            //     signed_integer_value = data->get_int64_value(member_id);
-            //     break;
-
-            // case TK_BYTE:
-            //     unsigned_integer_value = data->get_uint8_value(member_id);
-            //     break;
-
-            // case TK_UINT16:
-            //     unsigned_integer_value = data->get_uint16_value(member_id);
-            //     break;
-
-            // case TK_UINT32:
-            //     unsigned_integer_value = data->get_uint32_value(member_id);
-            //     break;
-
-            // case TK_UINT64:
-            //     unsigned_integer_value = data->get_uint64_value(member_id);
-            //     break;
-
-            case ::rosidl_typesupport_introspection_cpp::ROS_TYPE_UINT8:
-                unsigned_integer_value = *(int8_t*)data;
-                break;
-
             case ::rosidl_typesupport_introspection_cpp::ROS_TYPE_FLOAT:
                 float_value = *(float*)data;
                 break;
 
-            // case TK_FLOAT64:
-            //     float_value = data->get_float64_value(member_id);
-            //     break;
+            case ::rosidl_typesupport_introspection_cpp::ROS_TYPE_DOUBLE:
+                float_value = *(double*)data;
+                break;
 
-            // case TK_FLOAT128:
-            //     float_value = data->get_float128_value(member_id);
-            //     break;
+            case ::rosidl_typesupport_introspection_cpp::ROS_TYPE_LONG_DOUBLE:
+                float_value = *(long double*)data;
+                break;
 
+            case ::rosidl_typesupport_introspection_cpp::ROS_TYPE_CHAR:
+                char_value = *(char*)data;
+                break;
+
+            case ::rosidl_typesupport_introspection_cpp::ROS_TYPE_BOOLEAN:
+                boolean_value = *(bool*)data;
+                break;
+
+            case ::rosidl_typesupport_introspection_cpp::ROS_TYPE_OCTET:
+            case ::rosidl_typesupport_introspection_cpp::ROS_TYPE_UINT8:
+                unsigned_integer_value = *(uint8_t*)data;
+                break;
+
+            case ::rosidl_typesupport_introspection_cpp::ROS_TYPE_INT8:
+                signed_integer_value = *(int8_t*)data;
+                break;
+
+            case ::rosidl_typesupport_introspection_cpp::ROS_TYPE_UINT16:
+                unsigned_integer_value = *(uint16_t*)data;
+                break;
+
+            case ::rosidl_typesupport_introspection_cpp::ROS_TYPE_INT16:
+                signed_integer_value = *(int16_t*)data;
+                break;
+
+            case ::rosidl_typesupport_introspection_cpp::ROS_TYPE_UINT32:
+                unsigned_integer_value = *(uint32_t*)data;
+                break;
+
+            case ::rosidl_typesupport_introspection_cpp::ROS_TYPE_INT32:
+                signed_integer_value = *(int32_t*)data;
+                break;
+
+            case ::rosidl_typesupport_introspection_cpp::ROS_TYPE_UINT64:
+                unsigned_integer_value = *(uint64_t*)data;
+                break;
+
+            case ::rosidl_typesupport_introspection_cpp::ROS_TYPE_INT64:
+                signed_integer_value = *(int64_t*)data;
+                break;
+
+            case ::rosidl_typesupport_introspection_cpp::ROS_TYPE_STRING:
+
+                if (is_c_type_support) {
+                  strncpy(string_value, (char*)data, sizeof(string_value));
+                } else {
+                  auto string = reinterpret_cast<const std::string *>(data);
+                  strncpy(string_value, (char*)string->c_str(), sizeof(string_value));
+                }
+                break;
+
+            case ::rosidl_typesupport_introspection_cpp::ROS_TYPE_WCHAR:
+            case ::rosidl_typesupport_introspection_cpp::ROS_TYPE_WSTRING:
             default:
                 ret = false;
                 break;

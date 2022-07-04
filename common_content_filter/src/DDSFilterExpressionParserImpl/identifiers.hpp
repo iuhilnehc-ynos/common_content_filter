@@ -22,11 +22,11 @@
 
 struct CurrentIdentifierState
 {
-    // TODO. const rosidl_message_type_support_t * type_support,
     const rosidl_message_type_support_t * type_support;
 
     // ros2 primitive type
     const rosidl_message_type_support_t * current_type_support;
+
     uint8_t current_type;
 
     std::vector<DDSFilterField::FieldAccessor> access_path;
@@ -64,9 +64,6 @@ get_type_support_introspection(
   return type_support;
 }
 
-
-
-
 template<typename MembersType>
 inline void
 add_access_path(
@@ -76,7 +73,7 @@ add_access_path(
 {
   const MembersType * members = static_cast<const MembersType *>(type_support_introspection->data);
   if (!members) {
-    throw std::runtime_error("The members in the type support introspection is invalid.");
+    throw std::runtime_error("The data in the type support introspection is invalid.");
   }
 
   size_t member_index = 0;

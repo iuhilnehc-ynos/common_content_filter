@@ -61,8 +61,8 @@ public:
      *
      * @param [in] type  The DynamicType to assign.
      */
-    void set_type(
-            const void * type);
+    // void set_type(
+    //         const void * type);
 
     /// The root condition of the expression tree.
     std::unique_ptr<DDSFilterCondition> root;

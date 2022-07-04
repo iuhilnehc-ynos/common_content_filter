@@ -46,7 +46,7 @@ class DDSFilterFactory final : public IContentFilterFactory
 {
 
 public:
-    DDSFilterFactory();
+
     ~DDSFilterFactory();
 
     ReturnCode_t create_content_filter(
