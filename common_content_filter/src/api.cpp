@@ -89,7 +89,7 @@ public:
     const std::vector<std::string> & expression_parameters)
   {
     std::lock_guard<std::mutex> lock(mutex_);
-    static std::string tip = filter_instance_ ? "create" : "set";
+    const char * tip = filter_instance_ ? "create" : "set";
     DDSFilterFactory::ReturnCode_t ret = get_common_content_filter_factory()->create_content_filter(
       FILTER_CLASS_NAME,    // deprecated
       "",                   // deprecated
