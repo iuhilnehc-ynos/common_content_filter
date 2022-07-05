@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef COMMON_CONTENT_FILTER__API_HPP_
-#define COMMON_CONTENT_FILTER__API_HPP_
+#ifndef COMMON_CONTENT_FILTER__API_H_
+#define COMMON_CONTENT_FILTER__API_H_
 
 #include "common_content_filter/visibility_control.h"
 
@@ -35,7 +35,7 @@ extern "C"
  */
 COMMON_CONTENT_FILTER_PUBLIC
 void *
-create_common_content_filter();
+common_content_filter_create();
 
 /// Check if the content filter instance is enabled.
 /**
@@ -44,7 +44,7 @@ create_common_content_filter();
  */
 COMMON_CONTENT_FILTER_PUBLIC
 bool
-is_common_content_filter_enabled(void * instance);
+common_content_filter_is_enabled(void * instance);
 
 /// Use the content filter instance to evalute the data.
 /**
@@ -55,7 +55,7 @@ is_common_content_filter_enabled(void * instance);
  */
 COMMON_CONTENT_FILTER_PUBLIC
 bool
-evaluate_common_content_filter(void * instance, void * data, bool serialized);
+common_content_filter_evaluate(void * instance, void * data, bool serialized);
 
 /// Set a common content filter instance with an options.
 /**
@@ -66,7 +66,7 @@ evaluate_common_content_filter(void * instance, void * data, bool serialized);
  */
 COMMON_CONTENT_FILTER_PUBLIC
 bool
-set_common_content_filter(
+common_content_filter_set(
   void * instance,
   const rosidl_message_type_support_t * type_support,
   const rmw_subscription_content_filter_options_t * options
@@ -81,7 +81,7 @@ set_common_content_filter(
  */
 COMMON_CONTENT_FILTER_PUBLIC
 bool
-get_common_content_filter(
+common_content_filter_get(
   void * instance,
   rcutils_allocator_t * allocator,
   rmw_subscription_content_filter_options_t * options
@@ -93,10 +93,10 @@ get_common_content_filter(
  */
 COMMON_CONTENT_FILTER_PUBLIC
 void
-destroy_common_content_filter(void * instance);
+common_content_filter_destroy(void * instance);
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif  // COMMON_CONTENT_FILTER__API_HPP_
+#endif  // COMMON_CONTENT_FILTER__API_H_

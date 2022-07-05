@@ -159,12 +159,12 @@ extern "C"
 #endif
 
 void *
-create_common_content_filter() {
+common_content_filter_create() {
   return (new common_content_filter::ContentFilterWrapper);
 }
 
 bool
-is_common_content_filter_enabled(void * instance) {
+common_content_filter_is_enabled(void * instance) {
   common_content_filter::ContentFilterWrapper * content_filter_wrapper =
     common_content_filter::validate(instance);
   if (!content_filter_wrapper) {
@@ -175,7 +175,7 @@ is_common_content_filter_enabled(void * instance) {
 }
 
 bool
-evaluate_common_content_filter(void * instance, void * ros_data, bool serialized) {
+common_content_filter_evaluate(void * instance, void * ros_data, bool serialized) {
   common_content_filter::ContentFilterWrapper * content_filter_wrapper =
     common_content_filter::validate(instance);
   if (!content_filter_wrapper) {
@@ -198,7 +198,7 @@ evaluate_common_content_filter(void * instance, void * ros_data, bool serialized
 }
 
 bool
-set_common_content_filter(
+common_content_filter_set(
   void * instance,
   const rosidl_message_type_support_t * type_support,
   const rmw_subscription_content_filter_options_t * options
@@ -232,7 +232,7 @@ set_common_content_filter(
 }
 
 bool
-get_common_content_filter(
+common_content_filter_get(
   void * instance,
   rcutils_allocator_t * allocator,
   rmw_subscription_content_filter_options_t * options
@@ -280,7 +280,7 @@ get_common_content_filter(
 }
 
 void
-destroy_common_content_filter(void * instance) {
+common_content_filter_destroy(void * instance) {
   common_content_filter::ContentFilterWrapper * content_filter_wrapper =
     common_content_filter::validate(instance);
   if (!content_filter_wrapper) {
