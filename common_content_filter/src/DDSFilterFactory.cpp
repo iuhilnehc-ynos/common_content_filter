@@ -433,7 +433,7 @@ IContentFilterFactory::ReturnCode_t DDSFilterFactory::create_content_filter(
     }
   } else if (std::strlen(filter_expression) == 0) {
     delete_content_filter(filter_class_name, filter_instance);
-    filter_instance = &empty_expression_;
+    filter_instance = nullptr;
     ret = ReturnCode_t::RETCODE_OK;
   } else {
     auto node = parser::parse_filter_expression(filter_expression, type_support);

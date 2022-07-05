@@ -278,7 +278,7 @@ common_content_filter_get(
     string_array.push_back(expression_parameters[i].c_str());
   }
 
-  rmw_ret_t rmw_ret = rmw_subscription_content_filter_options_init(
+  rmw_ret_t rmw_ret = rmw_subscription_content_filter_options_set(
     filter_expression.c_str(),
     string_array.size(),
     string_array.data(),

@@ -23,6 +23,7 @@
 #include <rosidl_typesupport_introspection_c/message_introspection.h>
 #include <rosidl_typesupport_introspection_cpp/message_introspection.hpp>
 #include <rosidl_typesupport_introspection_cpp/field_types.hpp>
+#include <rosidl_runtime_c/string.h>
 
 #include <cassert>
 #include <unordered_set>
@@ -201,10 +202,11 @@ bool DDSFilterField::set_member(
     case ::rosidl_typesupport_introspection_cpp::ROS_TYPE_STRING:
 
       if (is_c_type_support) {
-        strncpy(string_value, reinterpret_cast<const char *>(data), sizeof(string_value));
+        auto c_string = reinterpret_cast<const rosidl_runtime_c__String *>(data);
+        strncpy(string_value, c_string->data, sizeof(string_value));
       } else {
         auto string = reinterpret_cast<const std::string *>(data);
-        strncpy(string_value, (char *)string->c_str(), sizeof(string_value));
+        strncpy(string_value, string->c_str(), sizeof(string_value));
       }
       break;
 
