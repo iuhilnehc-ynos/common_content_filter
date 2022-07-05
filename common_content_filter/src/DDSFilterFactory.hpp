@@ -27,10 +27,14 @@
 #include "DDSFilterExpression.hpp"
 #include "ObjectPool.hpp"
 
-namespace eprosima_common {
-namespace fastdds {
-namespace dds {
-namespace DDSSQLFilter {
+namespace eprosima_common
+{
+namespace fastdds
+{
+namespace dds
+{
+namespace DDSSQLFilter
+{
 
 /**
  * An IContentFilterFactory that processes DDS-SQL filter expressions.
@@ -39,53 +43,52 @@ class DDSFilterFactory final : public IContentFilterFactory
 {
 
 public:
+  ~DDSFilterFactory();
 
-    ~DDSFilterFactory();
+  ReturnCode_t create_content_filter(
+    const char * filter_class_name,
+    const char * type_name,
+    const rosidl_message_type_support_t * type_support,
+    const char * filter_expression,
+    const ParameterSeq & filter_parameters,
+    IContentFilter * & filter_instance) override;
 
-    ReturnCode_t create_content_filter(
-            const char* filter_class_name,
-            const char* type_name,
-            const rosidl_message_type_support_t* type_support,
-            const char* filter_expression,
-            const ParameterSeq& filter_parameters,
-            IContentFilter*& filter_instance) override;
-
-    ReturnCode_t delete_content_filter(
-            const char* filter_class_name,
-            IContentFilter* filter_instance) override;
+  ReturnCode_t delete_content_filter(
+    const char * filter_class_name,
+    IContentFilter * filter_instance) override;
 
 private:
+  /**
+   * Retrieve a DDSFilterExpression from the pool.
+   *
+   * @return A pointer to an empty DDSFilterExpression.
+   */
+  DDSFilterExpression * get_expression()
+  {
+    return expression_pool_.get(
+      []
+      {
+        return new DDSFilterExpression();
+      });
+  }
 
-    /**
-     * Retrieve a DDSFilterExpression from the pool.
-     *
-     * @return A pointer to an empty DDSFilterExpression.
-     */
-    DDSFilterExpression* get_expression()
-    {
-        return expression_pool_.get([]
-                       {
-                           return new DDSFilterExpression();
-                       });
-    }
+  /**
+   * Generic method to perform processing of an AST node resulting from the parsing of a DDS-SQL filter expression.
+   * Provides a generic mechanism for methods that perform post-processing of the generated AST tree, so they could
+   * have access to the private fields of DDSFilterFactory.
+   *
+   * @return return code indicating the conversion result.
+   */
+  template<typename _Parser, typename _ParserNode, typename _State, typename _Output>
+  ReturnCode_t convert_tree(
+    _State & state,
+    _Output & parse_output,
+    const _ParserNode & node);
 
-    /**
-     * Generic method to perform processing of an AST node resulting from the parsing of a DDS-SQL filter expression.
-     * Provides a generic mechanism for methods that perform post-processing of the generated AST tree, so they could
-     * have access to the private fields of DDSFilterFactory.
-     *
-     * @return return code indicating the conversion result.
-     */
-    template<typename _Parser, typename _ParserNode, typename _State, typename _Output>
-    ReturnCode_t convert_tree(
-            _State& state,
-            _Output& parse_output,
-            const _ParserNode& node);
-
-    /// Empty expressions content filter
-    DDSFilterEmptyExpression empty_expression_;
-    /// Pool of DDSFilterExpression objects
-    ObjectPool<DDSFilterExpression*> expression_pool_;
+  /// Empty expressions content filter
+  DDSFilterEmptyExpression empty_expression_;
+  /// Pool of DDSFilterExpression objects
+  ObjectPool<DDSFilterExpression *> expression_pool_;
 
 };
 

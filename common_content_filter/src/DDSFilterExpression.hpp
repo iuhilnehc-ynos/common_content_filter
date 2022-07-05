@@ -29,10 +29,14 @@
 #include "DDSFilterField.hpp"
 #include "DDSFilterParameter.hpp"
 
-namespace eprosima_common {
-namespace fastdds {
-namespace dds {
-namespace DDSSQLFilter {
+namespace eprosima_common
+{
+namespace fastdds
+{
+namespace dds
+{
+namespace DDSSQLFilter
+{
 
 /**
  * An IContentFilter that evaluates DDS-SQL filter expressions
@@ -41,21 +45,20 @@ class DDSFilterExpression final : public IContentFilter
 {
 
 public:
+  bool evaluate(
+    const void * payload) const final;
 
-    bool evaluate(
-            const void * payload) const final;
+  /**
+   * Clear the information held by this object.
+   */
+  void clear();
 
-    /**
-     * Clear the information held by this object.
-     */
-    void clear();
-
-    /// The root condition of the expression tree.
-    std::unique_ptr<DDSFilterCondition> root;
-    /// The fields referenced by this expression.
-    std::map<std::string, std::shared_ptr<DDSFilterField>> fields;
-    /// The parameters referenced by this expression.
-    std::vector<std::shared_ptr<DDSFilterParameter>> parameters;
+  /// The root condition of the expression tree.
+  std::unique_ptr<DDSFilterCondition> root;
+  /// The fields referenced by this expression.
+  std::map<std::string, std::shared_ptr<DDSFilterField>> fields;
+  /// The parameters referenced by this expression.
+  std::vector<std::shared_ptr<DDSFilterParameter>> parameters;
 };
 
 }  // namespace DDSSQLFilter

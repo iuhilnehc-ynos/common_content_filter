@@ -28,35 +28,38 @@
 #include "DDSFilterParameter.hpp"
 #include "Log.hpp"
 
-namespace eprosima_common {
-namespace fastdds {
-namespace dds {
-namespace DDSSQLFilter {
+namespace eprosima_common
+{
+namespace fastdds
+{
+namespace dds
+{
+namespace DDSSQLFilter
+{
 
 bool DDSFilterExpression::evaluate(
-        const void * payload) const
+  const void * payload) const
 {
-    // logDebug(DDSSQLFILTER, "DDSFilterExpression::evaluate fields size:" << fields.size());
+  // logDebug(DDSSQLFILTER, "DDSFilterExpression::evaluate fields size:" << fields.size());
 
-    root->reset();
-    for (auto it = fields.begin();
-            it != fields.end() && DDSFilterConditionState::UNDECIDED == root->get_state();
-            ++it)
-    {
-        if (!it->second->set_value(payload))
-        {
-            return false;
-        }
+  root->reset();
+  for (auto it = fields.begin();
+    it != fields.end() && DDSFilterConditionState::UNDECIDED == root->get_state();
+    ++it)
+  {
+    if (!it->second->set_value(payload)) {
+      return false;
     }
+  }
 
-    return DDSFilterConditionState::RESULT_TRUE == root->get_state();
+  return DDSFilterConditionState::RESULT_TRUE == root->get_state();
 }
 
 void DDSFilterExpression::clear()
 {
-    parameters.clear();
-    fields.clear();
-    root.reset();
+  parameters.clear();
+  fields.clear();
+  root.reset();
 }
 
 

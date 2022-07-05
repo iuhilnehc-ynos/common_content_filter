@@ -21,10 +21,14 @@
 
 #include "pegtl.hpp"
 
-namespace eprosima_common {
-namespace fastdds {
-namespace dds {
-namespace DDSSQLFilter {
+namespace eprosima_common
+{
+namespace fastdds
+{
+namespace dds
+{
+namespace DDSSQLFilter
+{
 
 using namespace tao::TAO_PEGTL_NAMESPACE;
 

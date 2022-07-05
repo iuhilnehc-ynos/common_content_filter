@@ -3,7 +3,7 @@
 <package format="3">
   <name>common_content_filter</name>
   <version>0.0.1</version>
-  <description>To support content filter fallback used in rcl.</description>
+  <description>To support the common content filter (a CFT fallback on the DDS) used in rcl.</description>
   <maintainer email="lihui.chen@sony.com">chenlh</maintainer>
   <license>Apache License 2.0</license>
 
@@ -12,7 +12,8 @@
   <depend>rcutils</depend>
   <depend>rcpputils</depend>
   <depend>rmw</depend>
-  <depend>rosidl_runtime_cpp</depend>
+  <depend>rosidl_typesupport_introspection_c</depend>
+  <depend>rosidl_typesupport_introspection_cpp</depend>
 
   <test_depend>ament_lint_auto</test_depend>
   <test_depend>ament_lint_common</test_depend>

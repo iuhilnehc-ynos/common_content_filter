@@ -26,31 +26,36 @@
 #include "Log.hpp"
 
 
-namespace common_content_filter {
+namespace common_content_filter
+{
 
 const int MAGIC = 0x434654;  // 'C','F','T'
-const char* FILTER_CLASS_NAME = "DDSSQL";
+const char * FILTER_CLASS_NAME = "DDSSQL";
 
 using DDSFilterFactory = eprosima_common::fastdds::dds::DDSSQLFilter::DDSFilterFactory;
 using IContentFilter = eprosima_common::fastdds::dds::IContentFilter;
 
 DDSFilterFactory *
-get_common_content_filter_factory() {
+get_common_content_filter_factory()
+{
   static DDSFilterFactory content_filter_factory;
   return &content_filter_factory;
 }
 
-class ContentFilterWrapper {
+class ContentFilterWrapper
+{
 public:
   ContentFilterWrapper()
   {
     // logDebug(DDSSQLFILTER, "ContentFilterWrapper ctor : " << this);
   }
 
-  ~ContentFilterWrapper() {
+  ~ContentFilterWrapper()
+  {
     std::lock_guard<std::mutex> lock(mutex_);
     if (filter_instance_) {
-      DDSFilterFactory::ReturnCode_t ret = get_common_content_filter_factory()->delete_content_filter(
+      DDSFilterFactory::ReturnCode_t ret =
+        get_common_content_filter_factory()->delete_content_filter(
         FILTER_CLASS_NAME,
         filter_instance_);
       if (ret != DDSFilterFactory::RETCODE_OK) {
@@ -63,7 +68,8 @@ public:
     // logDebug(DDSSQLFILTER, "ContentFilterWrapper dtor : " << this);
   }
 
-  bool evaluate(void * ros_data, bool serialized) {
+  bool evaluate(void * ros_data, bool serialized)
+  {
     std::lock_guard<std::mutex> lock(mutex_);
     if (serialized) {
       // TODO. deserialize the ros_data
@@ -119,15 +125,18 @@ public:
     return true;
   }
 
-  IContentFilter * filter_instance() {
+  IContentFilter * filter_instance()
+  {
     return filter_instance_;
   }
 
-  bool is_enabled() {
+  bool is_enabled()
+  {
     return filter_instance_ != nullptr;
   }
 
-  int magic() {
+  int magic()
+  {
     return magic_;
   }
 
@@ -140,10 +149,11 @@ private:
 };
 
 
-common_content_filter::ContentFilterWrapper * validate(void * instance) {
+common_content_filter::ContentFilterWrapper * validate(void * instance)
+{
   auto content_filter_wrapper =
     static_cast<common_content_filter::ContentFilterWrapper *>(instance);
-  if (!content_filter_wrapper || content_filter_wrapper->magic() != common_content_filter::MAGIC ) {
+  if (!content_filter_wrapper || content_filter_wrapper->magic() != common_content_filter::MAGIC) {
     logError(DDSSQLFILTER, "Invalid instance");
     return nullptr;
   }
@@ -159,12 +169,14 @@ extern "C"
 #endif
 
 void *
-common_content_filter_create() {
-  return (new common_content_filter::ContentFilterWrapper);
+common_content_filter_create()
+{
+  return new common_content_filter::ContentFilterWrapper;
 }
 
 bool
-common_content_filter_is_enabled(void * instance) {
+common_content_filter_is_enabled(void * instance)
+{
   common_content_filter::ContentFilterWrapper * content_filter_wrapper =
     common_content_filter::validate(instance);
   if (!content_filter_wrapper) {
@@ -175,7 +187,8 @@ common_content_filter_is_enabled(void * instance) {
 }
 
 bool
-common_content_filter_evaluate(void * instance, void * ros_data, bool serialized) {
+common_content_filter_evaluate(void * instance, void * ros_data, bool serialized)
+{
   common_content_filter::ContentFilterWrapper * content_filter_wrapper =
     common_content_filter::validate(instance);
   if (!content_filter_wrapper) {
@@ -190,7 +203,7 @@ common_content_filter_evaluate(void * instance, void * ros_data, bool serialized
   bool ret = false;
   try {
     ret = content_filter_wrapper->evaluate(ros_data, serialized);
-  } catch (const std::runtime_error& e) {
+  } catch (const std::runtime_error & e) {
     logError(DDSSQLFILTER, "Failed to evaluate: " << e.what());
   }
 
@@ -202,7 +215,8 @@ common_content_filter_set(
   void * instance,
   const rosidl_message_type_support_t * type_support,
   const rmw_subscription_content_filter_options_t * options
-) {
+)
+{
   common_content_filter::ContentFilterWrapper * content_filter_wrapper =
     common_content_filter::validate(instance);
   if (!content_filter_wrapper) {
@@ -224,7 +238,7 @@ common_content_filter_set(
     ret = content_filter_wrapper->set_filter_expression(
       type_support, options->filter_expression, expression_parameters
     );
-  } catch (const std::runtime_error& e) {
+  } catch (const std::runtime_error & e) {
     logInfo(DDSSQLFILTER, "Failed to create content filter: " << e.what());
   }
 
@@ -236,7 +250,8 @@ common_content_filter_get(
   void * instance,
   rcutils_allocator_t * allocator,
   rmw_subscription_content_filter_options_t * options
-) {
+)
+{
   common_content_filter::ContentFilterWrapper * content_filter_wrapper =
     common_content_filter::validate(instance);
   if (!content_filter_wrapper) {
@@ -280,7 +295,8 @@ common_content_filter_get(
 }
 
 void
-common_content_filter_destroy(void * instance) {
+common_content_filter_destroy(void * instance)
+{
   common_content_filter::ContentFilterWrapper * content_filter_wrapper =
     common_content_filter::validate(instance);
   if (!content_filter_wrapper) {

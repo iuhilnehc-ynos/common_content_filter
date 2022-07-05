@@ -21,10 +21,14 @@
 
 #include "DDSFilterValue.hpp"
 
-namespace eprosima_common {
-namespace fastdds {
-namespace dds {
-namespace DDSSQLFilter {
+namespace eprosima_common
+{
+namespace fastdds
+{
+namespace dds
+{
+namespace DDSSQLFilter
+{
 
 /**
  * A DDSFilterValue for expression parameters (i.e. %nn).
@@ -33,18 +37,17 @@ class DDSFilterParameter final : public DDSFilterValue
 {
 
 public:
+  virtual ~DDSFilterParameter() = default;
 
-    virtual ~DDSFilterParameter() = default;
-
-    /**
-     * Sets the value of this DDSFilterParameter given from an input string.
-     *
-     * @param[in] parameter  The string from which to set the value.
-     *
-     * @return whether the parsing of the string correspond to a valid literal value.
-     */
-    bool set_value(
-            const char* parameter);
+  /**
+   * Sets the value of this DDSFilterParameter given from an input string.
+   *
+   * @param[in] parameter  The string from which to set the value.
+   *
+   * @return whether the parsing of the string correspond to a valid literal value.
+   */
+  bool set_value(
+    const char * parameter);
 };
 
 }  // namespace DDSSQLFilter

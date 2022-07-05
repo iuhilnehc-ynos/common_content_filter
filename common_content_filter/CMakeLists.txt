@@ -27,24 +27,17 @@ add_library(${PROJECT_NAME}_library SHARED
   src/DDSFilterField.cpp
   src/DDSFilterParameter.cpp
   src/DDSFilterPredicate.cpp
-  src/DDSFilterValue.cpp
-  )
+  src/DDSFilterValue.cpp)
 
 set_target_properties(${PROJECT_NAME}_library
   PROPERTIES OUTPUT_NAME ${PROJECT_NAME})
-# target_link_libraries(${PROJECT_NAME}_library PUBLIC
-#   rcutils::rcutils
-#   rmw::rmw
-#   )
-# target_link_libraries(${PROJECT_NAME}_library PRIVATE
-#   rcpputils::rcpputils)
+
 target_include_directories(${PROJECT_NAME}_library
   PUBLIC
   "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>"
   "$<INSTALL_INTERFACE:include/${PROJECT_NAME}>"
   PRIVATE
-  ${PROJECT_SOURCE_DIR}/thirdparty/taocpp-pegtl
-  )
+  ${PROJECT_SOURCE_DIR}/thirdparty/taocpp-pegtl)
 
 ament_target_dependencies(${PROJECT_NAME}_library
   "rcpputils"
@@ -53,14 +46,6 @@ ament_target_dependencies(${PROJECT_NAME}_library
   "rosidl_typesupport_introspection_c"
   "rosidl_typesupport_introspection_cpp"
 )
-# # Wait for all rosidl generators to finish before building this library
-# add_dependencies(${PROJECT_NAME}_library
-#   ${PROJECT_NAME})
-
-# Depend on the generated C++ messages
-# rosidl_get_typesupport_target(cpp_typesupport_target "${PROJECT_NAME}" "rosidl_typesupport_cpp")
-# target_link_libraries(${PROJECT_NAME}_library PUBLIC
-#   ${cpp_typesupport_target})
 
 # Causes the visibility macros to use dllexport rather than dllimport,
 # which is appropriate when building the dll but not consuming it.

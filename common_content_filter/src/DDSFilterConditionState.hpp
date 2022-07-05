@@ -19,24 +19,28 @@
 #ifndef COMMON_CONTENT_FILTER__DDSFILTERCONDITIONSTATE_HPP_
 #define COMMON_CONTENT_FILTER__DDSFILTERCONDITIONSTATE_HPP_
 
-namespace eprosima_common {
-namespace fastdds {
-namespace dds {
-namespace DDSSQLFilter {
+namespace eprosima_common
+{
+namespace fastdds
+{
+namespace dds
+{
+namespace DDSSQLFilter
+{
 
 /**
  * Possible states of a DDSFilterCondition.
  */
 enum class DDSFilterConditionState : char
 {
-    /// Initial state of the DDSFilterCondition, indicating there is no result.
-    UNDECIDED,
+  /// Initial state of the DDSFilterCondition, indicating there is no result.
+  UNDECIDED,
 
-    /// State indicating that the DDSFilterCondition evaluates to @c false.
-    RESULT_FALSE,
+  /// State indicating that the DDSFilterCondition evaluates to @c false.
+  RESULT_FALSE,
 
-    /// State indicating that the DDSFilterCondition evaluates to @c true.
-    RESULT_TRUE
+  /// State indicating that the DDSFilterCondition evaluates to @c true.
+  RESULT_TRUE
 };
 
 }  // namespace DDSSQLFilter

@@ -21,10 +21,14 @@
 
 #include "IContentFilter.hpp"
 
-namespace eprosima_common {
-namespace fastdds {
-namespace dds {
-namespace DDSSQLFilter {
+namespace eprosima_common
+{
+namespace fastdds
+{
+namespace dds
+{
+namespace DDSSQLFilter
+{
 
 /**
  * An IContentFilter for empty expressions that always evaluates to true.
@@ -33,14 +37,13 @@ class DDSFilterEmptyExpression final : public IContentFilter
 {
 
 public:
+  bool evaluate(
+    const void * payload) const final
+  {
+    static_cast<void>(payload);
 
-    bool evaluate(
-            const void * payload) const final
-    {
-        static_cast<void>(payload);
-
-        return true;
-    }
+    return true;
+  }
 
 };
 

@@ -24,11 +24,16 @@
 #include "DDSFilterParseNode.hpp"
 
 
-namespace eprosima_common {
-namespace fastdds {
-namespace dds {
-namespace DDSSQLFilter {
-namespace parser {
+namespace eprosima_common
+{
+namespace fastdds
+{
+namespace dds
+{
+namespace DDSSQLFilter
+{
+namespace parser
+{
 
 /**
  * Performs parsing of a string containing a DDS-SQL filter expression.
@@ -40,8 +45,8 @@ namespace parser {
  * @return A pointer to the root node of the AST tree for the expression.
  */
 std::unique_ptr<ParseNode> parse_filter_expression(
-        const char* expression,
-        const rosidl_message_type_support_t* type_support);
+  const char * expression,
+  const rosidl_message_type_support_t * type_support);
 
 /**
  * Performs parsing of a string containing a literal value.
@@ -53,7 +58,7 @@ std::unique_ptr<ParseNode> parse_filter_expression(
  * @return A simple tree consisting of a root node, with a single child that contains the generated DDSFilterValue.
  */
 std::unique_ptr<ParseNode> parse_literal_value(
-        const char* value);
+  const char * value);
 
 }  // namespace parser
 }  // namespace DDSSQLFilter

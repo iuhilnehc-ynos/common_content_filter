@@ -20,19 +20,18 @@
  */
 
 struct parameter_processor
-    : parse_tree::apply< parameter_processor >
+  : parse_tree::apply<parameter_processor>
 {
-    template< typename ... States >
-    static void transform(
-            std::unique_ptr< ParseNode >& n,
-            States&&... /*st*/)
-    {
-        n->parameter_index = static_cast<int32_t>(n->m_begin.data[1] - '0');
-        if (n->m_end.byte - n->m_begin.byte == 3)
-        {
-            n->parameter_index *= 10;
-            n->parameter_index += static_cast<int32_t>(n->m_begin.data[2] - '0');
-        }
+  template<typename ... States>
+  static void transform(
+    std::unique_ptr<ParseNode> & n,
+    States &&... /*st*/)
+  {
+    n->parameter_index = static_cast<int32_t>(n->m_begin.data[1] - '0');
+    if (n->m_end.byte - n->m_begin.byte == 3) {
+      n->parameter_index *= 10;
+      n->parameter_index += static_cast<int32_t>(n->m_begin.data[2] - '0');
     }
+  }
 
 };

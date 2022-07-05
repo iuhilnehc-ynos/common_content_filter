@@ -20,24 +20,27 @@
 #define COMMON_CONTENT_FILTER__ICONTENTFILTER_HPP_
 
 
-namespace eprosima_common {
-namespace fastdds {
-namespace dds {
+namespace eprosima_common
+{
+namespace fastdds
+{
+namespace dds
+{
 
 /**
  * The interface that content filter objects should implement.
  */
 struct IContentFilter
 {
-    /**
-     * Evaluate if a de-serialized payload should be accepted by certain reader.
-     *
-     * @param [in]  payload      The de-serialized payload of the sample being evaluated.
-     *
-     * @return whether the sample should be accepted.
-     */
-    virtual bool evaluate(
-            const void * payload) const = 0;
+  /**
+   * Evaluate if a de-serialized payload should be accepted by certain reader.
+   *
+   * @param [in]  payload      The de-serialized payload of the sample being evaluated.
+   *
+   * @return whether the sample should be accepted.
+   */
+  virtual bool evaluate(
+    const void * payload) const = 0;
 };
 
 } // namespace dds

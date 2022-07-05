@@ -21,27 +21,30 @@
 #include "DDSFilterExpressionParser.hpp"
 #include "Log.hpp"
 
-namespace eprosima_common {
-namespace fastdds {
-namespace dds {
-namespace DDSSQLFilter {
+namespace eprosima_common
+{
+namespace fastdds
+{
+namespace dds
+{
+namespace DDSSQLFilter
+{
 
 bool DDSFilterParameter::set_value(
-        const char* parameter)
+  const char * parameter)
 {
-    auto node = parser::parse_literal_value(parameter);
+  auto node = parser::parse_literal_value(parameter);
 
-    if (!node)
-    {
-      logError(DDSSQLFILTER, "PARSE ERROR: parser::parse_literal_value");
+  if (!node) {
+    logError(DDSSQLFILTER, "PARSE ERROR: parser::parse_literal_value");
 
-        return false;
-    }
+    return false;
+  }
 
-    copy_from(*node->left().value, false);
-    value_has_changed();
+  copy_from(*node->left().value, false);
+  value_has_changed();
 
-    return true;
+  return true;
 }
 
 }  // namespace DDSSQLFilter

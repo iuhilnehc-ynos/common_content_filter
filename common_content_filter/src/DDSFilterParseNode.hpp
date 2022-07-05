@@ -27,37 +27,42 @@
 #include "DDSFilterField.hpp"
 #include "DDSFilterValue.hpp"
 
-namespace eprosima_common {
-namespace fastdds {
-namespace dds {
-namespace DDSSQLFilter {
-namespace parser {
+namespace eprosima_common
+{
+namespace fastdds
+{
+namespace dds
+{
+namespace DDSSQLFilter
+{
+namespace parser
+{
 
 using namespace tao::TAO_PEGTL_NAMESPACE;
 
-struct ParseNode : parse_tree::basic_node< ParseNode >
+struct ParseNode : parse_tree::basic_node<ParseNode>
 {
-    // When the node is a literal value, it will hold a pointer to it
-    std::unique_ptr<DDSFilterValue> value;
+  // When the node is a literal value, it will hold a pointer to it
+  std::unique_ptr<DDSFilterValue> value;
 
-    // When the node is a fieldname, it will hold the access path to the field, the data kind, and the type id
-    std::vector<DDSFilterField::FieldAccessor> field_access_path;
-    DDSFilterValue::ValueKind field_kind = DDSFilterValue::ValueKind::STRING;
-    // ros2 primitive type id
-    uint8_t type_id = 0;
+  // When the node is a fieldname, it will hold the access path to the field, the data kind, and the type id
+  std::vector<DDSFilterField::FieldAccessor> field_access_path;
+  DDSFilterValue::ValueKind field_kind = DDSFilterValue::ValueKind::STRING;
+  // ros2 primitive type id
+  uint8_t type_id = 0;
 
-    // When the node is a parameter, it will hold the parameter index
-    size_t parameter_index = 0;
+  // When the node is a parameter, it will hold the parameter index
+  size_t parameter_index = 0;
 
-    const ParseNode& left() const
-    {
-        return *(children[0]);
-    }
+  const ParseNode & left() const
+  {
+    return *(children[0]);
+  }
 
-    const ParseNode& right() const
-    {
-        return *(children[1]);
-    }
+  const ParseNode & right() const
+  {
+    return *(children[1]);
+  }
 
 };
 
