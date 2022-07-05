@@ -17,6 +17,7 @@
 
 #include "common_content_filter/visibility_control.h"
 
+#include <rcutils/allocator.h>
 #include <rmw/subscription_content_filter_options.h>
 #include <rosidl_runtime_c/message_type_support_struct.h>
 
@@ -34,10 +35,16 @@ extern "C"
  */
 COMMON_CONTENT_FILTER_PUBLIC
 void *
-create_common_content_filter(
-  const rosidl_message_type_support_t * type_support,
-  rmw_subscription_content_filter_options_t * options
-);
+create_common_content_filter();
+
+/// Check if the content filter instance is enabled.
+/**
+ * \param[in] instance The content filter instance
+ * \return true if enabled, or false
+ */
+COMMON_CONTENT_FILTER_PUBLIC
+bool
+is_common_content_filter_enabled(void * instance);
 
 /// Use the content filter instance to evalute the data.
 /**
@@ -48,7 +55,37 @@ create_common_content_filter(
  */
 COMMON_CONTENT_FILTER_PUBLIC
 bool
-common_content_filter_evaluate(void * instance, void * data, bool serialized);
+evaluate_common_content_filter(void * instance, void * data, bool serialized);
+
+/// Set a common content filter instance with an options.
+/**
+ * \param[in] instance The content filter instance
+ * \param[in] type_support Type support of the topic data being filtered
+ * \param[in] options the filter options
+ * \return a valid address if success, or NULL on failure
+ */
+COMMON_CONTENT_FILTER_PUBLIC
+bool
+set_common_content_filter(
+  void * instance,
+  const rosidl_message_type_support_t * type_support,
+  const rmw_subscription_content_filter_options_t * options
+);
+
+/// Get the options from a common content filter instance.
+/**
+ * \param[in] instance The content filter instance
+ * \param[in] allocator Type support of the topic data being filtered
+ * \param[in] options the filter options
+ * \return a valid address if success, or NULL on failure
+ */
+COMMON_CONTENT_FILTER_PUBLIC
+bool
+get_common_content_filter(
+  void * instance,
+  rcutils_allocator_t * allocator,
+  rmw_subscription_content_filter_options_t * options
+);
 
 /// Destroy the content filter instance.
 /**
