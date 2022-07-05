@@ -139,6 +139,17 @@ private:
   std::mutex mutex_;
 };
 
+
+common_content_filter::ContentFilterWrapper * validate(void * instance) {
+  auto content_filter_wrapper =
+    static_cast<common_content_filter::ContentFilterWrapper *>(instance);
+  if (!content_filter_wrapper || content_filter_wrapper->magic() != common_content_filter::MAGIC ) {
+    logError(DDSSQLFILTER, "Invalid instance");
+    return nullptr;
+  }
+  return content_filter_wrapper;
+}
+
 }  // namespace common_content_filter
 
 
@@ -149,23 +160,14 @@ extern "C"
 
 void *
 create_common_content_filter() {
-  common_content_filter::ContentFilterWrapper * filter_instance_wrapper = nullptr;
-  try {
-    filter_instance_wrapper =
-      new common_content_filter::ContentFilterWrapper();
-  } catch (const std::runtime_error& e) {
-    logInfo(DDSSQLFILTER, "Failed to create content filter: " << e.what());
-  }
-
-  return filter_instance_wrapper;
+  return (new common_content_filter::ContentFilterWrapper);
 }
 
 bool
 is_common_content_filter_enabled(void * instance) {
   common_content_filter::ContentFilterWrapper * content_filter_wrapper =
-    static_cast<common_content_filter::ContentFilterWrapper *>(instance);
-  if (!content_filter_wrapper || content_filter_wrapper->magic() != common_content_filter::MAGIC ) {
-    logError(DDSSQLFILTER, "Invalid arguments");
+    common_content_filter::validate(instance);
+  if (!content_filter_wrapper) {
     return false;
   }
 
@@ -174,10 +176,13 @@ is_common_content_filter_enabled(void * instance) {
 
 bool
 evaluate_common_content_filter(void * instance, void * ros_data, bool serialized) {
-
   common_content_filter::ContentFilterWrapper * content_filter_wrapper =
-    static_cast<common_content_filter::ContentFilterWrapper *>(instance);
-  if (!content_filter_wrapper || content_filter_wrapper->magic() != common_content_filter::MAGIC ) {
+    common_content_filter::validate(instance);
+  if (!content_filter_wrapper) {
+    return false;
+  }
+
+  if (!ros_data) {
     logError(DDSSQLFILTER, "Invalid arguments");
     return false;
   }
@@ -198,11 +203,9 @@ set_common_content_filter(
   const rosidl_message_type_support_t * type_support,
   const rmw_subscription_content_filter_options_t * options
 ) {
-
   common_content_filter::ContentFilterWrapper * content_filter_wrapper =
-    static_cast<common_content_filter::ContentFilterWrapper *>(instance);
-  if (!content_filter_wrapper || content_filter_wrapper->magic() != common_content_filter::MAGIC ) {
-    logError(DDSSQLFILTER, "Invalid arguments");
+    common_content_filter::validate(instance);
+  if (!content_filter_wrapper) {
     return false;
   }
 
@@ -235,9 +238,8 @@ get_common_content_filter(
   rmw_subscription_content_filter_options_t * options
 ) {
   common_content_filter::ContentFilterWrapper * content_filter_wrapper =
-    static_cast<common_content_filter::ContentFilterWrapper *>(instance);
-  if (!content_filter_wrapper || content_filter_wrapper->magic() != common_content_filter::MAGIC ) {
-    logError(DDSSQLFILTER, "Invalid arguments");
+    common_content_filter::validate(instance);
+  if (!content_filter_wrapper) {
     return false;
   }
 
@@ -280,9 +282,8 @@ get_common_content_filter(
 void
 destroy_common_content_filter(void * instance) {
   common_content_filter::ContentFilterWrapper * content_filter_wrapper =
-    static_cast<common_content_filter::ContentFilterWrapper *>(instance);
-  if (!content_filter_wrapper || content_filter_wrapper->magic() != common_content_filter::MAGIC ) {
-    logError(DDSSQLFILTER, "Invalid arguments");
+    common_content_filter::validate(instance);
+  if (!content_filter_wrapper) {
     return;
   }
 
