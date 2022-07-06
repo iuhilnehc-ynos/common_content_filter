@@ -29,8 +29,6 @@ extern "C"
 
 /// Create a common content filter instance to filter data.
 /**
- * \param[in] type_support Type support of the topic data being filtered
- * \param[in] options the filter options
  * \return a valid address if success, or NULL on failure
  */
 COMMON_CONTENT_FILTER_PUBLIC
