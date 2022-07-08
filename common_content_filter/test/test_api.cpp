@@ -16,6 +16,8 @@
 
 #include <test_msgs/msg/basic_types.h>
 #include <osrf_testing_tools_cpp/scope_exit.hpp>
+#include <rmw/rmw.h>
+#include <rmw/serialized_message.h>
 
 #include "common_content_filter/api.h"
 
@@ -73,6 +75,8 @@ TEST_F(TestCommonContentFilterAPI, is_enabled) {
 TEST_F(TestCommonContentFilterAPI, evaluate) {
   EXPECT_FALSE(common_content_filter_evaluate(nullptr, nullptr, false));
   EXPECT_FALSE(common_content_filter_evaluate(instance, nullptr, false));
+  EXPECT_FALSE(common_content_filter_evaluate(nullptr, nullptr, true));
+  EXPECT_FALSE(common_content_filter_evaluate(instance, nullptr, true));
 
   test_msgs__msg__BasicTypes msg;
   test_msgs__msg__BasicTypes__init(&msg);
@@ -82,15 +86,41 @@ TEST_F(TestCommonContentFilterAPI, evaluate) {
     test_msgs__msg__BasicTypes__fini(&msg);
   });
 
+  // test serialized message
+  rmw_serialized_message_t serialized_message =
+    rmw_get_zero_initialized_serialized_message();
+  rcutils_allocator_t allocator = rcutils_get_default_allocator();
+  EXPECT_EQ(
+    RMW_RET_OK,
+    rmw_serialized_message_init(&serialized_message, 1U, &allocator)
+  );
+  OSRF_TESTING_TOOLS_CPP_SCOPE_EXIT(
+  {
+    rmw_serialized_message_fini(&serialized_message);
+  });
+
+  EXPECT_EQ(
+    RMW_RET_OK,
+    rmw_serialize(&msg, type_support, &serialized_message)
+  );
+
   // no filter setting, expect true
   EXPECT_TRUE(common_content_filter_evaluate(instance, &msg, false));
+  EXPECT_TRUE(common_content_filter_evaluate(instance, &serialized_message, true));
   // after setting filter with "int32_value = 4"
   set_options();
   // expect msg(int32_value = 3) return false
   EXPECT_FALSE(common_content_filter_evaluate(instance, &msg, false));
+  EXPECT_FALSE(common_content_filter_evaluate(instance, &serialized_message, true));
   // update msg with 4
   msg.int32_value = 4;
+  EXPECT_EQ(
+    RMW_RET_OK,
+    rmw_serialize(&msg, type_support, &serialized_message)
+  );
+
   EXPECT_TRUE(common_content_filter_evaluate(instance, &msg, false));
+  EXPECT_TRUE(common_content_filter_evaluate(instance, &serialized_message, true));
 }
 
 TEST_F(TestCommonContentFilterAPI, set) {
