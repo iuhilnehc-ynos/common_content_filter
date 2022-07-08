@@ -266,21 +266,6 @@ TEST_F(TestComplexMsgCommonContentFilterAPI, get) {
     bool expectation;
   };
 
-  basic_types_data_one.bool_value = true;
-  basic_types_data_one.byte_value = 1;
-  basic_types_data_one.char_value = 1;
-  basic_types_data_one.float32_value = 1.0f;
-  basic_types_data_one.float64_value = 1.0;
-  basic_types_data_one.int8_value = 1;
-  basic_types_data_one.uint8_value = 1;
-  basic_types_data_one.int16_value = 1;
-  basic_types_data_one.uint16_value = 1;
-  basic_types_data_one.int32_value = 1l;
-  basic_types_data_one.uint32_value = 1ul;
-  basic_types_data_one.int64_value = 1ll;
-  basic_types_data_one.uint64_value = 1ull;
-
-
   std::vector<Info> expectation = {
     // name with string or string array
     {"name=%0", {"'complex_name'"}, true},
