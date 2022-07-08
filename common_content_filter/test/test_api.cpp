@@ -37,7 +37,8 @@ protected:
   }
 
 protected:
-  void set_options() {
+  void set_options()
+  {
     rcutils_allocator_t allocator = rcutils_get_default_allocator();
     rmw_subscription_content_filter_options_t options =
       rmw_get_zero_initialized_content_filter_options();

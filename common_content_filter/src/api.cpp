@@ -50,11 +50,55 @@ get_common_content_filter_factory()
   return &content_filter_factory;
 }
 
+template<typename MembersType, typename MessageInitialization>
+auto
+get_message(
+  const rosidl_message_type_support_t * type_support_introspection,
+  MessageInitialization message_initialization)
+{
+  const MembersType * members =
+    static_cast<const MembersType *>(type_support_introspection->data);
+  if (!members) {
+    throw std::runtime_error("The data in the type support introspection is invalid.");
+  }
+
+  auto msg = std::unique_ptr<void, std::function<void(void *)>>(
+    malloc(members->size_of_),
+    [members](void * msg_ptr) {
+      members->fini_function(msg_ptr);
+      free(msg_ptr);
+    });
+  if (msg) {
+    members->init_function(msg.get(), message_initialization);
+  }
+
+  return msg;
+}
+
+auto get_message_buffer(const rosidl_message_type_support_t * type_support)
+{
+  const rosidl_message_type_support_t * type_support_introspection =
+    get_type_support_introspection(type_support);
+  if (!type_support_introspection) {
+    throw std::runtime_error("failed to get type support introspection");
+  }
+
+  if (type_support_introspection->typesupport_identifier ==
+    rosidl_typesupport_introspection_c__identifier)
+  {
+    return get_message<rosidl_typesupport_introspection_c__MessageMembers>(
+      type_support_introspection, ROSIDL_RUNTIME_C_MSG_INIT_ZERO);
+  } else {
+    return get_message<rosidl_typesupport_introspection_cpp::MessageMembers>(
+      type_support_introspection, rosidl_runtime_cpp::MessageInitialization::ZERO);
+  }
+}
+
 class ContentFilterWrapper
 {
 public:
   ContentFilterWrapper(const rosidl_message_type_support_t * type_support)
-    : type_support_(type_support)
+  : type_support_(type_support)
   {
     // logDebug(DDSSQLFILTER, "ContentFilterWrapper ctor : " << this);
   }
@@ -77,63 +121,19 @@ public:
     // logDebug(DDSSQLFILTER, "ContentFilterWrapper dtor : " << this);
   }
 
-  template<typename MembersType, typename MessageInitialization>
-  auto
-  get_message(
-    const rosidl_message_type_support_t * type_support_introspection,
-    MessageInitialization message_initialization)
-  {
-    const MembersType * members =
-      static_cast<const MembersType *>(type_support_introspection->data);
-    if (!members) {
-      throw std::runtime_error("The data in the type support introspection is invalid.");
-    }
-
-    auto msg = std::unique_ptr<void, std::function<void(void *)>>(
-      malloc(members->size_of_),
-      [members](void * msg_ptr) {
-        members->fini_function(msg_ptr);
-        free(msg_ptr);
-      });
-    if (msg) {
-      members->init_function(msg.get(), message_initialization);
-    }
-
-    return msg;
-  }
-
-  auto get_message_buffer() {
-    const rosidl_message_type_support_t * type_support_introspection =
-      get_type_support_introspection(type_support_);
-    if (!type_support_introspection) {
-      throw std::runtime_error("failed to get type support introspection");
-    }
-
-    if (type_support_introspection->typesupport_identifier ==
-      rosidl_typesupport_introspection_c__identifier)
-    {
-      return get_message<rosidl_typesupport_introspection_c__MessageMembers>(
-        type_support_introspection, ROSIDL_RUNTIME_C_MSG_INIT_ZERO);
-    } else {
-      return get_message<rosidl_typesupport_introspection_cpp::MessageMembers>(
-        type_support_introspection, rosidl_runtime_cpp::MessageInitialization::ZERO);
-    }
-  }
-
   bool evaluate(void * ros_data, bool serialized)
   {
     std::lock_guard<std::mutex> lock(mutex_);
-    std::unique_ptr<void, std::function<void(void *)>> deserialized_buffer = nullptr;
 
     if (serialized) {
-      deserialized_buffer = std::move(get_message_buffer());
       const rmw_serialized_message_t * serialized_message =
         (const rmw_serialized_message_t *)ros_data;
+      if (!deserialized_buffer_) {
+        deserialized_buffer_ = std::move(get_message_buffer(type_support_));
+      }
       rmw_ret_t rmw_ret =
-        rmw_deserialize(serialized_message,
-          type_support_,
-          deserialized_buffer.get());
-      ros_data = deserialized_buffer.get();
+        rmw_deserialize(serialized_message, type_support_, deserialized_buffer_.get());
+      ros_data = deserialized_buffer_.get();
       if (rmw_ret != RMW_RET_OK) {
         logError(DDSSQLFILTER, "Failed to deserialize message");
         return false;
@@ -208,6 +208,7 @@ public:
 private:
   const int magic_ = MAGIC;
   const rosidl_message_type_support_t * type_support_;
+  std::unique_ptr<void, std::function<void(void *)>> deserialized_buffer_ = nullptr;
   IContentFilter * filter_instance_ = nullptr;
   std::string filter_expression_;
   std::vector<std::string> expression_parameters_;
