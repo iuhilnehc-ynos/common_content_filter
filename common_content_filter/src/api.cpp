@@ -26,6 +26,7 @@
 #include <rosidl_typesupport_introspection_cpp/message_introspection.hpp>
 #include <rosidl_typesupport_introspection_cpp/field_types.hpp>
 
+#include <functional>
 #include <mutex>
 #include <pegtl.hpp>
 
