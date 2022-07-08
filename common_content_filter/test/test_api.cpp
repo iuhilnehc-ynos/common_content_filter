@@ -234,6 +234,8 @@ TEST_F(TestComplexMsgCommonContentFilterAPI, get) {
     basic_types_data_zero,                  // data.basic_array[0].basic_types[0] is 0
     basic_types_data_one                    // data.basic_array[0].basic_types[1] is 1
   };
+  basic_zero_one.unbounded_int32_data = {0, 1};
+  basic_zero_one.bounded_float64_data = {0, 1};
 
   test_content_filter_msgs::msg::Basic basic_one_zero;
   basic_one_zero.names = {
@@ -244,6 +246,8 @@ TEST_F(TestComplexMsgCommonContentFilterAPI, get) {
     basic_types_data_one,                   // data.basic_array[1].basic_types[0] is 1
     basic_types_data_zero                   // data.basic_array[1].basic_types[1] is 0
   };
+  basic_one_zero.unbounded_int32_data = {1, 0};
+  basic_one_zero.bounded_float64_data = {1, 0};
 
   test_content_filter_msgs::msg::Complex msg;
   msg.data.basic_array = {
@@ -307,6 +311,8 @@ TEST_F(TestComplexMsgCommonContentFilterAPI, get) {
     {"data.basic_array[0].basic_types[0].uint32_value=%0", {"0"}, true},
     {"data.basic_array[0].basic_types[0].int64_value=%0", {"0"}, true},
     {"data.basic_array[0].basic_types[0].uint64_value=%0", {"0"}, true},
+    {"data.basic_array[0].unbounded_int32_data[0]=%0", {"0"}, true},
+    {"data.basic_array[0].bounded_float64_data[0]=%0", {"0"}, true},
 
     {"data.basic_array[0].basic_types[0].bool_value=%0", {"true"}, false},
     {"data.basic_array[0].basic_types[0].byte_value=%0", {"1"}, false},
@@ -321,6 +327,8 @@ TEST_F(TestComplexMsgCommonContentFilterAPI, get) {
     {"data.basic_array[0].basic_types[0].uint32_value=%0", {"1"}, false},
     {"data.basic_array[0].basic_types[0].int64_value=%0", {"1"}, false},
     {"data.basic_array[0].basic_types[0].uint64_value=%0", {"1"}, false},
+    {"data.basic_array[0].unbounded_int32_data[0]=%0", {"1"}, false},
+    {"data.basic_array[0].bounded_float64_data[0]=%0", {"1"}, false},
 
     // 0 1
     {"data.basic_array[0].basic_types[1].bool_value=%0", {"false"}, false},
@@ -336,6 +344,8 @@ TEST_F(TestComplexMsgCommonContentFilterAPI, get) {
     {"data.basic_array[0].basic_types[1].uint32_value=%0", {"0"}, false},
     {"data.basic_array[0].basic_types[1].int64_value=%0", {"0"}, false},
     {"data.basic_array[0].basic_types[1].uint64_value=%0", {"0"}, false},
+    {"data.basic_array[0].unbounded_int32_data[1]=%0", {"0"}, false},
+    {"data.basic_array[0].bounded_float64_data[1]=%0", {"0"}, false},
 
     {"data.basic_array[0].basic_types[1].bool_value=%0", {"true"}, true},
     {"data.basic_array[0].basic_types[1].byte_value=%0", {"1"}, true},
@@ -350,6 +360,8 @@ TEST_F(TestComplexMsgCommonContentFilterAPI, get) {
     {"data.basic_array[0].basic_types[1].uint32_value=%0", {"1"}, true},
     {"data.basic_array[0].basic_types[1].int64_value=%0", {"1"}, true},
     {"data.basic_array[0].basic_types[1].uint64_value=%0", {"1"}, true},
+    {"data.basic_array[0].unbounded_int32_data[1]=%0", {"1"}, true},
+    {"data.basic_array[0].bounded_float64_data[1]=%0", {"1"}, true},
 
     // [1][0]
     {"data.basic_array[1].basic_types[0].bool_value=%0", {"false"}, false},
@@ -365,6 +377,8 @@ TEST_F(TestComplexMsgCommonContentFilterAPI, get) {
     {"data.basic_array[1].basic_types[0].uint32_value=%0", {"0"}, false},
     {"data.basic_array[1].basic_types[0].int64_value=%0", {"0"}, false},
     {"data.basic_array[1].basic_types[0].uint64_value=%0", {"0"}, false},
+    {"data.basic_array[1].unbounded_int32_data[0]=%0", {"0"}, false},
+    {"data.basic_array[1].bounded_float64_data[0]=%0", {"0"}, false},
 
     {"data.basic_array[1].basic_types[0].bool_value=%0", {"true"}, true},
     {"data.basic_array[1].basic_types[0].byte_value=%0", {"1"}, true},
@@ -379,6 +393,10 @@ TEST_F(TestComplexMsgCommonContentFilterAPI, get) {
     {"data.basic_array[1].basic_types[0].uint32_value=%0", {"1"}, true},
     {"data.basic_array[1].basic_types[0].int64_value=%0", {"1"}, true},
     {"data.basic_array[1].basic_types[0].uint64_value=%0", {"1"}, true},
+    {"data.basic_array[1].unbounded_int32_data[0]=%0", {"1"}, true},
+    {"data.basic_array[1].bounded_float64_data[0]=%0", {"1"}, true},
+    {"data.basic_array[1].unbounded_int32_data[0]=%0", {"1"}, true},
+    {"data.basic_array[1].bounded_float64_data[0]=%0", {"1"}, true},
 
     // [1][1]
     {"data.basic_array[1].basic_types[1].bool_value=%0", {"false"}, true},
@@ -408,6 +426,8 @@ TEST_F(TestComplexMsgCommonContentFilterAPI, get) {
     {"data.basic_array[1].basic_types[1].uint32_value=%0", {"1"}, false},
     {"data.basic_array[1].basic_types[1].int64_value=%0", {"1"}, false},
     {"data.basic_array[1].basic_types[1].uint64_value=%0", {"1"}, false},
+    {"data.basic_array[1].unbounded_int32_data[1]=%0", {"1"}, false},
+    {"data.basic_array[1].bounded_float64_data[1]=%0", {"1"}, false},
   };
 
   for (auto & item : expectation) {
