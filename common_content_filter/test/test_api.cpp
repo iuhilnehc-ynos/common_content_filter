@@ -415,6 +415,7 @@ TEST_F(TestComplexMsgCommonContentFilterAPI, get) {
       item.filter_expression,
       item.expression_parameter.size(),
       item.expression_parameter.data());
-    EXPECT_EQ(common_content_filter_evaluate(instance, &msg, false), item.expectation);
+    EXPECT_EQ(common_content_filter_evaluate(instance, &msg, false), item.expectation)
+      << "Error happened by the filter expression:" << item.filter_expression;
   }
 }
