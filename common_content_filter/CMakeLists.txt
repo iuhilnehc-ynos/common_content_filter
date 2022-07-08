@@ -15,6 +15,7 @@ find_package(ament_cmake REQUIRED)
 find_package(rcutils REQUIRED)
 find_package(rcpputils REQUIRED)
 find_package(rmw REQUIRED)
+find_package(rmw_implementation REQUIRED)
 find_package(rosidl_typesupport_introspection_c REQUIRED)
 find_package(rosidl_typesupport_introspection_cpp REQUIRED)
 
@@ -27,7 +28,8 @@ add_library(${PROJECT_NAME}_library SHARED
   src/DDSFilterField.cpp
   src/DDSFilterParameter.cpp
   src/DDSFilterPredicate.cpp
-  src/DDSFilterValue.cpp)
+  src/DDSFilterValue.cpp
+  src/Utilities.cpp)
 
 set_target_properties(${PROJECT_NAME}_library
   PROPERTIES OUTPUT_NAME ${PROJECT_NAME})
@@ -43,6 +45,7 @@ ament_target_dependencies(${PROJECT_NAME}_library
   "rcpputils"
   "rcutils"
   "rmw"
+  "rmw_implementation"
   "rosidl_typesupport_introspection_c"
   "rosidl_typesupport_introspection_cpp"
 )
@@ -70,6 +73,7 @@ ament_export_dependencies(ament_cmake_core)
 ament_export_dependencies(rcpputils)
 ament_export_dependencies(rcutils)
 ament_export_dependencies(rmw)
+ament_export_dependencies(rmw_implementation)
 ament_export_dependencies(rosidl_typesupport_introspection_c)
 ament_export_dependencies(rosidl_typesupport_introspection_cpp)
 
@@ -96,7 +100,7 @@ if(BUILD_TESTING)
 
   ament_add_gtest(test_api test/test_api.cpp)
   target_link_libraries(test_api ${PROJECT_NAME}_library)
-  ament_target_dependencies(test_api test_msgs osrf_testing_tools_cpp)
+  ament_target_dependencies(test_api test_msgs osrf_testing_tools_cpp rmw)
 endif()
 
 ament_package()

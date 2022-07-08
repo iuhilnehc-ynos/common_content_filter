@@ -19,11 +19,19 @@
 #include <rmw/rmw.h>
 
 #include <rmw/subscription_content_filter_options.h>
+
+#include <rosidl_typesupport_introspection_c/identifier.h>
+#include <rosidl_typesupport_introspection_cpp/identifier.hpp>
+#include <rosidl_typesupport_introspection_c/message_introspection.h>
+#include <rosidl_typesupport_introspection_cpp/message_introspection.hpp>
+#include <rosidl_typesupport_introspection_cpp/field_types.hpp>
+
 #include <mutex>
 #include <pegtl.hpp>
 
 #include "DDSFilterFactory.hpp"
 #include "Log.hpp"
+#include "Utilities.hpp"
 
 
 namespace common_content_filter
@@ -45,7 +53,8 @@ get_common_content_filter_factory()
 class ContentFilterWrapper
 {
 public:
-  ContentFilterWrapper()
+  ContentFilterWrapper(const rosidl_message_type_support_t * type_support)
+    : type_support_(type_support)
   {
     // logDebug(DDSSQLFILTER, "ContentFilterWrapper ctor : " << this);
   }
@@ -68,23 +77,79 @@ public:
     // logDebug(DDSSQLFILTER, "ContentFilterWrapper dtor : " << this);
   }
 
+  template<typename MembersType, typename MessageInitialization>
+  auto
+  get_message(
+    const rosidl_message_type_support_t * type_support_introspection,
+    MessageInitialization message_initialization)
+  {
+    const MembersType * members =
+      static_cast<const MembersType *>(type_support_introspection->data);
+    if (!members) {
+      throw std::runtime_error("The data in the type support introspection is invalid.");
+    }
+
+    auto msg = std::unique_ptr<void, std::function<void(void *)>>(
+      malloc(members->size_of_),
+      [members](void * msg_ptr) {
+        members->fini_function(msg_ptr);
+        free(msg_ptr);
+      });
+    if (msg) {
+      members->init_function(msg.get(), message_initialization);
+    }
+
+    return msg;
+  }
+
+  auto get_message_buffer() {
+    const rosidl_message_type_support_t * type_support_introspection =
+      get_type_support_introspection(type_support_);
+    if (!type_support_introspection) {
+      throw std::runtime_error("failed to get type support introspection");
+    }
+
+    if (type_support_introspection->typesupport_identifier ==
+      rosidl_typesupport_introspection_c__identifier)
+    {
+      return get_message<rosidl_typesupport_introspection_c__MessageMembers>(
+        type_support_introspection, ROSIDL_RUNTIME_C_MSG_INIT_ZERO);
+    } else {
+      return get_message<rosidl_typesupport_introspection_cpp::MessageMembers>(
+        type_support_introspection, rosidl_runtime_cpp::MessageInitialization::ZERO);
+    }
+  }
+
   bool evaluate(void * ros_data, bool serialized)
   {
     std::lock_guard<std::mutex> lock(mutex_);
+    std::unique_ptr<void, std::function<void(void *)>> deserialized_buffer = nullptr;
+
     if (serialized) {
-      // TODO. deserialize the ros_data
+      deserialized_buffer = std::move(get_message_buffer());
+      const rmw_serialized_message_t * serialized_message =
+        (const rmw_serialized_message_t *)ros_data;
+      rmw_ret_t rmw_ret =
+        rmw_deserialize(serialized_message,
+          type_support_,
+          deserialized_buffer.get());
+      ros_data = deserialized_buffer.get();
+      if (rmw_ret != RMW_RET_OK) {
+        logError(DDSSQLFILTER, "Failed to deserialize message");
+        return false;
+      }
     }
 
     bool ret = true;
     if (filter_instance_) {
       ret = filter_instance_->evaluate(ros_data);
     }
+
     // logDebug(DDSSQLFILTER, "evaluate ret: " << ret);
     return ret;
   }
 
   bool set_filter_expression(
-    const rosidl_message_type_support_t * type_support,
     const std::string & filter_expression,
     const std::vector<std::string> & expression_parameters)
   {
@@ -93,12 +158,12 @@ public:
     DDSFilterFactory::ReturnCode_t ret = get_common_content_filter_factory()->create_content_filter(
       FILTER_CLASS_NAME,    // deprecated
       "",                   // deprecated
-      type_support,
+      type_support_,
       filter_expression.c_str(),
       expression_parameters,
       filter_instance_);
     if (ret != DDSFilterFactory::RETCODE_OK) {
-      logError(DDSSQLFILTER, "failed to " << tip << " content filter, ret: " << ret);
+      logError(DDSSQLFILTER, "failed to " << tip << " content filter, error code: " << ret);
       return false;
     }
 
@@ -142,6 +207,7 @@ public:
 
 private:
   const int magic_ = MAGIC;
+  const rosidl_message_type_support_t * type_support_;
   IContentFilter * filter_instance_ = nullptr;
   std::string filter_expression_;
   std::vector<std::string> expression_parameters_;
@@ -169,9 +235,9 @@ extern "C"
 #endif
 
 void *
-common_content_filter_create()
+common_content_filter_create(const rosidl_message_type_support_t * type_support)
 {
-  return new common_content_filter::ContentFilterWrapper;
+  return new common_content_filter::ContentFilterWrapper(type_support);
 }
 
 bool
@@ -213,7 +279,6 @@ common_content_filter_evaluate(void * instance, void * ros_data, bool serialized
 bool
 common_content_filter_set(
   void * instance,
-  const rosidl_message_type_support_t * type_support,
   const rmw_subscription_content_filter_options_t * options
 )
 {
@@ -223,7 +288,7 @@ common_content_filter_set(
     return false;
   }
 
-  if (!type_support || !options) {
+  if (!options) {
     logError(DDSSQLFILTER, "Invalid arguments");
     return false;
   }
@@ -236,7 +301,7 @@ common_content_filter_set(
   bool ret = false;
   try {
     ret = content_filter_wrapper->set_filter_expression(
-      type_support, options->filter_expression, expression_parameters
+      options->filter_expression, expression_parameters
     );
   } catch (const std::runtime_error & e) {
     logInfo(DDSSQLFILTER, "Failed to create content filter: " << e.what());

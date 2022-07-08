@@ -36,6 +36,7 @@
 #include "DDSFilterValue.hpp"
 #include "DDSFilterField.hpp"
 #include "Log.hpp"
+#include "Utilities.hpp"
 
 namespace eprosima_common
 {

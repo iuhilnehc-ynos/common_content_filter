@@ -24,9 +24,9 @@ class TestCommonContentFilterAPI : public ::testing::Test
 protected:
   void SetUp()
   {
-    instance = common_content_filter_create();
-    EXPECT_NE(instance, nullptr);
     type_support = ROSIDL_GET_MSG_TYPE_SUPPORT(test_msgs, msg, BasicTypes);
+    instance = common_content_filter_create(type_support);
+    EXPECT_NE(instance, nullptr);
   }
 
   void TearDown()
@@ -53,7 +53,7 @@ protected:
       rmw_subscription_content_filter_options_fini(&options, &allocator);
     });
 
-    EXPECT_TRUE(common_content_filter_set(instance, type_support, &options));
+    EXPECT_TRUE(common_content_filter_set(instance, &options));
   }
 
   void * instance;
@@ -94,9 +94,8 @@ TEST_F(TestCommonContentFilterAPI, evaluate) {
 }
 
 TEST_F(TestCommonContentFilterAPI, set) {
-  EXPECT_FALSE(common_content_filter_set(nullptr, nullptr, nullptr));
-  EXPECT_FALSE(common_content_filter_set(instance, nullptr, nullptr));
-  EXPECT_FALSE(common_content_filter_set(instance, type_support, nullptr));
+  EXPECT_FALSE(common_content_filter_set(nullptr, nullptr));
+  EXPECT_FALSE(common_content_filter_set(instance, nullptr));
   set_options();
 }
 

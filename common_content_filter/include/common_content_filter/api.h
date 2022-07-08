@@ -29,11 +29,12 @@ extern "C"
 
 /// Create a common content filter instance to filter data.
 /**
+ * \param[in] type_support Type support of the topic data being filtered
  * \return a valid address if success, or NULL on failure
  */
 COMMON_CONTENT_FILTER_PUBLIC
 void *
-common_content_filter_create();
+common_content_filter_create(const rosidl_message_type_support_t * type_support);
 
 /// Check if the content filter instance is enabled.
 /**
@@ -58,15 +59,13 @@ common_content_filter_evaluate(void * instance, void * data, bool serialized);
 /// Set a common content filter instance with an options.
 /**
  * \param[in] instance The content filter instance
- * \param[in] type_support Type support of the topic data being filtered
  * \param[in] options the filter options
- * \return a valid address if success, or NULL on failure
+ * \return true if success, or false
  */
 COMMON_CONTENT_FILTER_PUBLIC
 bool
 common_content_filter_set(
   void * instance,
-  const rosidl_message_type_support_t * type_support,
   const rmw_subscription_content_filter_options_t * options
 );
 
@@ -75,7 +74,7 @@ common_content_filter_set(
  * \param[in] instance The content filter instance
  * \param[in] allocator Type support of the topic data being filtered
  * \param[in] options the filter options
- * \return a valid address if success, or NULL on failure
+ * \return true if success, or false
  */
 COMMON_CONTENT_FILTER_PUBLIC
 bool

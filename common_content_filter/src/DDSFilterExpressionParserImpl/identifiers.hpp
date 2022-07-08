@@ -35,37 +35,6 @@ struct identifier_processor
   : parse_tree::apply<identifier_processor>
 {
 
-  static const rosidl_message_type_support_t *
-  get_type_support_introspection(
-    const rosidl_message_type_support_t * type_support)
-  {
-    const rosidl_message_type_support_t * type_support_introspection =
-      get_message_typesupport_handle(
-      type_support, rosidl_typesupport_introspection_c__identifier);
-    if (nullptr == type_support_introspection) {
-      rcutils_error_string_t prev_error_string = rcutils_get_error_string();
-      rcutils_reset_error();
-
-      type_support_introspection =
-        get_message_typesupport_handle(
-        type_support,
-        rosidl_typesupport_introspection_cpp::typesupport_identifier);
-      if (nullptr == type_support_introspection) {
-        rcutils_error_string_t error_string = rcutils_get_error_string();
-        rcutils_reset_error();
-        RMW_SET_ERROR_MSG_WITH_FORMAT_STRING(
-          "Type support not from this implementation. Got:\n"
-          "    %s\n"
-          "    %s\n"
-          "while fetching it",
-          prev_error_string.str, error_string.str);
-        return nullptr;
-      }
-    }
-
-    return type_support_introspection;
-  }
-
   template<typename MembersType>
   static void
   add_access_path(
