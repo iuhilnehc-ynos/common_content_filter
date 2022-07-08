@@ -98,7 +98,7 @@ class ContentFilterWrapper
 public:
   ContentFilterWrapper(const rosidl_message_type_support_t * type_support)
   : type_support_(type_support)
-  { }
+  {}
 
   ~ContentFilterWrapper()
   {

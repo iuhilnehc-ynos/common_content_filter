@@ -84,6 +84,7 @@ install(
 if(BUILD_TESTING)
   find_package(ament_cmake_gtest REQUIRED)
   find_package(ament_lint_auto REQUIRED)
+  find_package(test_content_filter_msgs REQUIRED)
   find_package(test_msgs REQUIRED)
   find_package(osrf_testing_tools_cpp REQUIRED)
 
@@ -100,7 +101,8 @@ if(BUILD_TESTING)
 
   ament_add_gtest(test_api test/test_api.cpp)
   target_link_libraries(test_api ${PROJECT_NAME}_library)
-  ament_target_dependencies(test_api test_msgs osrf_testing_tools_cpp rmw)
+  ament_target_dependencies(
+    test_api test_content_filter_msgs test_msgs osrf_testing_tools_cpp)
 endif()
 
 ament_package()
