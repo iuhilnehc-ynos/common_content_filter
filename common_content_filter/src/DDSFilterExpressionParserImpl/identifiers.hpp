@@ -158,8 +158,6 @@ struct identifier_processor
     CurrentIdentifierState & state,
     States &&... /*st*/)
   {
-    // logDebug(DDSSQLFILTER, "identifiers transform node name:" << n->content());
-
     if (n->is<fieldname>()) {
       // Set data for fieldname node
       n->field_kind = get_value_kind(state.current_type, n->end());

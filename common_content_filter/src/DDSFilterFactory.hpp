@@ -46,15 +46,12 @@ public:
   ~DDSFilterFactory();
 
   ReturnCode_t create_content_filter(
-    const char * filter_class_name,
-    const char * type_name,
     const rosidl_message_type_support_t * type_support,
     const char * filter_expression,
     const ParameterSeq & filter_parameters,
     IContentFilter * & filter_instance) override;
 
   ReturnCode_t delete_content_filter(
-    const char * filter_class_name,
     IContentFilter * filter_instance) override;
 
 private:

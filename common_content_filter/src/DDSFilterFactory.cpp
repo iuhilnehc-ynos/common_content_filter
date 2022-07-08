@@ -387,15 +387,11 @@ DDSFilterFactory::~DDSFilterFactory()
 }
 
 IContentFilterFactory::ReturnCode_t DDSFilterFactory::create_content_filter(
-  const char * filter_class_name,
-  const char * type_name,
   const rosidl_message_type_support_t * type_support,
   const char * filter_expression,
   const IContentFilterFactory::ParameterSeq & filter_parameters,
   IContentFilter * & filter_instance)
 {
-
-  static_cast<void>(type_name);
 
   ReturnCode_t ret = ReturnCode_t::RETCODE_UNSUPPORTED;
 
@@ -432,7 +428,7 @@ IContentFilterFactory::ReturnCode_t DDSFilterFactory::create_content_filter(
       }
     }
   } else if (std::strlen(filter_expression) == 0) {
-    delete_content_filter(filter_class_name, filter_instance);
+    delete_content_filter(filter_instance);
     filter_instance = nullptr;
     ret = ReturnCode_t::RETCODE_OK;
   } else {
@@ -448,10 +444,10 @@ IContentFilterFactory::ReturnCode_t DDSFilterFactory::create_content_filter(
       ExpressionParsingState state{nullptr, filter_parameters, expr};
       ret = convert_tree<DDSFilterCondition>(state, expr->root, *(node->children[0]));
       if (ReturnCode_t::RETCODE_OK == ret) {
-        delete_content_filter(filter_class_name, filter_instance);
+        delete_content_filter(filter_instance);
         filter_instance = expr;
       } else {
-        delete_content_filter(filter_class_name, expr);
+        delete_content_filter(expr);
       }
     } else {
       ret = ReturnCode_t::RETCODE_BAD_PARAMETER;
@@ -462,11 +458,8 @@ IContentFilterFactory::ReturnCode_t DDSFilterFactory::create_content_filter(
 }
 
 IContentFilterFactory::ReturnCode_t DDSFilterFactory::delete_content_filter(
-  const char * filter_class_name,
   IContentFilter * filter_instance)
 {
-  static_cast<void>(filter_class_name);
-
   if (nullptr == filter_instance) {
     return ReturnCode_t::RETCODE_BAD_PARAMETER;
   }

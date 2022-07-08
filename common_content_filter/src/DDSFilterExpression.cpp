@@ -40,8 +40,6 @@ namespace DDSSQLFilter
 bool DDSFilterExpression::evaluate(
   const void * payload) const
 {
-  // logDebug(DDSSQLFILTER, "DDSFilterExpression::evaluate fields size:" << fields.size());
-
   root->reset();
   for (auto it = fields.begin();
     it != fields.end() && DDSFilterConditionState::UNDECIDED == root->get_state();

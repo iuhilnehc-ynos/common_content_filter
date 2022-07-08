@@ -38,7 +38,6 @@ namespace common_content_filter
 {
 
 const int MAGIC = 0x434654;  // 'C','F','T'
-const char * FILTER_CLASS_NAME = "DDSSQL";
 
 using DDSFilterFactory = eprosima_common::fastdds::dds::DDSSQLFilter::DDSFilterFactory;
 using IContentFilter = eprosima_common::fastdds::dds::IContentFilter;
@@ -99,31 +98,29 @@ class ContentFilterWrapper
 public:
   ContentFilterWrapper(const rosidl_message_type_support_t * type_support)
   : type_support_(type_support)
-  {
-    // logDebug(DDSSQLFILTER, "ContentFilterWrapper ctor : " << this);
-  }
+  { }
 
   ~ContentFilterWrapper()
   {
     std::lock_guard<std::mutex> lock(mutex_);
     if (filter_instance_) {
       DDSFilterFactory::ReturnCode_t ret =
-        get_common_content_filter_factory()->delete_content_filter(
-        FILTER_CLASS_NAME,
-        filter_instance_);
+        get_common_content_filter_factory()->delete_content_filter(filter_instance_);
       if (ret != DDSFilterFactory::RETCODE_OK) {
         logError(DDSSQLFILTER, "Failed to delete content filter: " << ret);
       }
 
       filter_instance_ = nullptr;
     }
-
-    // logDebug(DDSSQLFILTER, "ContentFilterWrapper dtor : " << this);
   }
 
   bool evaluate(void * ros_data, bool serialized)
   {
     std::lock_guard<std::mutex> lock(mutex_);
+    if (!filter_instance_) {
+      logWarning(DDSSQLFILTER, "Common content filter is not set");
+      return true;
+    }
 
     if (serialized) {
       const rmw_serialized_message_t * serialized_message =
@@ -140,13 +137,7 @@ public:
       }
     }
 
-    bool ret = true;
-    if (filter_instance_) {
-      ret = filter_instance_->evaluate(ros_data);
-    }
-
-    // logDebug(DDSSQLFILTER, "evaluate ret: " << ret);
-    return ret;
+    return filter_instance_->evaluate(ros_data);
   }
 
   bool set_filter_expression(
@@ -156,8 +147,6 @@ public:
     std::lock_guard<std::mutex> lock(mutex_);
     const char * tip = filter_instance_ ? "create" : "set";
     DDSFilterFactory::ReturnCode_t ret = get_common_content_filter_factory()->create_content_filter(
-      FILTER_CLASS_NAME,    // deprecated
-      "",                   // deprecated
       type_support_,
       filter_expression.c_str(),
       expression_parameters,

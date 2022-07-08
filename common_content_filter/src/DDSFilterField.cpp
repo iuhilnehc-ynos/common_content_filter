@@ -56,16 +56,6 @@ DDSFilterField::get_msg_data_address(
   }
 
   const auto member = members->members_ + accessor.member_index;
-  // logDebug(DDSSQLFILTER, "DDSFilterField::get_msg_data_address "
-  //       << " accessor.member_index:" << accessor.member_index
-  //       << " accessor.array_index:" << accessor.array_index
-  //       << " member member->name:" << member->name_
-  //       << " member member->type_id_:" << static_cast<int>(member->type_id_)
-  //       << " member member->offset_:" << member->offset_
-  //       << " member member->is_array_:" << member->is_array_
-  //       << " member member->array_size_:" << member->array_size_
-  //       << " member member->is_upper_bound_:" << member->is_upper_bound_
-  //   );
 
   uint64_t addr = reinterpret_cast<uint64_t>(data);
   if (member->is_array_) {
@@ -95,11 +85,6 @@ bool DDSFilterField::set_value(
   bool last_step = access_path_.size() - 1 == n;
   bool ret = false;
   bool is_c_type_support;
-
-  // logDebug(
-  //   DDSSQLFILTER,
-  //   "DDSFilterField::set_value " << "access_path size:" << access_path_.size()
-  // );
 
   const rosidl_message_type_support_t * type_support_introspection =
     access_path_[n].type_support_introspection;
@@ -140,10 +125,6 @@ bool DDSFilterField::set_member(
   bool is_c_type_support)
 {
   bool ret = true;
-  // logDebug(
-  //   DDSSQLFILTER,
-  //   "DDSFilterField::set_member " << "type_id_:" << (uint32_t)type_id_;
-  // );
 
   switch (type_id_) {
     case ::rosidl_typesupport_introspection_cpp::ROS_TYPE_FLOAT:

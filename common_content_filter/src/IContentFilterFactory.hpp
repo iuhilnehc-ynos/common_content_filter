@@ -51,9 +51,6 @@ struct IContentFilterFactory
   /**
    * Create or update an IContentFilter instance.
    *
-   * @param [in]       filter_class_name   Filter class name for which the factory is being called.
-   *                                       Allows using the same factory for different filter classes.
-   * @param [in]       type_name           Type name of the topic being filtered.
    * @param [in]       type_support        Type support of the topic data being filtered.
    * @param [in]       filter_expression   Content filter expression.
    *                                       May be nullptr when updating the parameters of a filter instance.
@@ -73,8 +70,6 @@ struct IContentFilterFactory
    * @return A return code indicating the result of the operation.
    */
   virtual ReturnCode_t create_content_filter(
-    const char * filter_class_name,
-    const char * type_name,
     const rosidl_message_type_support_t * type_support,
     const char * filter_expression,
     const ParameterSeq & filter_parameters,
@@ -83,8 +78,6 @@ struct IContentFilterFactory
   /**
    * Delete an IContentFilter instance.
    *
-   * @param [in]  filter_class_name   Filter class name for which the factory is being called.
-   *                                  Allows using the same factory for different filter classes.
    * @param [in]  filter_instance     A pointer to a filter instance previously returned by create_content_filter.
    *                                  The factory takes ownership of the filter instance, and can decide to destroy
    *                                  it or keep it for future use.
@@ -93,7 +86,6 @@ struct IContentFilterFactory
    * @return A return code indicating the result of the operation.
    */
   virtual ReturnCode_t delete_content_filter(
-    const char * filter_class_name,
     IContentFilter * filter_instance) = 0;
 };
 
