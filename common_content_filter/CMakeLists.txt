@@ -76,6 +76,7 @@ ament_export_dependencies(rmw)
 ament_export_dependencies(rmw_implementation)
 ament_export_dependencies(rosidl_typesupport_introspection_c)
 ament_export_dependencies(rosidl_typesupport_introspection_cpp)
+ament_export_dependencies(tao_pegtl_vendor)
 
 install(
   DIRECTORY include/
