@@ -26,23 +26,13 @@
 
 #include "common_content_filter/api.h"
 
-class TestCommonContentFilterAPI : public ::testing::Test
+class TestAPIBase
 {
 protected:
-  void SetUp()
-  {
-    type_support = ROSIDL_GET_MSG_TYPE_SUPPORT(test_msgs, msg, BasicTypes);
-    instance = common_content_filter_create(type_support);
-    EXPECT_NE(instance, nullptr);
-  }
-
-  void TearDown()
-  {
-    common_content_filter_destroy(instance);
-  }
-
-protected:
-  void set_options()
+  bool set_options(
+    const char * filter_expression,
+    size_t expression_parameter_argc,
+    const char * expression_parameter_argv[])
   {
     rcutils_allocator_t allocator = rcutils_get_default_allocator();
     rmw_subscription_content_filter_options_t options =
@@ -61,20 +51,38 @@ protected:
       rmw_subscription_content_filter_options_fini(&options, &allocator);
     });
 
-    EXPECT_TRUE(common_content_filter_set(instance, &options));
+    return common_content_filter_set(instance, &options);
   }
 
   void * instance;
   const rosidl_message_type_support_t * type_support;
+};
+
+class TestCommonContentFilterAPI : public ::testing::Test, public TestAPIBase
+{
+protected:
+  void SetUp()
+  {
+    type_support = ROSIDL_GET_MSG_TYPE_SUPPORT(test_msgs, msg, BasicTypes);
+    instance = common_content_filter_create(type_support);
+    EXPECT_NE(instance, nullptr);
+  }
+
+  void TearDown()
+  {
+    common_content_filter_destroy(instance);
+  }
+
+protected:
   const char * filter_expression = "int32_value = %0";
-  size_t expression_parameter_argc = 1;
-  const char * expression_parameter_argv[1] = {"4"};
+  std::vector<const char *> expression_parameter = {"4"};
 };
 
 TEST_F(TestCommonContentFilterAPI, is_enabled) {
   EXPECT_FALSE(common_content_filter_is_enabled(nullptr));
   EXPECT_FALSE(common_content_filter_is_enabled(instance));
-  set_options();
+  EXPECT_TRUE(
+    set_options(filter_expression, expression_parameter.size(), expression_parameter.data()));
   EXPECT_TRUE(common_content_filter_is_enabled(instance));
 }
 
@@ -114,7 +122,8 @@ TEST_F(TestCommonContentFilterAPI, evaluate) {
   EXPECT_TRUE(common_content_filter_evaluate(instance, &msg, false));
   EXPECT_TRUE(common_content_filter_evaluate(instance, &serialized_message, true));
   // after setting filter with "int32_value = 4"
-  set_options();
+  EXPECT_TRUE(
+    set_options(filter_expression, expression_parameter.size(), expression_parameter.data()));
   // expect msg(int32_value = 3) return false
   EXPECT_FALSE(common_content_filter_evaluate(instance, &msg, false));
   EXPECT_FALSE(common_content_filter_evaluate(instance, &serialized_message, true));
@@ -132,13 +141,19 @@ TEST_F(TestCommonContentFilterAPI, evaluate) {
 TEST_F(TestCommonContentFilterAPI, set) {
   EXPECT_FALSE(common_content_filter_set(nullptr, nullptr));
   EXPECT_FALSE(common_content_filter_set(instance, nullptr));
-  set_options();
+  EXPECT_TRUE(
+    set_options(filter_expression, expression_parameter.size(), expression_parameter.data()));
+
+  const char * filter_expression_error = "error_int32_value = %0";
+  EXPECT_FALSE(
+    set_options(filter_expression_error, expression_parameter.size(), expression_parameter.data()));
 }
 
 TEST_F(TestCommonContentFilterAPI, get) {
   EXPECT_FALSE(common_content_filter_get(nullptr, nullptr, nullptr));
   EXPECT_FALSE(common_content_filter_get(instance, nullptr, nullptr));
-  set_options();
+  EXPECT_TRUE(
+    set_options(filter_expression, expression_parameter.size(), expression_parameter.data()));
   rcutils_allocator_t allocator = rcutils_get_default_allocator();
   EXPECT_FALSE(common_content_filter_get(instance, &allocator, nullptr));
 
@@ -151,13 +166,13 @@ TEST_F(TestCommonContentFilterAPI, get) {
   });
 
   EXPECT_STREQ(options.filter_expression, filter_expression);
-  ASSERT_EQ(expression_parameter_argc, options.expression_parameters.size);
-  for (size_t i = 0; i < expression_parameter_argc; ++i) {
-    EXPECT_STREQ(options.expression_parameters.data[i], expression_parameter_argv[i]);
+  ASSERT_EQ(expression_parameter.size(), options.expression_parameters.size);
+  for (size_t i = 0; i < expression_parameter.size(); ++i) {
+    EXPECT_STREQ(options.expression_parameters.data[i], expression_parameter[i]);
   }
 }
 
-class TestComplexMsgCommonContentFilterAPI : public ::testing::Test
+class TestComplexMsgCommonContentFilterAPI : public ::testing::Test, public TestAPIBase
 {
 protected:
   void SetUp()
@@ -174,38 +189,9 @@ protected:
   {
     common_content_filter_destroy(instance);
   }
-
-protected:
-  void set_options(
-    const char * filter_expression,
-    size_t expression_parameter_argc,
-    const char * expression_parameter_argv[])
-  {
-    rcutils_allocator_t allocator = rcutils_get_default_allocator();
-    rmw_subscription_content_filter_options_t options =
-      rmw_get_zero_initialized_content_filter_options();
-    EXPECT_EQ(
-      RMW_RET_OK,
-      rmw_subscription_content_filter_options_init(
-        filter_expression,
-        expression_parameter_argc,
-        expression_parameter_argv,
-        &allocator,
-        &options)
-    );
-    OSRF_TESTING_TOOLS_CPP_SCOPE_EXIT(
-    {
-      rmw_subscription_content_filter_options_fini(&options, &allocator);
-    });
-
-    EXPECT_TRUE(common_content_filter_set(instance, &options));
-  }
-
-  void * instance;
-  const rosidl_message_type_support_t * type_support;
 };
 
-TEST_F(TestComplexMsgCommonContentFilterAPI, get) {
+TEST_F(TestComplexMsgCommonContentFilterAPI, set_and_evaluate) {
   // default is zero
   test_msgs::msg::BasicTypes basic_types_data_zero;
 
@@ -261,181 +247,203 @@ TEST_F(TestComplexMsgCommonContentFilterAPI, get) {
 
   msg.name = "complex_name";                // name
 
+  // no filter, expect the true value by evaluating a message
   EXPECT_TRUE(common_content_filter_evaluate(instance, &msg, false));
 
   struct Info
   {
     const char * filter_expression;
     std::vector<const char *> expression_parameter;
-    bool expectation;
+    bool set_expectation;
+    bool evaluate_expectation;
   };
 
   std::vector<Info> expectation = {
     // name with string or string array
-    {"name=%0", {"'complex_name'"}, true},
-    {"name=%0", {"'not_complex_name'"}, false},
+    {"name=%0", {"'complex_name'"}, true, true},
+    {"name=%0", {"'not_complex_name'"}, true, false},
 
-    {"data.names[0]=%0", {"'intermedia_first_name'"}, true},
-    {"data.names[0]=%0", {"'intermedia_second_name'"}, false},
-    {"data.names[1]=%0", {"'intermedia_first_name'"}, false},
-    {"data.names[1]=%0", {"'intermedia_second_name'"}, true},
+    {"data.names[0]=%0", {"'intermedia_first_name'"}, true, true},
+    {"data.names[0]=%0", {"'intermedia_second_name'"}, true, false},
+    {"data.names[1]=%0", {"'intermedia_first_name'"}, true, false},
+    {"data.names[1]=%0", {"'intermedia_second_name'"}, true, true},
 
-    {"data.basic_array[0].names[0]=%0", {"'basic_zero_one_first_name'"}, true},
-    {"data.basic_array[0].names[0]=%0", {"'basic_zero_one_second_name'"}, false},
-    {"data.basic_array[0].names[1]=%0", {"'basic_zero_one_first_name'"}, false},
-    {"data.basic_array[0].names[1]=%0", {"'basic_zero_one_second_name'"}, true},
+    {"data.basic_array[0].names[0]=%0", {"'basic_zero_one_first_name'"}, true, true},
+    {"data.basic_array[0].names[0]=%0", {"'basic_zero_one_second_name'"}, true, false},
+    {"data.basic_array[0].names[1]=%0", {"'basic_zero_one_first_name'"}, true, false},
+    {"data.basic_array[0].names[1]=%0", {"'basic_zero_one_second_name'"}, true, true},
 
-    {"data.basic_array[1].names[0]=%0", {"'basic_one_zero_first_name'"}, true},
-    {"data.basic_array[1].names[0]=%0", {"'basic_one_zero_second_name'"}, false},
-    {"data.basic_array[1].names[1]=%0", {"'basic_one_zero_first_name'"}, false},
-    {"data.basic_array[1].names[1]=%0", {"'basic_one_zero_second_name'"}, true},
+    {"data.basic_array[1].names[0]=%0", {"'basic_one_zero_first_name'"}, true, true},
+    {"data.basic_array[1].names[0]=%0", {"'basic_one_zero_second_name'"}, true, false},
+    {"data.basic_array[1].names[1]=%0", {"'basic_one_zero_first_name'"}, true, false},
+    {"data.basic_array[1].names[1]=%0", {"'basic_one_zero_second_name'"}, true, true},
 
-    {"name=%0 and data.names[0]=%1", {"'complex_name'", "'intermedia_first_name'"}, true},
-    {"name=%0 and data.names[0]=%1", {"'not_complex_name'", "'intermedia_first_name'"}, false},
-    {"name=%0 or data.names[0]=%1", {"'complex_name'", "'intermedia_first_name'"}, true},
-    {"name=%0 or data.names[0]=%1", {"'not_complex_name'", "'intermedia_first_name'"}, true},
-    {"name=%0 or data.names[0]=%1", {"'complex_name'", "'intermedia_second_name'"}, true},
+    {"name=%0 and data.names[0]=%1", {"'complex_name'", "'intermedia_first_name'"}, true, true},
+    {"name=%0 and data.names[0]=%1", {"'not_complex_name'", "'intermedia_first_name'"}, true,
+      false},
+    {"name=%0 or data.names[0]=%1", {"'complex_name'", "'intermedia_first_name'"}, true, true},
+    {"name=%0 or data.names[0]=%1", {"'not_complex_name'", "'intermedia_first_name'"}, true, true},
+    {"name=%0 or data.names[0]=%1", {"'complex_name'", "'intermedia_second_name'"}, true, true},
 
     // basic types array
-    // 0 0
-    {"data.basic_array[0].basic_types[0].bool_value=%0", {"false"}, true},
-    {"data.basic_array[0].basic_types[0].byte_value=%0", {"0"}, true},
-    {"data.basic_array[0].basic_types[0].char_value=%0", {"0"}, true},
-    {"data.basic_array[0].basic_types[0].float32_value=%0", {"0"}, true},
-    {"data.basic_array[0].basic_types[0].float64_value=%0", {"0"}, true},
-    {"data.basic_array[0].basic_types[0].int8_value=%0", {"0"}, true},
-    {"data.basic_array[0].basic_types[0].uint8_value=%0", {"0"}, true},
-    {"data.basic_array[0].basic_types[0].int16_value=%0", {"0"}, true},
-    {"data.basic_array[0].basic_types[0].uint16_value=%0", {"0"}, true},
-    {"data.basic_array[0].basic_types[0].int32_value=%0", {"0"}, true},
-    {"data.basic_array[0].basic_types[0].uint32_value=%0", {"0"}, true},
-    {"data.basic_array[0].basic_types[0].int64_value=%0", {"0"}, true},
-    {"data.basic_array[0].basic_types[0].uint64_value=%0", {"0"}, true},
-    {"data.basic_array[0].unbounded_int32_data[0]=%0", {"0"}, true},
-    {"data.basic_array[0].bounded_float64_data[0]=%0", {"0"}, true},
+    // [0] [0]
+    {"data.basic_array[0].basic_types[0].bool_value=%0", {"false"}, true, true},
+    {"data.basic_array[0].basic_types[0].byte_value=%0", {"0"}, true, true},
+    {"data.basic_array[0].basic_types[0].char_value=%0", {"0"}, true, true},
+    {"data.basic_array[0].basic_types[0].float32_value=%0", {"0"}, true, true},
+    {"data.basic_array[0].basic_types[0].float64_value=%0", {"0"}, true, true},
+    {"data.basic_array[0].basic_types[0].int8_value=%0", {"0"}, true, true},
+    {"data.basic_array[0].basic_types[0].uint8_value=%0", {"0"}, true, true},
+    {"data.basic_array[0].basic_types[0].int16_value=%0", {"0"}, true, true},
+    {"data.basic_array[0].basic_types[0].uint16_value=%0", {"0"}, true, true},
+    {"data.basic_array[0].basic_types[0].int32_value=%0", {"0"}, true, true},
+    {"data.basic_array[0].basic_types[0].uint32_value=%0", {"0"}, true, true},
+    {"data.basic_array[0].basic_types[0].int64_value=%0", {"0"}, true, true},
+    {"data.basic_array[0].basic_types[0].uint64_value=%0", {"0"}, true, true},
+    {"data.basic_array[0].unbounded_int32_data[0]=%0", {"0"}, true, true},
+    {"data.basic_array[0].bounded_float64_data[0]=%0", {"0"}, true, true},
 
-    {"data.basic_array[0].basic_types[0].bool_value=%0", {"true"}, false},
-    {"data.basic_array[0].basic_types[0].byte_value=%0", {"1"}, false},
-    {"data.basic_array[0].basic_types[0].char_value=%0", {"1"}, false},
-    {"data.basic_array[0].basic_types[0].float32_value=%0", {"1"}, false},
-    {"data.basic_array[0].basic_types[0].float64_value=%0", {"1"}, false},
-    {"data.basic_array[0].basic_types[0].int8_value=%0", {"1"}, false},
-    {"data.basic_array[0].basic_types[0].uint8_value=%0", {"1"}, false},
-    {"data.basic_array[0].basic_types[0].int16_value=%0", {"1"}, false},
-    {"data.basic_array[0].basic_types[0].uint16_value=%0", {"1"}, false},
-    {"data.basic_array[0].basic_types[0].int32_value=%0", {"1"}, false},
-    {"data.basic_array[0].basic_types[0].uint32_value=%0", {"1"}, false},
-    {"data.basic_array[0].basic_types[0].int64_value=%0", {"1"}, false},
-    {"data.basic_array[0].basic_types[0].uint64_value=%0", {"1"}, false},
-    {"data.basic_array[0].unbounded_int32_data[0]=%0", {"1"}, false},
-    {"data.basic_array[0].bounded_float64_data[0]=%0", {"1"}, false},
+    {"data.basic_array[0].basic_types[0].bool_value=%0", {"true"}, true, false},
+    {"data.basic_array[0].basic_types[0].byte_value=%0", {"1"}, true, false},
+    {"data.basic_array[0].basic_types[0].char_value=%0", {"1"}, true, false},
+    {"data.basic_array[0].basic_types[0].float32_value=%0", {"1"}, true, false},
+    {"data.basic_array[0].basic_types[0].float64_value=%0", {"1"}, true, false},
+    {"data.basic_array[0].basic_types[0].int8_value=%0", {"1"}, true, false},
+    {"data.basic_array[0].basic_types[0].uint8_value=%0", {"1"}, true, false},
+    {"data.basic_array[0].basic_types[0].int16_value=%0", {"1"}, true, false},
+    {"data.basic_array[0].basic_types[0].uint16_value=%0", {"1"}, true, false},
+    {"data.basic_array[0].basic_types[0].int32_value=%0", {"1"}, true, false},
+    {"data.basic_array[0].basic_types[0].uint32_value=%0", {"1"}, true, false},
+    {"data.basic_array[0].basic_types[0].int64_value=%0", {"1"}, true, false},
+    {"data.basic_array[0].basic_types[0].uint64_value=%0", {"1"}, true, false},
+    {"data.basic_array[0].unbounded_int32_data[0]=%0", {"1"}, true, false},
+    {"data.basic_array[0].bounded_float64_data[0]=%0", {"1"}, true, false},
 
-    // 0 1
-    {"data.basic_array[0].basic_types[1].bool_value=%0", {"false"}, false},
-    {"data.basic_array[0].basic_types[1].byte_value=%0", {"0"}, false},
-    {"data.basic_array[0].basic_types[1].char_value=%0", {"0"}, false},
-    {"data.basic_array[0].basic_types[1].float32_value=%0", {"0"}, false},
-    {"data.basic_array[0].basic_types[1].float64_value=%0", {"0"}, false},
-    {"data.basic_array[0].basic_types[1].int8_value=%0", {"0"}, false},
-    {"data.basic_array[0].basic_types[1].uint8_value=%0", {"0"}, false},
-    {"data.basic_array[0].basic_types[1].int16_value=%0", {"0"}, false},
-    {"data.basic_array[0].basic_types[1].uint16_value=%0", {"0"}, false},
-    {"data.basic_array[0].basic_types[1].int32_value=%0", {"0"}, false},
-    {"data.basic_array[0].basic_types[1].uint32_value=%0", {"0"}, false},
-    {"data.basic_array[0].basic_types[1].int64_value=%0", {"0"}, false},
-    {"data.basic_array[0].basic_types[1].uint64_value=%0", {"0"}, false},
-    {"data.basic_array[0].unbounded_int32_data[1]=%0", {"0"}, false},
-    {"data.basic_array[0].bounded_float64_data[1]=%0", {"0"}, false},
+    // [0] [1]
+    {"data.basic_array[0].basic_types[1].bool_value=%0", {"false"}, true, false},
+    {"data.basic_array[0].basic_types[1].byte_value=%0", {"0"}, true, false},
+    {"data.basic_array[0].basic_types[1].char_value=%0", {"0"}, true, false},
+    {"data.basic_array[0].basic_types[1].float32_value=%0", {"0"}, true, false},
+    {"data.basic_array[0].basic_types[1].float64_value=%0", {"0"}, true, false},
+    {"data.basic_array[0].basic_types[1].int8_value=%0", {"0"}, true, false},
+    {"data.basic_array[0].basic_types[1].uint8_value=%0", {"0"}, true, false},
+    {"data.basic_array[0].basic_types[1].int16_value=%0", {"0"}, true, false},
+    {"data.basic_array[0].basic_types[1].uint16_value=%0", {"0"}, true, false},
+    {"data.basic_array[0].basic_types[1].int32_value=%0", {"0"}, true, false},
+    {"data.basic_array[0].basic_types[1].uint32_value=%0", {"0"}, true, false},
+    {"data.basic_array[0].basic_types[1].int64_value=%0", {"0"}, true, false},
+    {"data.basic_array[0].basic_types[1].uint64_value=%0", {"0"}, true, false},
+    {"data.basic_array[0].unbounded_int32_data[1]=%0", {"0"}, true, false},
+    {"data.basic_array[0].bounded_float64_data[1]=%0", {"0"}, true, false},
 
-    {"data.basic_array[0].basic_types[1].bool_value=%0", {"true"}, true},
-    {"data.basic_array[0].basic_types[1].byte_value=%0", {"1"}, true},
-    {"data.basic_array[0].basic_types[1].char_value=%0", {"1"}, true},
-    {"data.basic_array[0].basic_types[1].float32_value=%0", {"1"}, true},
-    {"data.basic_array[0].basic_types[1].float64_value=%0", {"1"}, true},
-    {"data.basic_array[0].basic_types[1].int8_value=%0", {"1"}, true},
-    {"data.basic_array[0].basic_types[1].uint8_value=%0", {"1"}, true},
-    {"data.basic_array[0].basic_types[1].int16_value=%0", {"1"}, true},
-    {"data.basic_array[0].basic_types[1].uint16_value=%0", {"1"}, true},
-    {"data.basic_array[0].basic_types[1].int32_value=%0", {"1"}, true},
-    {"data.basic_array[0].basic_types[1].uint32_value=%0", {"1"}, true},
-    {"data.basic_array[0].basic_types[1].int64_value=%0", {"1"}, true},
-    {"data.basic_array[0].basic_types[1].uint64_value=%0", {"1"}, true},
-    {"data.basic_array[0].unbounded_int32_data[1]=%0", {"1"}, true},
-    {"data.basic_array[0].bounded_float64_data[1]=%0", {"1"}, true},
+    {"data.basic_array[0].basic_types[1].bool_value=%0", {"true"}, true, true},
+    {"data.basic_array[0].basic_types[1].byte_value=%0", {"1"}, true, true},
+    {"data.basic_array[0].basic_types[1].char_value=%0", {"1"}, true, true},
+    {"data.basic_array[0].basic_types[1].float32_value=%0", {"1"}, true, true},
+    {"data.basic_array[0].basic_types[1].float64_value=%0", {"1"}, true, true},
+    {"data.basic_array[0].basic_types[1].int8_value=%0", {"1"}, true, true},
+    {"data.basic_array[0].basic_types[1].uint8_value=%0", {"1"}, true, true},
+    {"data.basic_array[0].basic_types[1].int16_value=%0", {"1"}, true, true},
+    {"data.basic_array[0].basic_types[1].uint16_value=%0", {"1"}, true, true},
+    {"data.basic_array[0].basic_types[1].int32_value=%0", {"1"}, true, true},
+    {"data.basic_array[0].basic_types[1].uint32_value=%0", {"1"}, true, true},
+    {"data.basic_array[0].basic_types[1].int64_value=%0", {"1"}, true, true},
+    {"data.basic_array[0].basic_types[1].uint64_value=%0", {"1"}, true, true},
+    {"data.basic_array[0].unbounded_int32_data[1]=%0", {"1"}, true, true},
+    {"data.basic_array[0].bounded_float64_data[1]=%0", {"1"}, true, true},
 
     // [1][0]
-    {"data.basic_array[1].basic_types[0].bool_value=%0", {"false"}, false},
-    {"data.basic_array[1].basic_types[0].byte_value=%0", {"0"}, false},
-    {"data.basic_array[1].basic_types[0].char_value=%0", {"0"}, false},
-    {"data.basic_array[1].basic_types[0].float32_value=%0", {"0"}, false},
-    {"data.basic_array[1].basic_types[0].float64_value=%0", {"0"}, false},
-    {"data.basic_array[1].basic_types[0].int8_value=%0", {"0"}, false},
-    {"data.basic_array[1].basic_types[0].uint8_value=%0", {"0"}, false},
-    {"data.basic_array[1].basic_types[0].int16_value=%0", {"0"}, false},
-    {"data.basic_array[1].basic_types[0].uint16_value=%0", {"0"}, false},
-    {"data.basic_array[1].basic_types[0].int32_value=%0", {"0"}, false},
-    {"data.basic_array[1].basic_types[0].uint32_value=%0", {"0"}, false},
-    {"data.basic_array[1].basic_types[0].int64_value=%0", {"0"}, false},
-    {"data.basic_array[1].basic_types[0].uint64_value=%0", {"0"}, false},
-    {"data.basic_array[1].unbounded_int32_data[0]=%0", {"0"}, false},
-    {"data.basic_array[1].bounded_float64_data[0]=%0", {"0"}, false},
+    {"data.basic_array[1].basic_types[0].bool_value=%0", {"false"}, true, false},
+    {"data.basic_array[1].basic_types[0].byte_value=%0", {"0"}, true, false},
+    {"data.basic_array[1].basic_types[0].char_value=%0", {"0"}, true, false},
+    {"data.basic_array[1].basic_types[0].float32_value=%0", {"0"}, true, false},
+    {"data.basic_array[1].basic_types[0].float64_value=%0", {"0"}, true, false},
+    {"data.basic_array[1].basic_types[0].int8_value=%0", {"0"}, true, false},
+    {"data.basic_array[1].basic_types[0].uint8_value=%0", {"0"}, true, false},
+    {"data.basic_array[1].basic_types[0].int16_value=%0", {"0"}, true, false},
+    {"data.basic_array[1].basic_types[0].uint16_value=%0", {"0"}, true, false},
+    {"data.basic_array[1].basic_types[0].int32_value=%0", {"0"}, true, false},
+    {"data.basic_array[1].basic_types[0].uint32_value=%0", {"0"}, true, false},
+    {"data.basic_array[1].basic_types[0].int64_value=%0", {"0"}, true, false},
+    {"data.basic_array[1].basic_types[0].uint64_value=%0", {"0"}, true, false},
+    {"data.basic_array[1].unbounded_int32_data[0]=%0", {"0"}, true, false},
+    {"data.basic_array[1].bounded_float64_data[0]=%0", {"0"}, true, false},
 
-    {"data.basic_array[1].basic_types[0].bool_value=%0", {"true"}, true},
-    {"data.basic_array[1].basic_types[0].byte_value=%0", {"1"}, true},
-    {"data.basic_array[1].basic_types[0].char_value=%0", {"1"}, true},
-    {"data.basic_array[1].basic_types[0].float32_value=%0", {"1"}, true},
-    {"data.basic_array[1].basic_types[0].float64_value=%0", {"1"}, true},
-    {"data.basic_array[1].basic_types[0].int8_value=%0", {"1"}, true},
-    {"data.basic_array[1].basic_types[0].uint8_value=%0", {"1"}, true},
-    {"data.basic_array[1].basic_types[0].int16_value=%0", {"1"}, true},
-    {"data.basic_array[1].basic_types[0].uint16_value=%0", {"1"}, true},
-    {"data.basic_array[1].basic_types[0].int32_value=%0", {"1"}, true},
-    {"data.basic_array[1].basic_types[0].uint32_value=%0", {"1"}, true},
-    {"data.basic_array[1].basic_types[0].int64_value=%0", {"1"}, true},
-    {"data.basic_array[1].basic_types[0].uint64_value=%0", {"1"}, true},
-    {"data.basic_array[1].unbounded_int32_data[0]=%0", {"1"}, true},
-    {"data.basic_array[1].bounded_float64_data[0]=%0", {"1"}, true},
+    {"data.basic_array[1].basic_types[0].bool_value=%0", {"true"}, true, true},
+    {"data.basic_array[1].basic_types[0].byte_value=%0", {"1"}, true, true},
+    {"data.basic_array[1].basic_types[0].char_value=%0", {"1"}, true, true},
+    {"data.basic_array[1].basic_types[0].float32_value=%0", {"1"}, true, true},
+    {"data.basic_array[1].basic_types[0].float64_value=%0", {"1"}, true, true},
+    {"data.basic_array[1].basic_types[0].int8_value=%0", {"1"}, true, true},
+    {"data.basic_array[1].basic_types[0].uint8_value=%0", {"1"}, true, true},
+    {"data.basic_array[1].basic_types[0].int16_value=%0", {"1"}, true, true},
+    {"data.basic_array[1].basic_types[0].uint16_value=%0", {"1"}, true, true},
+    {"data.basic_array[1].basic_types[0].int32_value=%0", {"1"}, true, true},
+    {"data.basic_array[1].basic_types[0].uint32_value=%0", {"1"}, true, true},
+    {"data.basic_array[1].basic_types[0].int64_value=%0", {"1"}, true, true},
+    {"data.basic_array[1].basic_types[0].uint64_value=%0", {"1"}, true, true},
+    {"data.basic_array[1].unbounded_int32_data[0]=%0", {"1"}, true, true},
+    {"data.basic_array[1].bounded_float64_data[0]=%0", {"1"}, true, true},
 
     // [1][1]
-    {"data.basic_array[1].basic_types[1].bool_value=%0", {"false"}, true},
-    {"data.basic_array[1].basic_types[1].byte_value=%0", {"0"}, true},
-    {"data.basic_array[1].basic_types[1].char_value=%0", {"0"}, true},
-    {"data.basic_array[1].basic_types[1].float32_value=%0", {"0"}, true},
-    {"data.basic_array[1].basic_types[1].float64_value=%0", {"0"}, true},
-    {"data.basic_array[1].basic_types[1].int8_value=%0", {"0"}, true},
-    {"data.basic_array[1].basic_types[1].uint8_value=%0", {"0"}, true},
-    {"data.basic_array[1].basic_types[1].int16_value=%0", {"0"}, true},
-    {"data.basic_array[1].basic_types[1].uint16_value=%0", {"0"}, true},
-    {"data.basic_array[1].basic_types[1].int32_value=%0", {"0"}, true},
-    {"data.basic_array[1].basic_types[1].uint32_value=%0", {"0"}, true},
-    {"data.basic_array[1].basic_types[1].int64_value=%0", {"0"}, true},
-    {"data.basic_array[1].basic_types[1].uint64_value=%0", {"0"}, true},
-    {"data.basic_array[1].unbounded_int32_data[1]=%0", {"0"}, true},
-    {"data.basic_array[1].bounded_float64_data[1]=%0", {"0"}, true},
+    {"data.basic_array[1].basic_types[1].bool_value=%0", {"false"}, true, true},
+    {"data.basic_array[1].basic_types[1].byte_value=%0", {"0"}, true, true},
+    {"data.basic_array[1].basic_types[1].char_value=%0", {"0"}, true, true},
+    {"data.basic_array[1].basic_types[1].float32_value=%0", {"0"}, true, true},
+    {"data.basic_array[1].basic_types[1].float64_value=%0", {"0"}, true, true},
+    {"data.basic_array[1].basic_types[1].int8_value=%0", {"0"}, true, true},
+    {"data.basic_array[1].basic_types[1].uint8_value=%0", {"0"}, true, true},
+    {"data.basic_array[1].basic_types[1].int16_value=%0", {"0"}, true, true},
+    {"data.basic_array[1].basic_types[1].uint16_value=%0", {"0"}, true, true},
+    {"data.basic_array[1].basic_types[1].int32_value=%0", {"0"}, true, true},
+    {"data.basic_array[1].basic_types[1].uint32_value=%0", {"0"}, true, true},
+    {"data.basic_array[1].basic_types[1].int64_value=%0", {"0"}, true, true},
+    {"data.basic_array[1].basic_types[1].uint64_value=%0", {"0"}, true, true},
+    {"data.basic_array[1].unbounded_int32_data[1]=%0", {"0"}, true, true},
+    {"data.basic_array[1].bounded_float64_data[1]=%0", {"0"}, true, true},
 
-    {"data.basic_array[1].basic_types[1].bool_value=%0", {"true"}, false},
-    {"data.basic_array[1].basic_types[1].byte_value=%0", {"1"}, false},
-    {"data.basic_array[1].basic_types[1].char_value=%0", {"1"}, false},
-    {"data.basic_array[1].basic_types[1].float32_value=%0", {"1"}, false},
-    {"data.basic_array[1].basic_types[1].float64_value=%0", {"1"}, false},
-    {"data.basic_array[1].basic_types[1].int8_value=%0", {"1"}, false},
-    {"data.basic_array[1].basic_types[1].uint8_value=%0", {"1"}, false},
-    {"data.basic_array[1].basic_types[1].int16_value=%0", {"1"}, false},
-    {"data.basic_array[1].basic_types[1].uint16_value=%0", {"1"}, false},
-    {"data.basic_array[1].basic_types[1].int32_value=%0", {"1"}, false},
-    {"data.basic_array[1].basic_types[1].uint32_value=%0", {"1"}, false},
-    {"data.basic_array[1].basic_types[1].int64_value=%0", {"1"}, false},
-    {"data.basic_array[1].basic_types[1].uint64_value=%0", {"1"}, false},
-    {"data.basic_array[1].unbounded_int32_data[1]=%0", {"1"}, false},
-    {"data.basic_array[1].bounded_float64_data[1]=%0", {"1"}, false},
+    {"data.basic_array[1].basic_types[1].bool_value=%0", {"true"}, true, false},
+    {"data.basic_array[1].basic_types[1].byte_value=%0", {"1"}, true, false},
+    {"data.basic_array[1].basic_types[1].char_value=%0", {"1"}, true, false},
+    {"data.basic_array[1].basic_types[1].float32_value=%0", {"1"}, true, false},
+    {"data.basic_array[1].basic_types[1].float64_value=%0", {"1"}, true, false},
+    {"data.basic_array[1].basic_types[1].int8_value=%0", {"1"}, true, false},
+    {"data.basic_array[1].basic_types[1].uint8_value=%0", {"1"}, true, false},
+    {"data.basic_array[1].basic_types[1].int16_value=%0", {"1"}, true, false},
+    {"data.basic_array[1].basic_types[1].uint16_value=%0", {"1"}, true, false},
+    {"data.basic_array[1].basic_types[1].int32_value=%0", {"1"}, true, false},
+    {"data.basic_array[1].basic_types[1].uint32_value=%0", {"1"}, true, false},
+    {"data.basic_array[1].basic_types[1].int64_value=%0", {"1"}, true, false},
+    {"data.basic_array[1].basic_types[1].uint64_value=%0", {"1"}, true, false},
+    {"data.basic_array[1].unbounded_int32_data[1]=%0", {"1"}, true, false},
+    {"data.basic_array[1].bounded_float64_data[1]=%0", {"1"}, true, false},
+
+    // some other cases
+    // bad field name
+    {"error_name=%0", {"'complex_name'"}, false, true},
+    {"errordata.names[0]=%0", {"'intermedia_first_name'"}, false, true},
+
+    // unbound case
+    {"data.names[10]=%0", {"'unbound_name'"}, true, false},
+
+    // bound case, the size of bounded_float64_data is 2
+    {"data.basic_array[0].bounded_float64_data[10]=%0", {"0"}, false, true},
+
+    // TODO. if bugs found, add new test cases and fix source code
   };
 
   for (auto & item : expectation) {
-    set_options(
-      item.filter_expression,
-      item.expression_parameter.size(),
-      item.expression_parameter.data());
-    EXPECT_EQ(common_content_filter_evaluate(instance, &msg, false), item.expectation)
-      << "Error happened by the filter expression:" << item.filter_expression;
+    EXPECT_EQ(
+      item.set_expectation,
+      set_options(
+        item.filter_expression,
+        item.expression_parameter.size(),
+        item.expression_parameter.data()))
+      << "Set error happened by the filter expression:" << item.filter_expression;
+    EXPECT_EQ(item.evaluate_expectation, common_content_filter_evaluate(instance, &msg, false))
+      << "Evaluate error happened by the filter expression:" << item.filter_expression;
+
+    // reset
+    EXPECT_TRUE(set_options("", 0, nullptr));
   }
 }

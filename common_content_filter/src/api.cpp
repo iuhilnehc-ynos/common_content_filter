@@ -127,7 +127,7 @@ public:
       const rmw_serialized_message_t * serialized_message =
         (const rmw_serialized_message_t *)ros_data;
       if (!deserialized_buffer_) {
-        deserialized_buffer_ = std::move(get_message_buffer(type_support_));
+        deserialized_buffer_ = get_message_buffer(type_support_);
       }
       rmw_ret_t rmw_ret =
         rmw_deserialize(serialized_message, type_support_, deserialized_buffer_.get());
@@ -146,7 +146,7 @@ public:
     const std::vector<std::string> & expression_parameters)
   {
     std::lock_guard<std::mutex> lock(mutex_);
-    const char * tip = filter_instance_ ? "create" : "set";
+    const char * tip = (filter_instance_ == nullptr) ? "create" : "set";
     DDSFilterFactory::ReturnCode_t ret = get_common_content_filter_factory()->create_content_filter(
       type_support_,
       filter_expression.c_str(),
