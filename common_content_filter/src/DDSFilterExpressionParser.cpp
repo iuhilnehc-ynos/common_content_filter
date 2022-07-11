@@ -28,8 +28,8 @@
 
 #include <memory>
 
-#include "pegtl.hpp"
-#include "pegtl/contrib/parse_tree.hpp"
+#include <tao/pegtl.hpp>
+#include <tao/pegtl/contrib/parse_tree.hpp>
 
 #include "DDSFilterGrammar.hpp"
 #include "DDSFilterParseNode.hpp"

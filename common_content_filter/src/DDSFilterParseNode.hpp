@@ -22,7 +22,7 @@
 #include <memory>
 #include <vector>
 
-#include "pegtl/contrib/parse_tree.hpp"
+#include <tao/pegtl/contrib/parse_tree.hpp>
 
 #include "DDSFilterField.hpp"
 #include "DDSFilterValue.hpp"

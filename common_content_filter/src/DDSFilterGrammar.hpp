@@ -19,7 +19,7 @@
 #ifndef COMMON_CONTENT_FILTER__DDSFILTERGRAMMAR_HPP_
 #define COMMON_CONTENT_FILTER__DDSFILTERGRAMMAR_HPP_
 
-#include "pegtl.hpp"
+#include <tao/pegtl.hpp>
 
 namespace eprosima_common
 {
