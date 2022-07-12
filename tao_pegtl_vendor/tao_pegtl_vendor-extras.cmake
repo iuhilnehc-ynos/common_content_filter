@@ -12,5 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-find_package(pegtl REQUIRED)
+# use the fixed version to prevent future compilation issues
+# the number version 2.8.1 is from CMakeLists.txt
+find_package(pegtl 2.8.1 REQUIRED)
 list(APPEND tao_pegtl_vendor_TARGETS taocpp::pegtl)
