@@ -63,8 +63,11 @@ macro(build_tao_pegtl)
   )
 endmacro()
 
-# force to build pegtl, as pegtl might not available in the stable version on some platforms
-build_tao_pegtl()
+# build pegtl 2.8.3 if it's not available in the system or ros2 environment
+find_package(pegtl QUIET)
+if(NOT pegtl_FOUND OR NOT "${pegtl_VERSION}" VERSION_EQUAL 2.8.3)
+  build_tao_pegtl()
+endif()
 
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)
