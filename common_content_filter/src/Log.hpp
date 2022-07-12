@@ -16,6 +16,7 @@
 #define COMMON_CONTENT_FILTER__LOG_HPP_
 
 #include <rcutils/logging_macros.h>
+#include <sstream>
 
 #define common_content_filter_log_(level, cat, msg) \
   { \

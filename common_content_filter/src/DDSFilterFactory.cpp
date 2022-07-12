@@ -434,7 +434,6 @@ IContentFilterFactory::ReturnCode_t DDSFilterFactory::create_content_filter(
   } else {
     auto node = parser::parse_filter_expression(filter_expression, type_support);
     if (node) {
-      // logDebug(DDSSQLFILTER, "parser::parse_filter_expression success ");
       DDSFilterExpression * expr = get_expression();
       size_t n_params = filter_parameters.size();
       expr->parameters.reserve(n_params);

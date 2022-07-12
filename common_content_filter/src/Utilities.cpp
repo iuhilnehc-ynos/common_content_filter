@@ -21,6 +21,8 @@
 #include <rosidl_typesupport_introspection_cpp/message_introspection.hpp>
 #include <rosidl_typesupport_introspection_cpp/field_types.hpp>
 
+#include "Log.hpp"
+
 const rosidl_message_type_support_t *
 get_type_support_introspection(
   const rosidl_message_type_support_t * type_support)
@@ -39,12 +41,12 @@ get_type_support_introspection(
     if (nullptr == type_support_introspection) {
       rcutils_error_string_t error_string = rcutils_get_error_string();
       rcutils_reset_error();
-      RMW_SET_ERROR_MSG_WITH_FORMAT_STRING(
+      logError(
+        DDSSQLFILTER,
         "Type support not from this implementation. Got:\n"
-        "    %s\n"
-        "    %s\n"
-        "while fetching it",
-        prev_error_string.str, error_string.str);
+          << "    " << prev_error_string.str << "\n"
+          << "    " << error_string.str << "\n"
+          << "while fetching it");
       return nullptr;
     }
   }

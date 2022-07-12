@@ -295,7 +295,7 @@ common_content_filter_set(
       options->filter_expression, expression_parameters
     );
   } catch (const std::runtime_error & e) {
-    logInfo(DDSSQLFILTER, "Failed to create content filter: " << e.what());
+    logError(DDSSQLFILTER, "Failed to create content filter: " << e.what());
   }
 
   return ret;
@@ -344,6 +344,7 @@ common_content_filter_get(
 
   if (rmw_ret != RMW_RET_OK) {
     logError(DDSSQLFILTER, rmw_get_error_string().str);
+    rmw_reset_error();
     return false;
   }
 
