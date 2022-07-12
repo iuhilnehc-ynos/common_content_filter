@@ -43,10 +43,10 @@ macro(build_tao_pegtl)
 
   include(ExternalProject)
 
-  # Get pegtl 2.8.1
-  externalproject_add(pegtl-2.8.1
-    URL https://github.com/taocpp/PEGTL/archive/refs/tags/2.8.1.tar.gz
-    URL_MD5 10d625fb1da9e95c8e29c51be5e0e5e1
+  # Get pegtl 2.8.3
+  externalproject_add(pegtl-2.8.3
+    URL https://github.com/taocpp/PEGTL/archive/refs/tags/2.8.3.tar.gz
+    URL_MD5 28b3c455d9ec392dd4230402383a8c6f
     TIMEOUT 60
     CMAKE_ARGS
       -DCMAKE_INSTALL_PREFIX=${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}_install
