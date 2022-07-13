@@ -45,7 +45,7 @@ struct fieldname_part : seq< identifier, opt< index_part > > {};
 struct fieldname : list<fieldname_part, dot_op> {};
 
 // CHARVALUE, STRING, ENUMERATEDVALUE
-struct open_quote : one< '`', '\'' > {};
+struct open_quote : one< '\'' > {};
 struct close_quote : one< '\'' > {};
 struct char_value : seq< open_quote, any, close_quote > {};
 struct string_content : star< not_one< '\'', '\r', '\n'> > {};
