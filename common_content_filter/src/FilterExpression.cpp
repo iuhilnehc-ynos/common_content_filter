@@ -26,7 +26,6 @@
 #include "FilterCondition.hpp"
 #include "FilterField.hpp"
 #include "FilterParameter.hpp"
-#include "Log.hpp"
 
 namespace common_content_filter
 {

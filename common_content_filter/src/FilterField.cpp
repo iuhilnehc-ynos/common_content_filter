@@ -31,7 +31,6 @@
 
 #include "FilterPredicate.hpp"
 #include "FilterValue.hpp"
-#include "Log.hpp"
 
 namespace common_content_filter
 {
