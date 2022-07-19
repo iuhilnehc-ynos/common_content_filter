@@ -13,21 +13,17 @@
 // limitations under the License.
 
 /**
- * @file DDSFilterGrammar.hpp
+ * @file FilterGrammar.hpp
  */
 
-#ifndef COMMON_CONTENT_FILTER__DDSFILTERGRAMMAR_HPP_
-#define COMMON_CONTENT_FILTER__DDSFILTERGRAMMAR_HPP_
+#ifndef COMMON_CONTENT_FILTER__FILTERGRAMMAR_HPP_
+#define COMMON_CONTENT_FILTER__FILTERGRAMMAR_HPP_
 
 #include <tao/pegtl.hpp>
 
-namespace eprosima_common
+namespace common_content_filter
 {
-namespace fastdds
-{
-namespace dds
-{
-namespace DDSSQLFilter
+namespace SQLFilter
 {
 
 using namespace tao::TAO_PEGTL_NAMESPACE;
@@ -102,7 +98,7 @@ struct Predicate : sor< ComparisonPredicate, BetweenPredicate > {};
 struct open_bracket : seq< one< '(' >, star< space > > {};
 struct close_bracket : seq< star< space >, one< ')' > > {};
 
-// Condition, FilterExpression
+// Condition, ConditionList
 struct Condition;
 struct ConditionList : list_must< Condition, sor< and_op, or_op > > {};
 struct Condition : sor<
@@ -110,17 +106,14 @@ struct Condition : sor<
                         seq< not_op, ConditionList >,
                         Predicate
                       > {};
-struct FilterExpression : ConditionList {};
 
 // Main grammar
-struct FilterExpressionGrammar : must< FilterExpression, tao::TAO_PEGTL_NAMESPACE::eof > {};
+struct FilterExpressionGrammar : must< ConditionList, tao::TAO_PEGTL_NAMESPACE::eof > {};
 struct LiteralGrammar : must< Literal, tao::TAO_PEGTL_NAMESPACE::eof > {};
 
 // *INDENT-ON*
 
-}  // namespace DDSSQLFilter
-}  // namespace dds
-}  // namespace fastdds
-}  // namespace eprosima_common
+}  // namespace SQLFilter
+}  // namespace common_content_filter
 
-#endif  // COMMON_CONTENT_FILTER__DDSFILTERGRAMMAR_HPP_
+#endif  // COMMON_CONTENT_FILTER__FILTERGRAMMAR_HPP_

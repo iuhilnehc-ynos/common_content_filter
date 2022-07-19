@@ -13,23 +13,19 @@
 // limitations under the License.
 
 /**
- * @file DDSFilterValue.cpp
+ * @file FilterValue.cpp
  */
 
-#include "DDSFilterValue.hpp"
+#include "FilterValue.hpp"
 
 #include <cassert>
 #include <cstring>
 #include <string>
 #include <regex>
 
-namespace eprosima_common
+namespace common_content_filter
 {
-namespace fastdds
-{
-namespace dds
-{
-namespace DDSSQLFilter
+namespace SQLFilter
 {
 
 template<typename T>
@@ -46,14 +42,14 @@ int compare_values(
  * Only used during promotion to UNSIGNED_INTEGER.
  */
 static bool is_negative(
-  const DDSFilterValue & value)
+  const FilterValue & value)
 {
   switch (value.kind) {
-    case DDSFilterValue::ValueKind::BOOLEAN:
+    case FilterValue::ValueKind::BOOLEAN:
       return false;
 
-    case DDSFilterValue::ValueKind::ENUM:
-    case DDSFilterValue::ValueKind::SIGNED_INTEGER:
+    case FilterValue::ValueKind::ENUM:
+    case FilterValue::ValueKind::SIGNED_INTEGER:
       return value.signed_integer_value < 0;
 
     // The rest of the types shall never be promoted to UNSIGNED_INTEGER
@@ -68,13 +64,13 @@ static bool is_negative(
  * Performs promotion to SIGNED_INTEGER
  */
 static int64_t to_signed_integer(
-  const DDSFilterValue & value)
+  const FilterValue & value)
 {
   switch (value.kind) {
-    case DDSFilterValue::ValueKind::BOOLEAN:
+    case FilterValue::ValueKind::BOOLEAN:
       return value.boolean_value ? 1 : 0;
 
-    case DDSFilterValue::ValueKind::ENUM:
+    case FilterValue::ValueKind::ENUM:
       return value.signed_integer_value;
 
     // The rest of the types shall never be promoted to SIGNED_INTEGER
@@ -89,14 +85,14 @@ static int64_t to_signed_integer(
  * Performs promotion to UNSIGNED_INTEGER
  */
 static uint64_t to_unsigned_integer(
-  const DDSFilterValue & value)
+  const FilterValue & value)
 {
   switch (value.kind) {
-    case DDSFilterValue::ValueKind::BOOLEAN:
+    case FilterValue::ValueKind::BOOLEAN:
       return value.boolean_value ? 1 : 0;
 
-    case DDSFilterValue::ValueKind::ENUM:
-    case DDSFilterValue::ValueKind::SIGNED_INTEGER:
+    case FilterValue::ValueKind::ENUM:
+    case FilterValue::ValueKind::SIGNED_INTEGER:
       return static_cast<uint64_t>(value.signed_integer_value);
 
     // The rest of the types shall never be promoted to UNSIGNED_INTEGER
@@ -111,20 +107,20 @@ static uint64_t to_unsigned_integer(
  * Performs promotion to FLOAT
  */
 static long double to_float(
-  const DDSFilterValue & value)
+  const FilterValue & value)
 {
   switch (value.kind) {
-    case DDSFilterValue::ValueKind::ENUM:
-    case DDSFilterValue::ValueKind::SIGNED_INTEGER:
+    case FilterValue::ValueKind::ENUM:
+    case FilterValue::ValueKind::SIGNED_INTEGER:
       return static_cast<long double>(value.signed_integer_value);
 
-    case DDSFilterValue::ValueKind::UNSIGNED_INTEGER:
+    case FilterValue::ValueKind::UNSIGNED_INTEGER:
       return static_cast<long double>(value.unsigned_integer_value);
 
-    case DDSFilterValue::ValueKind::FLOAT_CONST:
-    case DDSFilterValue::ValueKind::FLOAT_FIELD:
-    case DDSFilterValue::ValueKind::DOUBLE_FIELD:
-    case DDSFilterValue::ValueKind::LONG_DOUBLE_FIELD:
+    case FilterValue::ValueKind::FLOAT_CONST:
+    case FilterValue::ValueKind::FLOAT_FIELD:
+    case FilterValue::ValueKind::DOUBLE_FIELD:
+    case FilterValue::ValueKind::LONG_DOUBLE_FIELD:
       return value.float_value;
 
     // The rest of the types shall never be promoted to FLOAT
@@ -139,15 +135,15 @@ static long double to_float(
  * Performs promotion to STRING
  */
 static void to_string_value(
-  const DDSFilterValue & in,
+  const FilterValue & in,
   std::string & out)
 {
-  assert(DDSFilterValue::ValueKind::CHAR == in.kind);
+  assert(FilterValue::ValueKind::CHAR == in.kind);
   out.assign(&in.char_value, 1);
 }
 
-void DDSFilterValue::copy_from(
-  const DDSFilterValue & other,
+void FilterValue::copy_from(
+  const FilterValue & other,
   bool copy_regular_expression) noexcept
 {
   kind = other.kind;
@@ -192,9 +188,9 @@ void DDSFilterValue::copy_from(
   }
 }
 
-int DDSFilterValue::compare(
-  const DDSFilterValue & lhs,
-  const DDSFilterValue & rhs) noexcept
+int FilterValue::compare(
+  const FilterValue & lhs,
+  const FilterValue & rhs) noexcept
 {
   if (lhs.kind == rhs.kind) {
     switch (lhs.kind) {
@@ -237,7 +233,7 @@ int DDSFilterValue::compare(
     return -compare(rhs, lhs);
   } else {
     /* Type promotion rules are enforced during the construction of the expression tree on
-     * DDSFilterFactory. For the types on which promotion is supported, a corresponding to_xxx method exists
+     * FilterFactory. For the types on which promotion is supported, a corresponding to_xxx method exists
      * that will assert if an invalid promotion is performed.
      */
     switch (lhs.kind) {
@@ -285,7 +281,7 @@ int DDSFilterValue::compare(
   return 0;
 }
 
-void DDSFilterValue::as_regular_expression(
+void FilterValue::as_regular_expression(
   bool is_like_operand)
 {
   regular_expr_kind_ = is_like_operand ? RegExpKind::LIKE : RegExpKind::MATCH;
@@ -294,7 +290,7 @@ void DDSFilterValue::as_regular_expression(
   }
 }
 
-void DDSFilterValue::value_has_changed()
+void FilterValue::value_has_changed()
 {
   if (RegExpKind::NONE != regular_expr_kind_) {
     std::string expr;
@@ -323,8 +319,8 @@ void DDSFilterValue::value_has_changed()
   }
 }
 
-bool DDSFilterValue::is_like(
-  const DDSFilterValue & other) const noexcept
+bool FilterValue::is_like(
+  const FilterValue & other) const noexcept
 {
   assert(other.regular_expr_);
 
@@ -354,7 +350,5 @@ bool DDSFilterValue::is_like(
   return false;
 }
 
-}  // namespace DDSSQLFilter
-}  // namespace dds
-}  // namespace fastdds
-}  // namespace eprosima_common
+}  // namespace SQLFilter
+}  // namespace common_content_filter

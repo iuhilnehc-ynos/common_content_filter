@@ -13,27 +13,23 @@
 // limitations under the License.
 
 /**
- * @file DDSFilterParseNode.hpp
+ * @file FilterParseNode.hpp
  */
 
-#ifndef COMMON_CONTENT_FILTER__DDSFILTERPARSENODE_HPP_
-#define COMMON_CONTENT_FILTER__DDSFILTERPARSENODE_HPP_
+#ifndef COMMON_CONTENT_FILTER__FILTERPARSENODE_HPP_
+#define COMMON_CONTENT_FILTER__FILTERPARSENODE_HPP_
 
 #include <memory>
 #include <vector>
 
 #include <tao/pegtl/contrib/parse_tree.hpp>
 
-#include "DDSFilterField.hpp"
-#include "DDSFilterValue.hpp"
+#include "FilterField.hpp"
+#include "FilterValue.hpp"
 
-namespace eprosima_common
+namespace common_content_filter
 {
-namespace fastdds
-{
-namespace dds
-{
-namespace DDSSQLFilter
+namespace SQLFilter
 {
 namespace parser
 {
@@ -43,11 +39,11 @@ using namespace tao::TAO_PEGTL_NAMESPACE;
 struct ParseNode : parse_tree::basic_node<ParseNode>
 {
   // When the node is a literal value, it will hold a pointer to it
-  std::unique_ptr<DDSFilterValue> value;
+  std::unique_ptr<FilterValue> value;
 
   // When the node is a fieldname, it will hold the access path to the field, the data kind, and the type id
-  std::vector<DDSFilterField::FieldAccessor> field_access_path;
-  DDSFilterValue::ValueKind field_kind = DDSFilterValue::ValueKind::STRING;
+  std::vector<FilterField::FieldAccessor> field_access_path;
+  FilterValue::ValueKind field_kind = FilterValue::ValueKind::STRING;
   // ros2 primitive type id
   uint8_t type_id = 0;
 
@@ -67,9 +63,7 @@ struct ParseNode : parse_tree::basic_node<ParseNode>
 };
 
 }  // namespace parser
-}  // namespace DDSSQLFilter
-}  // namespace dds
-}  // namespace fastdds
-}  // namespace eprosima_common
+}  // namespace SQLFilter
+}  // namespace common_content_filter
 
-#endif  // COMMON_CONTENT_FILTER__DDSFILTERPARSENODE_HPP_
+#endif  // COMMON_CONTENT_FILTER__FILTERPARSENODE_HPP_

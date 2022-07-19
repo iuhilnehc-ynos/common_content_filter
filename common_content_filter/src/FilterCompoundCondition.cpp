@@ -13,29 +13,25 @@
 // limitations under the License.
 
 /**
- * @file DDSFilterCompoundCondition.cpp
+ * @file FilterCompoundCondition.cpp
  */
 
-#include "DDSFilterCompoundCondition.hpp"
+#include "FilterCompoundCondition.hpp"
 
 #include <cassert>
 #include <memory>
 
-#include "DDSFilterCondition.hpp"
+#include "FilterCondition.hpp"
 
-namespace eprosima_common
+namespace common_content_filter
 {
-namespace fastdds
-{
-namespace dds
-{
-namespace DDSSQLFilter
+namespace SQLFilter
 {
 
-DDSFilterCompoundCondition::DDSFilterCompoundCondition(
+FilterCompoundCondition::FilterCompoundCondition(
   OperationKind op,
-  std::unique_ptr<DDSFilterCondition> && left,
-  std::unique_ptr<DDSFilterCondition> && right)
+  std::unique_ptr<FilterCondition> && left,
+  std::unique_ptr<FilterCondition> && right)
 : op_(op)
   , left_(std::move(left))
   , right_(std::move(right))
@@ -49,7 +45,7 @@ DDSFilterCompoundCondition::DDSFilterCompoundCondition(
   }
 }
 
-void DDSFilterCompoundCondition::propagate_reset() noexcept
+void FilterCompoundCondition::propagate_reset() noexcept
 {
   num_children_decided_ = 0;
 
@@ -59,22 +55,22 @@ void DDSFilterCompoundCondition::propagate_reset() noexcept
   }
 }
 
-void DDSFilterCompoundCondition::child_has_changed(
-  const DDSFilterCondition & child) noexcept
+void FilterCompoundCondition::child_has_changed(
+  const FilterCondition & child) noexcept
 {
-  DDSFilterConditionState child_state = child.get_state();
-  assert(DDSFilterConditionState::UNDECIDED != child_state);
+  FilterConditionState child_state = child.get_state();
+  assert(FilterConditionState::UNDECIDED != child_state);
 
   ++num_children_decided_;
 
-  if (DDSFilterConditionState::UNDECIDED == get_state()) {
+  if (FilterConditionState::UNDECIDED == get_state()) {
     switch (op_) {
       case OperationKind::NOT:
-        set_result(DDSFilterConditionState::RESULT_FALSE == child_state);
+        set_result(FilterConditionState::RESULT_FALSE == child_state);
         break;
 
       case OperationKind::AND:
-        if (DDSFilterConditionState::RESULT_FALSE == child_state) {
+        if (FilterConditionState::RESULT_FALSE == child_state) {
           set_result(false);
         } else {
           if (2 == num_children_decided_) {
@@ -84,7 +80,7 @@ void DDSFilterCompoundCondition::child_has_changed(
         break;
 
       case OperationKind::OR:
-        if (DDSFilterConditionState::RESULT_TRUE == child_state) {
+        if (FilterConditionState::RESULT_TRUE == child_state) {
           set_result(true);
         } else {
           if (2 == num_children_decided_) {
@@ -99,7 +95,5 @@ void DDSFilterCompoundCondition::child_has_changed(
   }
 }
 
-}  // namespace DDSSQLFilter
-}  // namespace dds
-}  // namespace fastdds
-}  // namespace eprosima_common
+}  // namespace SQLFilter
+}  // namespace common_content_filter

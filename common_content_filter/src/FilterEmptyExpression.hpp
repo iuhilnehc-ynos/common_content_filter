@@ -13,25 +13,37 @@
 // limitations under the License.
 
 /**
- * @file parameters.hpp
- *
- * Note: this is an implementation file, designed to be included inside the
- * DDSFilterExpressionParser.hpp file of the parent folder.
+ * @file FilterEmptyExpression.hpp
  */
 
-struct parameter_processor
-  : parse_tree::apply<parameter_processor>
+#ifndef COMMON_CONTENT_FILTER__FILTEREMPTYEXPRESSION_HPP_
+#define COMMON_CONTENT_FILTER__FILTEREMPTYEXPRESSION_HPP_
+
+#include "IContentFilter.hpp"
+
+namespace common_content_filter
 {
-  template<typename ... States>
-  static void transform(
-    std::unique_ptr<ParseNode> & n,
-    States &&... /*st*/)
+namespace SQLFilter
+{
+
+/**
+ * An IContentFilter for empty expressions that always evaluates to true.
+ */
+class FilterEmptyExpression final : public IContentFilter
+{
+
+public:
+  bool evaluate(
+    const void * payload) const final
   {
-    n->parameter_index = static_cast<int32_t>(n->m_begin.data[1] - '0');
-    if (n->m_end.byte - n->m_begin.byte == 3) {
-      n->parameter_index *= 10;
-      n->parameter_index += static_cast<int32_t>(n->m_begin.data[2] - '0');
-    }
+    static_cast<void>(payload);
+
+    return true;
   }
 
 };
+
+}  // namespace SQLFilter
+}  // namespace common_content_filter
+
+#endif  // COMMON_CONTENT_FILTER__FILTEREMPTYEXPRESSION_HPP_

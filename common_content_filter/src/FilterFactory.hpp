@@ -13,37 +13,33 @@
 // limitations under the License.
 
 /**
- * @file DDSFilterFactory.hpp
+ * @file FilterFactory.hpp
  */
 
-#ifndef COMMON_CONTENT_FILTER__DDSFILTERFACTORY_HPP_
-#define COMMON_CONTENT_FILTER__DDSFILTERFACTORY_HPP_
+#ifndef COMMON_CONTENT_FILTER__FILTERFACTORY_HPP_
+#define COMMON_CONTENT_FILTER__FILTERFACTORY_HPP_
 
 #include "IContentFilterFactory.hpp"
 
 #include "IContentFilter.hpp"
 
-#include "DDSFilterEmptyExpression.hpp"
-#include "DDSFilterExpression.hpp"
+#include "FilterEmptyExpression.hpp"
+#include "FilterExpression.hpp"
 #include "ObjectPool.hpp"
 
-namespace eprosima_common
+namespace common_content_filter
 {
-namespace fastdds
-{
-namespace dds
-{
-namespace DDSSQLFilter
+namespace SQLFilter
 {
 
 /**
- * An IContentFilterFactory that processes DDS-SQL filter expressions.
+ * An IContentFilterFactory that processes -SQL filter expressions.
  */
-class DDSFilterFactory final : public IContentFilterFactory
+class FilterFactory final : public IContentFilterFactory
 {
 
 public:
-  ~DDSFilterFactory();
+  ~FilterFactory();
 
   ReturnCode_t create_content_filter(
     const rosidl_message_type_support_t * type_support,
@@ -56,23 +52,23 @@ public:
 
 private:
   /**
-   * Retrieve a DDSFilterExpression from the pool.
+   * Retrieve a FilterExpression from the pool.
    *
-   * @return A pointer to an empty DDSFilterExpression.
+   * @return A pointer to an empty FilterExpression.
    */
-  DDSFilterExpression * get_expression()
+  FilterExpression * get_expression()
   {
     return expression_pool_.get(
       []
       {
-        return new DDSFilterExpression();
+        return new FilterExpression();
       });
   }
 
   /**
-   * Generic method to perform processing of an AST node resulting from the parsing of a DDS-SQL filter expression.
+   * Generic method to perform processing of an AST node resulting from the parsing of a -SQL filter expression.
    * Provides a generic mechanism for methods that perform post-processing of the generated AST tree, so they could
-   * have access to the private fields of DDSFilterFactory.
+   * have access to the private fields of FilterFactory.
    *
    * @return return code indicating the conversion result.
    */
@@ -83,15 +79,13 @@ private:
     const _ParserNode & node);
 
   /// Empty expressions content filter
-  DDSFilterEmptyExpression empty_expression_;
-  /// Pool of DDSFilterExpression objects
-  ObjectPool<DDSFilterExpression *> expression_pool_;
+  FilterEmptyExpression empty_expression_;
+  /// Pool of FilterExpression objects
+  ObjectPool<FilterExpression *> expression_pool_;
 
 };
 
-}  // namespace DDSSQLFilter
-}  // namespace dds
-}  // namespace fastdds
-}  // namespace eprosima_common
+}  // namespace SQLFilter
+}  // namespace common_content_filter
 
-#endif  // COMMON_CONTENT_FILTER__DDSFILTERFACTORY_HPP_
+#endif  // COMMON_CONTENT_FILTER__FILTERFACTORY_HPP_

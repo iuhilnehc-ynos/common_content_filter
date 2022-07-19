@@ -13,10 +13,10 @@
 // limitations under the License.
 
 /**
- * @file DDSFilterExpressionParser.cpp
+ * @file FilterExpressionParser.cpp
  */
 
-#include "DDSFilterExpressionParser.hpp"
+#include "FilterExpressionParser.hpp"
 
 // header files needed by identifiers.hpp
 #include <rmw/error_handling.h>
@@ -31,30 +31,26 @@
 #include <tao/pegtl.hpp>
 #include <tao/pegtl/contrib/parse_tree.hpp>
 
-#include "DDSFilterGrammar.hpp"
-#include "DDSFilterParseNode.hpp"
-#include "DDSFilterValue.hpp"
-#include "DDSFilterField.hpp"
+#include "FilterGrammar.hpp"
+#include "FilterParseNode.hpp"
+#include "FilterValue.hpp"
+#include "FilterField.hpp"
 #include "Log.hpp"
 #include "Utilities.hpp"
 
-namespace eprosima_common
+namespace common_content_filter
 {
-namespace fastdds
-{
-namespace dds
-{
-namespace DDSSQLFilter
+namespace SQLFilter
 {
 namespace parser
 {
 
 using namespace tao::TAO_PEGTL_NAMESPACE;
 
-#include "DDSFilterExpressionParserImpl/rearrange.hpp"
-#include "DDSFilterExpressionParserImpl/literal_values.hpp"
-#include "DDSFilterExpressionParserImpl/identifiers.hpp"
-#include "DDSFilterExpressionParserImpl/parameters.hpp"
+#include "FilterExpressionParserImpl/rearrange.hpp"
+#include "FilterExpressionParserImpl/literal_values.hpp"
+#include "FilterExpressionParserImpl/identifiers.hpp"
+#include "FilterExpressionParserImpl/parameters.hpp"
 
 // select which rules in the grammar will produce parse tree nodes:
 template<typename Rule>
@@ -96,7 +92,7 @@ using selector = parse_tree::selector<
     BetweenPredicate,
     Range,
     Condition,
-    FilterExpression>,
+    ConditionList>,
   identifier_processor::on<
     fieldname_part,
     fieldname>
@@ -113,11 +109,11 @@ std::unique_ptr<ParseNode> parse_filter_expression(
   } catch (const parse_error & e) {
     const auto p = e.positions.front();
     logError(
-      DDSSQLFILTER, "PARSE ERROR: " << e.what() << std::endl
-                                    << in.line_at(p) << std::endl
-                                    << std::string(p.byte_in_line, ' ') << '^');
+      SQLFILTER, "PARSE ERROR: " << e.what() << std::endl
+                                 << in.line_at(p) << std::endl
+                                 << std::string(p.byte_in_line, ' ') << '^');
   } catch (const std::exception & e) {
-    logError(DDSSQLFILTER, "ERROR '" << e.what() << "' while parsing " << expression);
+    logError(SQLFILTER, "ERROR '" << e.what() << "' while parsing " << expression);
   }
 
   return nullptr;
@@ -133,18 +129,16 @@ std::unique_ptr<ParseNode> parse_literal_value(
   } catch (const parse_error & e) {
     const auto p = e.positions.front();
     logError(
-      DDSSQLFILTER, "PARSE ERROR: " << e.what() << std::endl
-                                    << in.line_at(p) << std::endl
-                                    << std::string(p.byte_in_line, ' ') << '^');
+      SQLFILTER, "PARSE ERROR: " << e.what() << std::endl
+                                 << in.line_at(p) << std::endl
+                                 << std::string(p.byte_in_line, ' ') << '^');
   } catch (const std::exception & e) {
-    logError(DDSSQLFILTER, "ERROR '" << e.what() << "' while parsing " << expression);
+    logError(SQLFILTER, "ERROR '" << e.what() << "' while parsing " << expression);
   }
 
   return nullptr;
 }
 
 }  // namespace parser
-}  // namespace DDSSQLFilter
-}  // namespace dds
-}  // namespace fastdds
-}  // namespace eprosima_common
+}  // namespace SQLFilter
+}  // namespace common_content_filter

@@ -13,36 +13,32 @@
 // limitations under the License.
 
 /**
- * @file DDSFilterExpression.cpp
+ * @file FilterExpression.cpp
  */
 
-#include "DDSFilterExpression.hpp"
+#include "FilterExpression.hpp"
 
 #include <map>
 #include <memory>
 #include <string>
 #include <vector>
 
-#include "DDSFilterCondition.hpp"
-#include "DDSFilterField.hpp"
-#include "DDSFilterParameter.hpp"
+#include "FilterCondition.hpp"
+#include "FilterField.hpp"
+#include "FilterParameter.hpp"
 #include "Log.hpp"
 
-namespace eprosima_common
+namespace common_content_filter
 {
-namespace fastdds
-{
-namespace dds
-{
-namespace DDSSQLFilter
+namespace SQLFilter
 {
 
-bool DDSFilterExpression::evaluate(
+bool FilterExpression::evaluate(
   const void * payload) const
 {
   root->reset();
   for (auto it = fields.begin();
-    it != fields.end() && DDSFilterConditionState::UNDECIDED == root->get_state();
+    it != fields.end() && FilterConditionState::UNDECIDED == root->get_state();
     ++it)
   {
     if (!it->second->set_value(payload)) {
@@ -50,10 +46,10 @@ bool DDSFilterExpression::evaluate(
     }
   }
 
-  return DDSFilterConditionState::RESULT_TRUE == root->get_state();
+  return FilterConditionState::RESULT_TRUE == root->get_state();
 }
 
-void DDSFilterExpression::clear()
+void FilterExpression::clear()
 {
   parameters.clear();
   fields.clear();
@@ -61,7 +57,5 @@ void DDSFilterExpression::clear()
 }
 
 
-}  // namespace DDSSQLFilter
-}  // namespace dds
-}  // namespace fastdds
-}  // namespace eprosima_common
+}  // namespace SQLFilter
+}  // namespace common_content_filter

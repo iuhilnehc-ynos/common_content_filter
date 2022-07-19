@@ -20,11 +20,7 @@
 #define COMMON_CONTENT_FILTER__ICONTENTFILTER_HPP_
 
 
-namespace eprosima_common
-{
-namespace fastdds
-{
-namespace dds
+namespace common_content_filter
 {
 
 /**
@@ -43,8 +39,6 @@ struct IContentFilter
     const void * payload) const = 0;
 };
 
-} // namespace dds
-} // namespace fastdds
-} // namespace eprosima_common
+} // namespace common_content_filter
 
 #endif  // COMMON_CONTENT_FILTER__ICONTENTFILTER_HPP_

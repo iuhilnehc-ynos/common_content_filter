@@ -13,29 +13,25 @@
 // limitations under the License.
 
 /**
- * @file DDSFilterCompoundCondition.hpp
+ * @file FilterCompoundCondition.hpp
  */
 
-#ifndef COMMON_CONTENT_FILTER__DDSFILTERCOMPOUNDCONDITION_HPP_
-#define COMMON_CONTENT_FILTER__DDSFILTERCOMPOUNDCONDITION_HPP_
+#ifndef COMMON_CONTENT_FILTER__FILTERCOMPOUNDCONDITION_HPP_
+#define COMMON_CONTENT_FILTER__FILTERCOMPOUNDCONDITION_HPP_
 
 #include <memory>
 
-#include "DDSFilterCondition.hpp"
+#include "FilterCondition.hpp"
 
-namespace eprosima_common
+namespace common_content_filter
 {
-namespace fastdds
-{
-namespace dds
-{
-namespace DDSSQLFilter
+namespace SQLFilter
 {
 
 /**
- * A DDSFilterCondition that performs a logical operation over one or two DDSFilterCondition objects.
+ * A FilterCondition that performs a logical operation over one or two FilterCondition objects.
  */
-class DDSFilterCompoundCondition final : public DDSFilterCondition
+class FilterCompoundCondition final : public FilterCondition
 {
 
 public:
@@ -50,36 +46,34 @@ public:
   };
 
   /**
-   * Construct a DDSFilterCompoundCondition.
+   * Construct a FilterCompoundCondition.
    *
    * @param[in]  op     Operation to perform.
    * @param[in]  left   Left operand.
    * @param[in]  right  Right operand.
    */
-  DDSFilterCompoundCondition(
+  FilterCompoundCondition(
     OperationKind op,
-    std::unique_ptr<DDSFilterCondition> && left,
-    std::unique_ptr<DDSFilterCondition> && right);
+    std::unique_ptr<FilterCondition> && left,
+    std::unique_ptr<FilterCondition> && right);
 
-  virtual ~DDSFilterCompoundCondition() = default;
+  virtual ~FilterCompoundCondition() = default;
 
 protected:
   void propagate_reset() noexcept final;
 
   void child_has_changed(
-    const DDSFilterCondition & child) noexcept final;
+    const FilterCondition & child) noexcept final;
 
 private:
   OperationKind op_;
-  std::unique_ptr<DDSFilterCondition> left_;
-  std::unique_ptr<DDSFilterCondition> right_;
+  std::unique_ptr<FilterCondition> left_;
+  std::unique_ptr<FilterCondition> right_;
   uint8_t num_children_decided_ = 0;
 
 };
 
-}  // namespace DDSSQLFilter
-}  // namespace dds
-}  // namespace fastdds
-}  // namespace eprosima_common
+}  // namespace SQLFilter
+}  // namespace common_content_filter
 
-#endif  // COMMON_CONTENT_FILTER__DDSFILTERCOMPOUNDCONDITION_HPP_
+#endif  // COMMON_CONTENT_FILTER__FILTERCOMPOUNDCONDITION_HPP_

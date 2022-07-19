@@ -13,30 +13,26 @@
 // limitations under the License.
 
 /**
- * @file DDSFilterExpressionParser.hpp
+ * @file FilterExpressionParser.hpp
  */
 
-#ifndef COMMON_CONTENT_FILTER__DDSFILTEREXPRESSIONPARSER_HPP_
-#define COMMON_CONTENT_FILTER__DDSFILTEREXPRESSIONPARSER_HPP_
+#ifndef COMMON_CONTENT_FILTER__FILTEREXPRESSIONPARSER_HPP_
+#define COMMON_CONTENT_FILTER__FILTEREXPRESSIONPARSER_HPP_
 
 #include <rosidl_runtime_c/message_type_support_struct.h>
 #include <memory>
-#include "DDSFilterParseNode.hpp"
+#include "FilterParseNode.hpp"
 
 
-namespace eprosima_common
+namespace common_content_filter
 {
-namespace fastdds
-{
-namespace dds
-{
-namespace DDSSQLFilter
+namespace SQLFilter
 {
 namespace parser
 {
 
 /**
- * Performs parsing of a string containing a DDS-SQL filter expression.
+ * Performs parsing of a string containing a -SQL filter expression.
  *
  * @param[in]  expression   The string to parse.
  * @param[in]  type_support  The type support representing the type of the data being filtered.
@@ -55,15 +51,13 @@ std::unique_ptr<ParseNode> parse_filter_expression(
  * @param[in]  value  The string to parse.
  *
  * @return nullptr when there is a parsing error.
- * @return A simple tree consisting of a root node, with a single child that contains the generated DDSFilterValue.
+ * @return A simple tree consisting of a root node, with a single child that contains the generated FilterValue.
  */
 std::unique_ptr<ParseNode> parse_literal_value(
   const char * value);
 
 }  // namespace parser
-}  // namespace DDSSQLFilter
-}  // namespace dds
-}  // namespace fastdds
-}  // namespace eprosima_common
+}  // namespace SQLFilter
+}  // namespace common_content_filter
 
-#endif  // COMMON_CONTENT_FILTER__DDSFILTEREXPRESSIONPARSER_HPP_
+#endif  // COMMON_CONTENT_FILTER__FILTEREXPRESSIONPARSER_HPP_

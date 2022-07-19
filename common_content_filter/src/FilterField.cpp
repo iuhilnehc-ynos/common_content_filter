@@ -13,10 +13,10 @@
 // limitations under the License.
 
 /**
- * @file DDSFilterField.cpp
+ * @file FilterField.cpp
  */
 
-#include "DDSFilterField.hpp"
+#include "FilterField.hpp"
 
 #include <rosidl_typesupport_introspection_c/identifier.h>
 #include <rosidl_typesupport_introspection_cpp/identifier.hpp>
@@ -29,23 +29,19 @@
 #include <unordered_set>
 #include <vector>
 
-#include "DDSFilterPredicate.hpp"
-#include "DDSFilterValue.hpp"
+#include "FilterPredicate.hpp"
+#include "FilterValue.hpp"
 #include "Log.hpp"
 
-namespace eprosima_common
+namespace common_content_filter
 {
-namespace fastdds
-{
-namespace dds
-{
-namespace DDSSQLFilter
+namespace SQLFilter
 {
 
 
 template<typename MembersType>
 bool
-DDSFilterField::get_msg_data_address(
+FilterField::get_msg_data_address(
   const void * untype_members,
   FieldAccessor & accessor,
   const void * & data)
@@ -78,7 +74,7 @@ DDSFilterField::get_msg_data_address(
   return true;
 }
 
-bool DDSFilterField::set_value(
+bool FilterField::set_value(
   const void * data,
   size_t n)
 {
@@ -109,7 +105,7 @@ bool DDSFilterField::set_value(
       value_has_changed();
 
       // Inform parent predicates
-      for (DDSFilterPredicate * parent : parents_) {
+      for (FilterPredicate * parent : parents_) {
         parent->value_has_changed();
       }
     } else {
@@ -120,7 +116,7 @@ bool DDSFilterField::set_value(
   return ret;
 }
 
-bool DDSFilterField::set_member(
+bool FilterField::set_member(
   const void * data,
   bool is_c_type_support)
 {
@@ -201,7 +197,5 @@ bool DDSFilterField::set_member(
   return ret;
 }
 
-}  // namespace DDSSQLFilter
-}  // namespace dds
-}  // namespace fastdds
-}  // namespace eprosima_common
+}  // namespace SQLFilter
+}  // namespace common_content_filter

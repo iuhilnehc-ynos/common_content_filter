@@ -13,38 +13,34 @@
 // limitations under the License.
 
 /**
- * @file DDSFilterCondition.hpp
+ * @file FilterCondition.hpp
  */
 
-#ifndef COMMON_CONTENT_FILTER__DDSFILTERCONDITION_HPP_
-#define COMMON_CONTENT_FILTER__DDSFILTERCONDITION_HPP_
+#ifndef COMMON_CONTENT_FILTER__FILTERCONDITION_HPP_
+#define COMMON_CONTENT_FILTER__FILTERCONDITION_HPP_
 
-#include "DDSFilterConditionState.hpp"
+#include "FilterConditionState.hpp"
 
-namespace eprosima_common
+namespace common_content_filter
 {
-namespace fastdds
-{
-namespace dds
-{
-namespace DDSSQLFilter
+namespace SQLFilter
 {
 
 /**
  * Base class for conditions on a filter expression.
  */
-class DDSFilterCondition
+class FilterCondition
 {
 
 public:
-  friend class DDSFilterCompoundCondition;
+  friend class FilterCompoundCondition;
 
-  virtual ~DDSFilterCondition() = default;
+  virtual ~FilterCondition() = default;
 
   /**
    * @return the current state of this condition.
    */
-  inline DDSFilterConditionState get_state() const noexcept
+  inline FilterConditionState get_state() const noexcept
   {
     return state_;
   }
@@ -57,7 +53,7 @@ public:
    */
   inline void reset() noexcept
   {
-    state_ = DDSFilterConditionState::UNDECIDED;
+    state_ = FilterConditionState::UNDECIDED;
     propagate_reset();
   }
 
@@ -72,7 +68,7 @@ protected:
    * @post The state of this condition will be @c state.
    */
   inline void set_state(
-    DDSFilterConditionState state) noexcept
+    FilterConditionState state) noexcept
   {
     if (state != state_) {
       state_ = state;
@@ -92,7 +88,7 @@ protected:
   inline void set_result(
     bool result) noexcept
   {
-    set_state(result ? DDSFilterConditionState::RESULT_TRUE : DDSFilterConditionState::RESULT_FALSE);
+    set_state(result ? FilterConditionState::RESULT_TRUE : FilterConditionState::RESULT_FALSE);
   }
 
   /**
@@ -101,7 +97,7 @@ protected:
    * @param parent  New parent to set.
    */
   inline void set_parent(
-    DDSFilterCondition * parent) noexcept
+    FilterCondition * parent) noexcept
   {
     parent_ = parent;
   }
@@ -118,17 +114,15 @@ protected:
    * @param[in] child The child condition
    */
   virtual void child_has_changed(
-    const DDSFilterCondition & child) noexcept = 0;
+    const FilterCondition & child) noexcept = 0;
 
 private:
-  DDSFilterConditionState state_ = DDSFilterConditionState::UNDECIDED;
-  DDSFilterCondition * parent_ = nullptr;
+  FilterConditionState state_ = FilterConditionState::UNDECIDED;
+  FilterCondition * parent_ = nullptr;
 
 };
 
-}  // namespace DDSSQLFilter
-}  // namespace dds
-}  // namespace fastdds
-}  // namespace eprosima_common
+}  // namespace SQLFilter
+}  // namespace common_content_filter
 
-#endif  // COMMON_CONTENT_FILTER__DDSFILTERCONDITION_HPP_
+#endif  // COMMON_CONTENT_FILTER__FILTERCONDITION_HPP_

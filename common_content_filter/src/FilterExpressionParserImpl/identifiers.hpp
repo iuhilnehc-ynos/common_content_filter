@@ -16,7 +16,7 @@
  * @file identifiers.hpp
  *
  * Note: this is an implementation file, designed to be included inside the
- * DDSFilterExpressionParser.hpp file of the parent folder.
+ * FilterExpressionParser.hpp file of the parent folder.
  */
 
 
@@ -28,7 +28,7 @@ struct CurrentIdentifierState
 
   uint8_t current_type;
 
-  std::vector<DDSFilterField::FieldAccessor> access_path;
+  std::vector<FilterField::FieldAccessor> access_path;
 };
 
 struct identifier_processor
@@ -85,7 +85,7 @@ struct identifier_processor
         }
 
         identifier_state.access_path.emplace_back(
-          DDSFilterField::FieldAccessor{member_index, array_index, type_support_introspection});
+          FilterField::FieldAccessor{member_index, array_index, type_support_introspection});
 
         return;
       }
@@ -115,34 +115,34 @@ struct identifier_processor
     }
   }
 
-  static DDSFilterValue::ValueKind get_value_kind(
+  static FilterValue::ValueKind get_value_kind(
     uint8_t type_id,
     const position & pos)
   {
     switch (type_id) {
       case ::rosidl_typesupport_introspection_cpp::ROS_TYPE_BOOLEAN:
-        return DDSFilterValue::ValueKind::BOOLEAN;
+        return FilterValue::ValueKind::BOOLEAN;
       case ::rosidl_typesupport_introspection_cpp::ROS_TYPE_CHAR:
-        return DDSFilterValue::ValueKind::CHAR;
+        return FilterValue::ValueKind::CHAR;
       case ::rosidl_typesupport_introspection_cpp::ROS_TYPE_STRING:
-        return DDSFilterValue::ValueKind::STRING;
+        return FilterValue::ValueKind::STRING;
       case ::rosidl_typesupport_introspection_cpp::ROS_TYPE_INT8:
       case ::rosidl_typesupport_introspection_cpp::ROS_TYPE_INT16:
       case ::rosidl_typesupport_introspection_cpp::ROS_TYPE_INT32:
       case ::rosidl_typesupport_introspection_cpp::ROS_TYPE_INT64:
-        return DDSFilterValue::ValueKind::SIGNED_INTEGER;
+        return FilterValue::ValueKind::SIGNED_INTEGER;
       case ::rosidl_typesupport_introspection_cpp::ROS_TYPE_OCTET:
       case ::rosidl_typesupport_introspection_cpp::ROS_TYPE_UINT8:
       case ::rosidl_typesupport_introspection_cpp::ROS_TYPE_UINT16:
       case ::rosidl_typesupport_introspection_cpp::ROS_TYPE_UINT32:
       case ::rosidl_typesupport_introspection_cpp::ROS_TYPE_UINT64:
-        return DDSFilterValue::ValueKind::UNSIGNED_INTEGER;
+        return FilterValue::ValueKind::UNSIGNED_INTEGER;
       case ::rosidl_typesupport_introspection_cpp::ROS_TYPE_FLOAT:
-        return DDSFilterValue::ValueKind::FLOAT_FIELD;
+        return FilterValue::ValueKind::FLOAT_FIELD;
       case ::rosidl_typesupport_introspection_cpp::ROS_TYPE_DOUBLE:
-        return DDSFilterValue::ValueKind::DOUBLE_FIELD;
+        return FilterValue::ValueKind::DOUBLE_FIELD;
       case ::rosidl_typesupport_introspection_cpp::ROS_TYPE_LONG_DOUBLE:
-        return DDSFilterValue::ValueKind::LONG_DOUBLE_FIELD;
+        return FilterValue::ValueKind::LONG_DOUBLE_FIELD;
       case ::rosidl_typesupport_introspection_cpp::ROS_TYPE_MESSAGE:
       case ::rosidl_typesupport_introspection_cpp::ROS_TYPE_WCHAR:
       case ::rosidl_typesupport_introspection_cpp::ROS_TYPE_WSTRING:

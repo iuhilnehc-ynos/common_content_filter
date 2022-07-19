@@ -13,11 +13,11 @@
 // limitations under the License.
 
 /**
- * @file DDSFilterExpression.hpp
+ * @file FilterExpression.hpp
  */
 
-#ifndef COMMON_CONTENT_FILTER__DDSFILTEREXPRESSION_HPP_
-#define COMMON_CONTENT_FILTER__DDSFILTEREXPRESSION_HPP_
+#ifndef COMMON_CONTENT_FILTER__FILTEREXPRESSION_HPP_
+#define COMMON_CONTENT_FILTER__FILTEREXPRESSION_HPP_
 
 #include <map>
 #include <memory>
@@ -25,23 +25,19 @@
 #include <vector>
 
 #include "IContentFilter.hpp"
-#include "DDSFilterCondition.hpp"
-#include "DDSFilterField.hpp"
-#include "DDSFilterParameter.hpp"
+#include "FilterCondition.hpp"
+#include "FilterField.hpp"
+#include "FilterParameter.hpp"
 
-namespace eprosima_common
+namespace common_content_filter
 {
-namespace fastdds
-{
-namespace dds
-{
-namespace DDSSQLFilter
+namespace SQLFilter
 {
 
 /**
- * An IContentFilter that evaluates DDS-SQL filter expressions
+ * An IContentFilter that evaluates -SQL filter expressions
  */
-class DDSFilterExpression final : public IContentFilter
+class FilterExpression final : public IContentFilter
 {
 
 public:
@@ -54,16 +50,14 @@ public:
   void clear();
 
   /// The root condition of the expression tree.
-  std::unique_ptr<DDSFilterCondition> root;
+  std::unique_ptr<FilterCondition> root;
   /// The fields referenced by this expression.
-  std::map<std::string, std::shared_ptr<DDSFilterField>> fields;
+  std::map<std::string, std::shared_ptr<FilterField>> fields;
   /// The parameters referenced by this expression.
-  std::vector<std::shared_ptr<DDSFilterParameter>> parameters;
+  std::vector<std::shared_ptr<FilterParameter>> parameters;
 };
 
-}  // namespace DDSSQLFilter
-}  // namespace dds
-}  // namespace fastdds
-}  // namespace eprosima_common
+}  // namespace SQLFilter
+}  // namespace common_content_filter
 
-#endif  // COMMON_CONTENT_FILTER__DDSFILTEREXPRESSION_HPP_
+#endif  // COMMON_CONTENT_FILTER__FILTEREXPRESSION_HPP_

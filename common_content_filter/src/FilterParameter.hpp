@@ -13,34 +13,30 @@
 // limitations under the License.
 
 /**
- * @file DDSFilterParameter.hpp
+ * @file FilterParameter.hpp
  */
 
-#ifndef COMMON_CONTENT_FILTER__DDSFILTERPARAMETER_HPP_
-#define COMMON_CONTENT_FILTER__DDSFILTERPARAMETER_HPP_
+#ifndef COMMON_CONTENT_FILTER__FILTERPARAMETER_HPP_
+#define COMMON_CONTENT_FILTER__FILTERPARAMETER_HPP_
 
-#include "DDSFilterValue.hpp"
+#include "FilterValue.hpp"
 
-namespace eprosima_common
+namespace common_content_filter
 {
-namespace fastdds
-{
-namespace dds
-{
-namespace DDSSQLFilter
+namespace SQLFilter
 {
 
 /**
- * A DDSFilterValue for expression parameters (i.e. %nn).
+ * A FilterValue for expression parameters (i.e. %nn).
  */
-class DDSFilterParameter final : public DDSFilterValue
+class FilterParameter final : public FilterValue
 {
 
 public:
-  virtual ~DDSFilterParameter() = default;
+  virtual ~FilterParameter() = default;
 
   /**
-   * Sets the value of this DDSFilterParameter given from an input string.
+   * Sets the value of this FilterParameter given from an input string.
    *
    * @param[in] parameter  The string from which to set the value.
    *
@@ -50,9 +46,7 @@ public:
     const char * parameter);
 };
 
-}  // namespace DDSSQLFilter
-}  // namespace dds
-}  // namespace fastdds
-}  // namespace eprosima_common
+}  // namespace SQLFilter
+}  // namespace common_content_filter
 
-#endif  // COMMON_CONTENT_FILTER__DDSFILTERPARAMETER_HPP_
+#endif  // COMMON_CONTENT_FILTER__FILTERPARAMETER_HPP_

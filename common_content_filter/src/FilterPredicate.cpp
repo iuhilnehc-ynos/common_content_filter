@@ -13,29 +13,25 @@
 // limitations under the License.
 
 /**
- * @file DDSFilterPredicate.cpp
+ * @file FilterPredicate.cpp
  */
 
-#include "DDSFilterPredicate.hpp"
+#include "FilterPredicate.hpp"
 
 #include <cassert>
 #include <memory>
 
-#include "DDSFilterValue.hpp"
+#include "FilterValue.hpp"
 
-namespace eprosima_common
+namespace common_content_filter
 {
-namespace fastdds
-{
-namespace dds
-{
-namespace DDSSQLFilter
+namespace SQLFilter
 {
 
-DDSFilterPredicate::DDSFilterPredicate(
+FilterPredicate::FilterPredicate(
   OperationKind op,
-  const std::shared_ptr<DDSFilterValue> & left,
-  const std::shared_ptr<DDSFilterValue> & right)
+  const std::shared_ptr<FilterValue> & left,
+  const std::shared_ptr<FilterValue> & right)
 : op_(op)
   , left_(left)
   , right_(right)
@@ -53,7 +49,7 @@ DDSFilterPredicate::DDSFilterPredicate(
   }
 }
 
-void DDSFilterPredicate::value_has_changed()
+void FilterPredicate::value_has_changed()
 {
   if (left_->has_value() && right_->has_value()) {
     switch (op_) {
@@ -92,13 +88,11 @@ void DDSFilterPredicate::value_has_changed()
   }
 }
 
-void DDSFilterPredicate::propagate_reset() noexcept
+void FilterPredicate::propagate_reset() noexcept
 {
   left_->reset();
   right_->reset();
 }
 
-}  // namespace DDSSQLFilter
-}  // namespace dds
-}  // namespace fastdds
-}  // namespace eprosima_common
+}  // namespace SQLFilter
+}  // namespace common_content_filter

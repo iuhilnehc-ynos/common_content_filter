@@ -16,7 +16,7 @@
  * @file rearrange.hpp
  *
  * Note: this is an implementation file, designed to be included inside the
- * DDSFilterExpressionParser.hpp file of the parent folder.
+ * FilterExpressionParser.hpp file of the parent folder.
  */
 
 // after a node is stored successfully, you can add an optional transformer like this:

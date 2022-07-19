@@ -30,7 +30,7 @@
 #include <mutex>
 #include <tao/pegtl.hpp>
 
-#include "DDSFilterFactory.hpp"
+#include "FilterFactory.hpp"
 #include "Log.hpp"
 #include "Utilities.hpp"
 
@@ -40,13 +40,13 @@ namespace common_content_filter
 
 const int MAGIC = 0x434654;  // 'C','F','T'
 
-using DDSFilterFactory = eprosima_common::fastdds::dds::DDSSQLFilter::DDSFilterFactory;
-using IContentFilter = eprosima_common::fastdds::dds::IContentFilter;
+using FilterFactory = common_content_filter::SQLFilter::FilterFactory;
+using IContentFilter = common_content_filter::IContentFilter;
 
-DDSFilterFactory *
+FilterFactory *
 get_common_content_filter_factory()
 {
-  static DDSFilterFactory content_filter_factory;
+  static FilterFactory content_filter_factory;
   return &content_filter_factory;
 }
 
@@ -105,10 +105,10 @@ public:
   {
     std::lock_guard<std::mutex> lock(mutex_);
     if (filter_instance_) {
-      DDSFilterFactory::ReturnCode_t ret =
+      FilterFactory::ReturnCode_t ret =
         get_common_content_filter_factory()->delete_content_filter(filter_instance_);
-      if (ret != DDSFilterFactory::RETCODE_OK) {
-        logError(DDSSQLFILTER, "Failed to delete content filter: " << ret);
+      if (ret != FilterFactory::RETCODE_OK) {
+        logError(SQLFILTER, "Failed to delete content filter: " << ret);
       }
 
       filter_instance_ = nullptr;
@@ -119,7 +119,7 @@ public:
   {
     std::lock_guard<std::mutex> lock(mutex_);
     if (!filter_instance_) {
-      logWarning(DDSSQLFILTER, "Common content filter is not set");
+      logWarning(SQLFILTER, "Common content filter is not set");
       return true;
     }
 
@@ -133,7 +133,7 @@ public:
         rmw_deserialize(serialized_message, type_support_, deserialized_buffer_.get());
       ros_data = deserialized_buffer_.get();
       if (rmw_ret != RMW_RET_OK) {
-        logError(DDSSQLFILTER, "Failed to deserialize message");
+        logError(SQLFILTER, "Failed to deserialize message");
         return false;
       }
     }
@@ -147,13 +147,13 @@ public:
   {
     std::lock_guard<std::mutex> lock(mutex_);
     const char * tip = (filter_instance_ == nullptr) ? "create" : "set";
-    DDSFilterFactory::ReturnCode_t ret = get_common_content_filter_factory()->create_content_filter(
+    FilterFactory::ReturnCode_t ret = get_common_content_filter_factory()->create_content_filter(
       type_support_,
       filter_expression.c_str(),
       expression_parameters,
       filter_instance_);
-    if (ret != DDSFilterFactory::RETCODE_OK) {
-      logError(DDSSQLFILTER, "failed to " << tip << " content filter, error code: " << ret);
+    if (ret != FilterFactory::RETCODE_OK) {
+      logError(SQLFILTER, "failed to " << tip << " content filter, error code: " << ret);
       return false;
     }
 
@@ -170,7 +170,7 @@ public:
     std::lock_guard<std::mutex> lock(mutex_);
 
     if (!filter_instance_) {
-      logError(DDSSQLFILTER, "content filter instance is not created");
+      logError(SQLFILTER, "content filter instance is not created");
       return false;
     }
 
@@ -211,7 +211,7 @@ common_content_filter::ContentFilterWrapper * validate(void * instance)
   auto content_filter_wrapper =
     static_cast<common_content_filter::ContentFilterWrapper *>(instance);
   if (!content_filter_wrapper || content_filter_wrapper->magic() != common_content_filter::MAGIC) {
-    logError(DDSSQLFILTER, "Invalid instance");
+    logError(SQLFILTER, "Invalid instance");
     return nullptr;
   }
   return content_filter_wrapper;
@@ -253,7 +253,7 @@ common_content_filter_evaluate(void * instance, void * ros_data, bool serialized
   }
 
   if (!ros_data) {
-    logError(DDSSQLFILTER, "Invalid arguments");
+    logError(SQLFILTER, "Invalid arguments");
     return false;
   }
 
@@ -261,7 +261,7 @@ common_content_filter_evaluate(void * instance, void * ros_data, bool serialized
   try {
     ret = content_filter_wrapper->evaluate(ros_data, serialized);
   } catch (const std::runtime_error & e) {
-    logError(DDSSQLFILTER, "Failed to evaluate: " << e.what());
+    logError(SQLFILTER, "Failed to evaluate: " << e.what());
   }
 
   return ret;
@@ -280,7 +280,7 @@ common_content_filter_set(
   }
 
   if (!options) {
-    logError(DDSSQLFILTER, "Invalid arguments");
+    logError(SQLFILTER, "Invalid arguments");
     return false;
   }
 
@@ -295,7 +295,7 @@ common_content_filter_set(
       options->filter_expression, expression_parameters
     );
   } catch (const std::runtime_error & e) {
-    logError(DDSSQLFILTER, "Failed to create content filter: " << e.what());
+    logError(SQLFILTER, "Failed to create content filter: " << e.what());
   }
 
   return ret;
@@ -315,7 +315,7 @@ common_content_filter_get(
   }
 
   if (!allocator || !options) {
-    logError(DDSSQLFILTER, "Invalid arguments");
+    logError(SQLFILTER, "Invalid arguments");
     return false;
   }
 
@@ -343,7 +343,7 @@ common_content_filter_get(
   );
 
   if (rmw_ret != RMW_RET_OK) {
-    logError(DDSSQLFILTER, rmw_get_error_string().str);
+    logError(SQLFILTER, rmw_get_error_string().str);
     rmw_reset_error();
     return false;
   }

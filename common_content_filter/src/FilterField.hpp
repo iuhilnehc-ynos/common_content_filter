@@ -13,11 +13,11 @@
 // limitations under the License.
 
 /**
- * @file DDSFilterField.hpp
+ * @file FilterField.hpp
  */
 
-#ifndef COMMON_CONTENT_FILTER__DDSFILTERFIELD_HPP_
-#define COMMON_CONTENT_FILTER__DDSFILTERFIELD_HPP_
+#ifndef COMMON_CONTENT_FILTER__FILTERFIELD_HPP_
+#define COMMON_CONTENT_FILTER__FILTERFIELD_HPP_
 
 #include <cassert>
 #include <unordered_set>
@@ -25,22 +25,18 @@
 
 #include <rosidl_runtime_c/message_type_support_struct.h>
 
-#include "DDSFilterPredicate.hpp"
-#include "DDSFilterValue.hpp"
+#include "FilterPredicate.hpp"
+#include "FilterValue.hpp"
 
-namespace eprosima_common
+namespace common_content_filter
 {
-namespace fastdds
-{
-namespace dds
-{
-namespace DDSSQLFilter
+namespace SQLFilter
 {
 
 /**
- * A DDSFilterValue for fieldname-based expression values.
+ * A FilterValue for fieldname-based expression values.
  */
-class DDSFilterField final : public DDSFilterValue
+class FilterField final : public FilterValue
 {
 
 public:
@@ -60,28 +56,28 @@ public:
   };
 
   /**
-   * Construct a DDSFilterField.
+   * Construct a FilterField.
    *
    * @param[in]  type_id       TypeIdentifier representing the primitive data type of the fieldname.
    * @param[in]  access_path   Access path to the field.
    * @param[in]  data_kind     Kind of data the field represents.
    */
-  DDSFilterField(
+  FilterField(
     uint8_t type_id,
     const std::vector<FieldAccessor> & access_path,
     ValueKind data_kind)
-  : DDSFilterValue(data_kind)
+  : FilterValue(data_kind)
     , access_path_(access_path)
     , type_id_(type_id)
   {
   }
 
-  virtual ~DDSFilterField() = default;
+  virtual ~FilterField() = default;
 
   /**
-   * This method is used by a DDSFilterPredicate to check if this DDSFilterField can be used.
+   * This method is used by a FilterPredicate to check if this FilterField can be used.
    *
-   * @return whether this DDSFilterField has a value that can be used on a predicate.
+   * @return whether this FilterField has a value that can be used on a predicate.
    */
   inline bool has_value() const noexcept final
   {
@@ -98,8 +94,8 @@ public:
 
 
   /**
-   * Perform the deserialization of the field represented by this DDSFilterField.
-   * Will notify the predicates where this DDSFilterField is being used.
+   * Perform the deserialization of the field represented by this FilterField.
+   * Will notify the predicates where this FilterField is being used.
    *
    * @param[in]  data  The dynamic representation of the payload being filtered.
    *
@@ -129,7 +125,7 @@ public:
 
 protected:
   inline void add_parent(
-    DDSFilterPredicate * parent) final
+    FilterPredicate * parent) final
   {
     assert(nullptr != parent);
     parents_.emplace(parent);
@@ -150,12 +146,10 @@ private:
   bool has_value_ = false;
   std::vector<FieldAccessor> access_path_;
   uint8_t type_id_ = 0;
-  std::unordered_set<DDSFilterPredicate *> parents_;
+  std::unordered_set<FilterPredicate *> parents_;
 };
 
-}  // namespace DDSSQLFilter
-}  // namespace dds
-}  // namespace fastdds
-}  // namespace eprosima_common
+}  // namespace SQLFilter
+}  // namespace common_content_filter
 
-#endif  // COMMON_CONTENT_FILTER__DDSFILTERFIELD_HPP_
+#endif  // COMMON_CONTENT_FILTER__FILTERFIELD_HPP_

@@ -27,11 +27,7 @@
 #include "IContentFilter.hpp"
 
 
-namespace eprosima_common
-{
-namespace fastdds
-{
-namespace dds
+namespace common_content_filter
 {
 
 /**
@@ -89,8 +85,6 @@ struct IContentFilterFactory
     IContentFilter * filter_instance) = 0;
 };
 
-} // namespace dds
-} // namespace fastdds
-} // namespace eprosima_common
+} // namespace common_content_filter
 
 #endif  // COMMON_CONTENT_FILTER__ICONTENTFILTERFACTORY_HPP_

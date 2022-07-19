@@ -13,41 +13,25 @@
 // limitations under the License.
 
 /**
- * @file DDSFilterParameter.cpp
+ * @file parameters.hpp
+ *
+ * Note: this is an implementation file, designed to be included inside the
+ * FilterExpressionParser.hpp file of the parent folder.
  */
 
-#include "DDSFilterParameter.hpp"
-
-#include "DDSFilterExpressionParser.hpp"
-#include "Log.hpp"
-
-namespace eprosima_common
+struct parameter_processor
+  : parse_tree::apply<parameter_processor>
 {
-namespace fastdds
-{
-namespace dds
-{
-namespace DDSSQLFilter
-{
-
-bool DDSFilterParameter::set_value(
-  const char * parameter)
-{
-  auto node = parser::parse_literal_value(parameter);
-
-  if (!node) {
-    logError(DDSSQLFILTER, "PARSE ERROR: parser::parse_literal_value");
-
-    return false;
+  template<typename ... States>
+  static void transform(
+    std::unique_ptr<ParseNode> & n,
+    States &&... /*st*/)
+  {
+    n->parameter_index = static_cast<int32_t>(n->m_begin.data[1] - '0');
+    if (n->m_end.byte - n->m_begin.byte == 3) {
+      n->parameter_index *= 10;
+      n->parameter_index += static_cast<int32_t>(n->m_begin.data[2] - '0');
+    }
   }
 
-  copy_from(*node->left().value, false);
-  value_has_changed();
-
-  return true;
-}
-
-}  // namespace DDSSQLFilter
-}  // namespace dds
-}  // namespace fastdds
-}  // namespace eprosima_common
+};

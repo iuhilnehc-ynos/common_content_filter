@@ -13,38 +13,34 @@
 // limitations under the License.
 
 /**
- * @file DDSFilterValue.hpp
+ * @file FilterValue.hpp
  */
 
-#ifndef COMMON_CONTENT_FILTER__DDSFILTERVALUE_HPP_
-#define COMMON_CONTENT_FILTER__DDSFILTERVALUE_HPP_
+#ifndef COMMON_CONTENT_FILTER__FILTERVALUE_HPP_
+#define COMMON_CONTENT_FILTER__FILTERVALUE_HPP_
 
 #include <memory>
 #include <regex>
 
-namespace eprosima_common
+namespace common_content_filter
 {
-namespace fastdds
-{
-namespace dds
-{
-namespace DDSSQLFilter
+namespace SQLFilter
 {
 
-class DDSFilterPredicate;
+class FilterPredicate;
 
 /**
  * Represents a value (either constant, parameter or fieldname) on a filter expression.
  */
-class DDSFilterValue
+class FilterValue
 {
 
 public:
-  // DDSFilterPredicate needs to call protected method add_parent
-  friend class DDSFilterPredicate;
+  // FilterPredicate needs to call protected method add_parent
+  friend class FilterPredicate;
 
   /**
-   * The high-level kind of a DDSFilterValue.
+   * The high-level kind of a FilterValue.
    * Please note that the constants here should follow the promotion order.
    */
   enum class ValueKind
@@ -61,7 +57,7 @@ public:
     STRING                  ///< Value is a string
   };
 
-  /// The kind of value held by this DDSFilterValue
+  /// The kind of value held by this FilterValue
   ValueKind kind;
 
   union {
@@ -75,9 +71,9 @@ public:
 
   /**
    * Default constructor.
-   * Constructs an empty string DDSFilterValue
+   * Constructs an empty string FilterValue
    */
-  DDSFilterValue() noexcept
+  FilterValue() noexcept
   : kind(ValueKind::STRING)
     , string_value()
   {
@@ -85,11 +81,11 @@ public:
 
   /**
    * Explicit kind constructor.
-   * Constructs a zero-valued, specific kind DDSFilterValue.
+   * Constructs a zero-valued, specific kind FilterValue.
    *
-   * @param[in] kind  The kind with which to construct the DDSFilterValue.
+   * @param[in] kind  The kind with which to construct the FilterValue.
    */
-  explicit DDSFilterValue(
+  explicit FilterValue(
     ValueKind data_kind) noexcept
   : kind(data_kind)
     , string_value()
@@ -97,30 +93,30 @@ public:
   }
 
   // *INDENT-OFF*
-    DDSFilterValue(const DDSFilterValue&) = delete;
-    DDSFilterValue& operator=(const DDSFilterValue&) = delete;
-    DDSFilterValue(DDSFilterValue&&) = default;
-    DDSFilterValue& operator=(DDSFilterValue&&) = default;
+    FilterValue(const FilterValue&) = delete;
+    FilterValue& operator=(const FilterValue&) = delete;
+    FilterValue(FilterValue&&) = default;
+    FilterValue& operator=(FilterValue&&) = default;
   // *INDENT-ON*
 
-  virtual ~DDSFilterValue() = default;
+  virtual ~FilterValue() = default;
 
   /**
    * Copy the state of this object from another one.
    *
-   * @param [in] other                    The DDSFilterValue from where to copy the state.
+   * @param [in] other                    The FilterValue from where to copy the state.
    * @param [in] copy_regular_expression  Whether the regular expression state should be copied or not
    */
   void copy_from(
-    const DDSFilterValue & other,
+    const FilterValue & other,
     bool copy_regular_expression) noexcept;
 
   /**
-   * This method is used by a DDSFilterPredicate to check if this DDSFilterValue can be used.
+   * This method is used by a FilterPredicate to check if this FilterValue can be used.
    * Constants and parameters will always have a value, but fieldname-based values can only be
    * used after deserialization.
    *
-   * @return whether this DDSFilterValue has a value that can be used on a predicate.
+   * @return whether this FilterValue has a value that can be used on a predicate.
    */
   virtual bool has_value() const noexcept
   {
@@ -146,64 +142,64 @@ public:
   /**
    * @name Comparison operations
    * Methods implementing the comparison operators of binary predicates.
-   * Should only be called against a DDSFilterValue of a compatible kind,
+   * Should only be called against a FilterValue of a compatible kind,
    * according to the type promotion restrictions.
    */
   ///@{
   inline bool operator==(
-    const DDSFilterValue & other) const noexcept
+    const FilterValue & other) const noexcept
   {
     return compare(*this, other) == 0;
   }
 
   inline bool operator!=(
-    const DDSFilterValue & other) const noexcept
+    const FilterValue & other) const noexcept
   {
     return compare(*this, other) != 0;
   }
 
   inline bool operator<(
-    const DDSFilterValue & other) const noexcept
+    const FilterValue & other) const noexcept
   {
     return compare(*this, other) < 0;
   }
 
   inline bool operator<=(
-    const DDSFilterValue & other) const noexcept
+    const FilterValue & other) const noexcept
   {
     return compare(*this, other) <= 0;
   }
 
   inline bool operator>(
-    const DDSFilterValue & other) const noexcept
+    const FilterValue & other) const noexcept
   {
     return compare(*this, other) > 0;
   }
 
   inline bool operator>=(
-    const DDSFilterValue & other) const noexcept
+    const FilterValue & other) const noexcept
   {
     return compare(*this, other) >= 0;
   }
 
   bool is_like(
-    const DDSFilterValue & other) const noexcept;
+    const FilterValue & other) const noexcept;
   ///@}
 
 protected:
   /**
-   * Called when this DDSFilterValue is used on a DDSFilterPredicate.
+   * Called when this FilterValue is used on a FilterPredicate.
    *
-   * @param parent [in]  The DDSFilterPredicate referencing this DDSFilterValue.
+   * @param parent [in]  The FilterPredicate referencing this FilterValue.
    */
   virtual void add_parent(
-    DDSFilterPredicate * parent)
+    FilterPredicate * parent)
   {
     static_cast<void>(parent);
   }
 
   /**
-   * Called when the value of this DDSFilterValue has changed.
+   * Called when the value of this FilterValue has changed.
    * Will regenerate the regular expression object if as_regular_expression was called.
    */
   void value_has_changed();
@@ -218,14 +214,12 @@ private:
   std::unique_ptr<std::regex> regular_expr_;
 
   static int compare(
-    const DDSFilterValue & lhs,
-    const DDSFilterValue & rhs) noexcept;
+    const FilterValue & lhs,
+    const FilterValue & rhs) noexcept;
 
 };
 
-}  // namespace DDSSQLFilter
-}  // namespace dds
-}  // namespace fastdds
-}  // namespace eprosima_common
+}  // namespace SQLFilter
+}  // namespace common_content_filter
 
-#endif  // COMMON_CONTENT_FILTER__DDSFILTERVALUE_HPP_
+#endif  // COMMON_CONTENT_FILTER__FILTERVALUE_HPP_

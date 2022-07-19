@@ -13,30 +13,26 @@
 // limitations under the License.
 
 /**
- * @file DDSFilterPredicate.hpp
+ * @file FilterPredicate.hpp
  */
 
-#ifndef COMMON_CONTENT_FILTER__DDSFILTERPREDICATE_HPP_
-#define COMMON_CONTENT_FILTER__DDSFILTERPREDICATE_HPP_
+#ifndef COMMON_CONTENT_FILTER__FILTERPREDICATE_HPP_
+#define COMMON_CONTENT_FILTER__FILTERPREDICATE_HPP_
 
 #include <memory>
 
-#include "DDSFilterCondition.hpp"
-#include "DDSFilterValue.hpp"
+#include "FilterCondition.hpp"
+#include "FilterValue.hpp"
 
-namespace eprosima_common
+namespace common_content_filter
 {
-namespace fastdds
-{
-namespace dds
-{
-namespace DDSSQLFilter
+namespace SQLFilter
 {
 
 /**
- * A DDSFilterCondition for binary predicates (i.e. <op1> <operator> <op2>).
+ * A FilterCondition for binary predicates (i.e. <op1> <operator> <op2>).
  */
-class DDSFilterPredicate final : public DDSFilterCondition
+class FilterPredicate final : public FilterCondition
 {
 
 public:
@@ -56,18 +52,18 @@ public:
   };
 
   /**
-   * Construct a DDSFilterPredicate.
+   * Construct a FilterPredicate.
    *
    * @param[in]  op     Operation to perform.
    * @param[in]  left   Left operand.
    * @param[in]  right  Right operand.
    */
-  DDSFilterPredicate(
+  FilterPredicate(
     OperationKind op,
-    const std::shared_ptr<DDSFilterValue> & left,
-    const std::shared_ptr<DDSFilterValue> & right);
+    const std::shared_ptr<FilterValue> & left,
+    const std::shared_ptr<FilterValue> & right);
 
-  virtual ~DDSFilterPredicate() = default;
+  virtual ~FilterPredicate() = default;
 
   /**
    * Called when the value of an operand is changed.
@@ -78,21 +74,19 @@ protected:
   void propagate_reset() noexcept final;
 
   void child_has_changed(
-    const DDSFilterCondition & child) noexcept final
+    const FilterCondition & child) noexcept final
   {
     static_cast<void>(child);
   }
 
 private:
   OperationKind op_;
-  std::shared_ptr<DDSFilterValue> left_;
-  std::shared_ptr<DDSFilterValue> right_;
+  std::shared_ptr<FilterValue> left_;
+  std::shared_ptr<FilterValue> right_;
 
 };
 
-}  // namespace DDSSQLFilter
-}  // namespace dds
-}  // namespace fastdds
-}  // namespace eprosima_common
+}  // namespace SQLFilter
+}  // namespace common_content_filter
 
-#endif  // COMMON_CONTENT_FILTER__DDSFILTERPREDICATE_HPP_
+#endif  // COMMON_CONTENT_FILTER__FILTERPREDICATE_HPP_

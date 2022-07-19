@@ -42,7 +42,7 @@ get_type_support_introspection(
       rcutils_error_string_t error_string = rcutils_get_error_string();
       rcutils_reset_error();
       logError(
-        DDSSQLFILTER,
+        SQLFILTER,
         "Type support not from this implementation. Got:\n"
           << "    " << prev_error_string.str << "\n"
           << "    " << error_string.str << "\n"

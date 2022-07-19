@@ -24,9 +24,7 @@
 #include <type_traits>
 #include <vector>
 
-namespace eprosima_common
-{
-namespace fastdds
+namespace common_content_filter
 {
 
 /**
@@ -94,7 +92,6 @@ private:
 
 };
 
-}  // namespace fastdds
-}  // namespace eprosima_common
+}  // namespace common_content_filter
 
 #endif  // COMMON_CONTENT_FILTER_OBJECTPOOL_HPP_

@@ -22,14 +22,14 @@ find_package(tao_pegtl_vendor REQUIRED)
 
 add_library(${PROJECT_NAME}_library SHARED
   src/api.cpp
-  src/DDSFilterCompoundCondition.cpp
-  src/DDSFilterExpression.cpp
-  src/DDSFilterExpressionParser.cpp
-  src/DDSFilterFactory.cpp
-  src/DDSFilterField.cpp
-  src/DDSFilterParameter.cpp
-  src/DDSFilterPredicate.cpp
-  src/DDSFilterValue.cpp
+  src/FilterCompoundCondition.cpp
+  src/FilterExpression.cpp
+  src/FilterExpressionParser.cpp
+  src/FilterFactory.cpp
+  src/FilterField.cpp
+  src/FilterParameter.cpp
+  src/FilterPredicate.cpp
+  src/FilterValue.cpp
   src/Utilities.cpp)
 
 set_target_properties(${PROJECT_NAME}_library
