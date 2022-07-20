@@ -16,8 +16,8 @@
 
 #include <rmw/error_handling.h>
 #include <rosidl_typesupport_introspection_c/identifier.h>
-#include <rosidl_typesupport_introspection_cpp/identifier.hpp>
 #include <rosidl_typesupport_introspection_c/message_introspection.h>
+#include <rosidl_typesupport_introspection_cpp/identifier.hpp>
 #include <rosidl_typesupport_introspection_cpp/message_introspection.hpp>
 #include <rosidl_typesupport_introspection_cpp/field_types.hpp>
 

@@ -18,16 +18,17 @@
 
 #include "FilterField.hpp"
 
-#include <rosidl_typesupport_introspection_c/identifier.h>
-#include <rosidl_typesupport_introspection_cpp/identifier.hpp>
-#include <rosidl_typesupport_introspection_c/message_introspection.h>
-#include <rosidl_typesupport_introspection_cpp/message_introspection.hpp>
-#include <rosidl_typesupport_introspection_cpp/field_types.hpp>
 #include <rosidl_runtime_c/string.h>
+#include <rosidl_typesupport_introspection_c/identifier.h>
+#include <rosidl_typesupport_introspection_c/message_introspection.h>
 
 #include <cassert>
+#include <string>
 #include <unordered_set>
 #include <vector>
+#include <rosidl_typesupport_introspection_cpp/identifier.hpp>
+#include <rosidl_typesupport_introspection_cpp/message_introspection.hpp>
+#include <rosidl_typesupport_introspection_cpp/field_types.hpp>
 
 #include "FilterPredicate.hpp"
 #include "FilterValue.hpp"

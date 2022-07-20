@@ -16,8 +16,8 @@
  * @file IContentFilter.hpp
  */
 
-#ifndef COMMON_CONTENT_FILTER__ICONTENTFILTER_HPP_
-#define COMMON_CONTENT_FILTER__ICONTENTFILTER_HPP_
+#ifndef ICONTENTFILTER_HPP_
+#define ICONTENTFILTER_HPP_
 
 
 namespace common_content_filter
@@ -39,6 +39,6 @@ struct IContentFilter
     const void * payload) const = 0;
 };
 
-} // namespace common_content_filter
+}  // namespace common_content_filter
 
-#endif  // COMMON_CONTENT_FILTER__ICONTENTFILTER_HPP_
+#endif  // ICONTENTFILTER_HPP_

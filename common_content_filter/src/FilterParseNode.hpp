@@ -16,8 +16,8 @@
  * @file FilterParseNode.hpp
  */
 
-#ifndef COMMON_CONTENT_FILTER__FILTERPARSENODE_HPP_
-#define COMMON_CONTENT_FILTER__FILTERPARSENODE_HPP_
+#ifndef FILTERPARSENODE_HPP_
+#define FILTERPARSENODE_HPP_
 
 #include <memory>
 #include <vector>
@@ -34,14 +34,15 @@ namespace SQLFilter
 namespace parser
 {
 
-using namespace tao::TAO_PEGTL_NAMESPACE;
+using namespace tao::TAO_PEGTL_NAMESPACE;  // NOLINT
 
 struct ParseNode : parse_tree::basic_node<ParseNode>
 {
   // When the node is a literal value, it will hold a pointer to it
   std::unique_ptr<FilterValue> value;
 
-  // When the node is a fieldname, it will hold the access path to the field, the data kind, and the type id
+  // When the node is a fieldname, it will hold the access path to the field, the data kind,
+  // and the type id
   std::vector<FilterField::FieldAccessor> field_access_path;
   FilterValue::ValueKind field_kind = FilterValue::ValueKind::STRING;
   // ros2 primitive type id
@@ -59,11 +60,10 @@ struct ParseNode : parse_tree::basic_node<ParseNode>
   {
     return *(children[1]);
   }
-
 };
 
 }  // namespace parser
 }  // namespace SQLFilter
 }  // namespace common_content_filter
 
-#endif  // COMMON_CONTENT_FILTER__FILTERPARSENODE_HPP_
+#endif  // FILTERPARSENODE_HPP_

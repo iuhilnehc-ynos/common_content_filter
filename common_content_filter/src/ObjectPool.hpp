@@ -17,11 +17,12 @@
  *
  */
 
-#ifndef COMMON_CONTENT_FILTER_OBJECTPOOL_HPP_
-#define COMMON_CONTENT_FILTER_OBJECTPOOL_HPP_
+#ifndef OBJECTPOOL_HPP_
+#define OBJECTPOOL_HPP_
 
 #include <memory>
 #include <type_traits>
+#include <utility>
 #include <vector>
 
 namespace common_content_filter
@@ -89,9 +90,8 @@ struct ObjectPool final
 
 private:
   _Collection collection_;
-
 };
 
 }  // namespace common_content_filter
 
-#endif  // COMMON_CONTENT_FILTER_OBJECTPOOL_HPP_
+#endif  // OBJECTPOOL_HPP_

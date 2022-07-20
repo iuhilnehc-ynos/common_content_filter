@@ -15,11 +15,11 @@
 #ifndef COMMON_CONTENT_FILTER__API_H_
 #define COMMON_CONTENT_FILTER__API_H_
 
-#include "common_content_filter/visibility_control.h"
-
 #include <rcutils/allocator.h>
 #include <rmw/subscription_content_filter_options.h>
 #include <rosidl_runtime_c/message_type_support_struct.h>
+
+#include "common_content_filter/visibility_control.h"
 
 
 #ifdef __cplusplus

@@ -16,8 +16,8 @@
  * @file FilterExpression.hpp
  */
 
-#ifndef COMMON_CONTENT_FILTER__FILTEREXPRESSION_HPP_
-#define COMMON_CONTENT_FILTER__FILTEREXPRESSION_HPP_
+#ifndef FILTEREXPRESSION_HPP_
+#define FILTEREXPRESSION_HPP_
 
 #include <map>
 #include <memory>
@@ -39,7 +39,6 @@ namespace SQLFilter
  */
 class FilterExpression final : public IContentFilter
 {
-
 public:
   bool evaluate(
     const void * payload) const final;
@@ -60,4 +59,4 @@ public:
 }  // namespace SQLFilter
 }  // namespace common_content_filter
 
-#endif  // COMMON_CONTENT_FILTER__FILTEREXPRESSION_HPP_
+#endif  // FILTEREXPRESSION_HPP_

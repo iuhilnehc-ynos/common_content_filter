@@ -16,8 +16,8 @@
  * @file IContentFilter.hpp
  */
 
-#ifndef COMMON_CONTENT_FILTER__ICONTENTFILTERFACTORY_HPP_
-#define COMMON_CONTENT_FILTER__ICONTENTFILTERFACTORY_HPP_
+#ifndef ICONTENTFILTERFACTORY_HPP_
+#define ICONTENTFILTERFACTORY_HPP_
 
 #include <rosidl_runtime_c/message_type_support_struct.h>
 
@@ -85,6 +85,6 @@ struct IContentFilterFactory
     IContentFilter * filter_instance) = 0;
 };
 
-} // namespace common_content_filter
+}  // namespace common_content_filter
 
-#endif  // COMMON_CONTENT_FILTER__ICONTENTFILTERFACTORY_HPP_
+#endif  // ICONTENTFILTERFACTORY_HPP_

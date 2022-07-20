@@ -19,6 +19,10 @@
  * FilterExpressionParser.hpp file of the parent folder.
  */
 
+#ifndef FILTEREXPRESSIONPARSERIMPL__PARAMETERS_HPP_
+#define FILTEREXPRESSIONPARSERIMPL__PARAMETERS_HPP_
+
+#include <memory>
 struct parameter_processor
   : parse_tree::apply<parameter_processor>
 {
@@ -33,5 +37,6 @@ struct parameter_processor
       n->parameter_index += static_cast<int32_t>(n->m_begin.data[2] - '0');
     }
   }
-
 };
+
+#endif  // FILTEREXPRESSIONPARSERIMPL__PARAMETERS_HPP_

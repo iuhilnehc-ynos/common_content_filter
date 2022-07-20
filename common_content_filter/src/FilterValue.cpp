@@ -223,7 +223,8 @@ int FilterValue::compare(
       case ValueKind::STRING:
         return std::strcmp(lhs.string_value, rhs.string_value);
 
-      // As the grammar does not allow constant vs constant comparisons, FLOAT_CONST should never reach here
+      // As the grammar does not allow constant vs constant comparisons, FLOAT_CONST should never
+      // reach here
       case ValueKind::FLOAT_CONST:
       default:
         assert(false);

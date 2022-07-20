@@ -16,8 +16,8 @@
  * @file FilterConditionState.hpp
  */
 
-#ifndef COMMON_CONTENT_FILTER__FILTERCONDITIONSTATE_HPP_
-#define COMMON_CONTENT_FILTER__FILTERCONDITIONSTATE_HPP_
+#ifndef FILTERCONDITIONSTATE_HPP_
+#define FILTERCONDITIONSTATE_HPP_
 
 namespace common_content_filter
 {
@@ -42,4 +42,4 @@ enum class FilterConditionState : char
 }  // namespace SQLFilter
 }  // namespace common_content_filter
 
-#endif  // COMMON_CONTENT_FILTER__FILTERCONDITIONSTATE_HPP_
+#endif  // FILTERCONDITIONSTATE_HPP_

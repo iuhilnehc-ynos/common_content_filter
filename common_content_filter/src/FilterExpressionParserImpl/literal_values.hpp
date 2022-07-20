@@ -19,6 +19,10 @@
  * FilterExpressionParser.hpp file of the parent folder.
  */
 
+#ifndef FILTEREXPRESSIONPARSERIMPL__LITERAL_VALUES_HPP_
+#define FILTEREXPRESSIONPARSERIMPL__LITERAL_VALUES_HPP_
+
+#include <memory>
 struct literal_value_processor
   : parse_tree::apply<literal_value_processor>
 {
@@ -29,15 +33,12 @@ struct literal_value_processor
   {
     n->value.reset(new FilterValue());
     if (n->is<true_value>()) {
-
       n->value->kind = FilterValue::ValueKind::BOOLEAN;
       n->value->boolean_value = true;
     } else if (n->is<false_value>()) {
-
       n->value->kind = FilterValue::ValueKind::BOOLEAN;
       n->value->boolean_value = false;
     } else if (n->is<integer_value>() || n->is<hex_value>()) {
-
       if (n->m_begin.data[0] == '-') {
         n->value->kind = FilterValue::ValueKind::SIGNED_INTEGER;
         n->value->signed_integer_value = std::stoll(n->content(), nullptr, 0);
@@ -46,15 +47,12 @@ struct literal_value_processor
         n->value->unsigned_integer_value = std::stoull(n->content(), nullptr, 0);
       }
     } else if (n->is<float_value>()) {
-
       n->value->kind = FilterValue::ValueKind::FLOAT_CONST;
       n->value->float_value = std::stold(n->content());
     } else if (n->is<char_value>()) {
-
       n->value->kind = FilterValue::ValueKind::CHAR;
       n->value->char_value = n->m_begin.data[1];
     } else if (n->is<string_value>()) {
-
       const ParseNode & content_node = n->left();
       size_t str_len = content_node.m_end.byte - content_node.m_begin.byte;
       if (sizeof(n->value->string_value) < str_len) {
@@ -66,5 +64,6 @@ struct literal_value_processor
 
     n->children.clear();
   }
-
 };
+
+#endif  // FILTEREXPRESSIONPARSERIMPL__LITERAL_VALUES_HPP_

@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef COMMON_CONTENT_FILTER__UTILITIES_HPP_
-#define COMMON_CONTENT_FILTER__UTILITIES_HPP_
+#ifndef UTILITIES_HPP_
+#define UTILITIES_HPP_
 
 #include <rosidl_runtime_c/message_type_support_struct.h>
 
@@ -21,4 +21,4 @@ const rosidl_message_type_support_t *
 get_type_support_introspection(
   const rosidl_message_type_support_t * type_support);
 
-#endif  // COMMON_CONTENT_FILTER__UTILITIES_HPP_
+#endif  // UTILITIES_HPP_

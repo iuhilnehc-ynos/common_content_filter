@@ -16,9 +16,11 @@
  * @file FilterGrammar.hpp
  */
 
-#ifndef COMMON_CONTENT_FILTER__FILTERGRAMMAR_HPP_
-#define COMMON_CONTENT_FILTER__FILTERGRAMMAR_HPP_
+#ifndef FILTERGRAMMAR_HPP_
+#define FILTERGRAMMAR_HPP_
 
+#include <functional>
+#include <list>
 #include <tao/pegtl.hpp>
 
 namespace common_content_filter
@@ -26,7 +28,7 @@ namespace common_content_filter
 namespace SQLFilter
 {
 
-using namespace tao::TAO_PEGTL_NAMESPACE;
+using namespace tao::TAO_PEGTL_NAMESPACE;  // NOLINT
 
 // *INDENT-OFF*  Allow curly braces on the same line to improve grammar readability
 
@@ -56,7 +58,8 @@ struct boolean_value : sor<false_value, true_value> {};
 struct integer_value : seq< opt< sign >, integer > {};
 struct fractional : seq< dot_op, integer > {};
 struct exponent : seq< one< 'e', 'E' >, integer_value > {};
-struct float_value : seq < opt< sign >, integer, sor < exponent, seq< fractional, opt< exponent > > > > {};
+struct float_value :
+  seq < opt< sign >, integer, sor < exponent, seq< fractional, opt< exponent > > > > {};
 struct hex_value : seq< opt< sign >, one< '0' >, one< 'x', 'X' >, plus< xdigit > > {};
 
 // PARAMETER
@@ -66,8 +69,10 @@ struct parameter_value : seq< one< '%' >, digit, opt< digit > > {};
 struct and_op : pad< sor< TAO_PEGTL_KEYWORD("AND"), TAO_PEGTL_KEYWORD("and") >, space > {};
 struct or_op : pad< sor< TAO_PEGTL_KEYWORD("OR"), TAO_PEGTL_KEYWORD("or") >, space> {};
 struct not_op : pad< sor< TAO_PEGTL_KEYWORD("NOT"), TAO_PEGTL_KEYWORD("not") >, space> {};
-struct between_op : pad< sor< TAO_PEGTL_KEYWORD("BETWEEN"), TAO_PEGTL_KEYWORD("between") >, space> {};
-struct not_between_op : pad< sor< TAO_PEGTL_KEYWORD("NOT BETWEEN"), TAO_PEGTL_KEYWORD("not between") >, space> {};
+struct between_op :
+  pad< sor< TAO_PEGTL_KEYWORD("BETWEEN"), TAO_PEGTL_KEYWORD("between") >, space> {};
+struct not_between_op :
+  pad< sor< TAO_PEGTL_KEYWORD("NOT BETWEEN"), TAO_PEGTL_KEYWORD("not between") >, space> {};
 
 // RelOp
 struct eq_op : pad< one<'='>, space> {};
@@ -81,7 +86,8 @@ struct match_op : pad< sor< TAO_PEGTL_KEYWORD("MATCH"), TAO_PEGTL_KEYWORD("match
 struct rel_op : sor< match_op, like_op, ne_op, le_op, ge_op, lt_op, gt_op, eq_op > {};
 
 // Parameter, Range
-struct Literal : sor< boolean_value, float_value, hex_value, integer_value, char_value, string_value > {};
+struct Literal :
+  sor< boolean_value, float_value, hex_value, integer_value, char_value, string_value > {};
 struct Parameter : sor< Literal, parameter_value > {};
 struct Range : seq< Parameter, and_op, Parameter > {};
 
@@ -116,4 +122,4 @@ struct LiteralGrammar : must< Literal, tao::TAO_PEGTL_NAMESPACE::eof > {};
 }  // namespace SQLFilter
 }  // namespace common_content_filter
 
-#endif  // COMMON_CONTENT_FILTER__FILTERGRAMMAR_HPP_
+#endif  // FILTERGRAMMAR_HPP_

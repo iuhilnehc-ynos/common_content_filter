@@ -19,6 +19,13 @@
  * FilterExpressionParser.hpp file of the parent folder.
  */
 
+#ifndef FILTEREXPRESSIONPARSERIMPL__REARRANGE_HPP_
+#define FILTEREXPRESSIONPARSERIMPL__REARRANGE_HPP_
+
+#include <algorithm>
+#include <memory>
+#include <utility>
+
 // after a node is stored successfully, you can add an optional transformer like this:
 struct rearrange
   : parse_tree::apply<rearrange>      // allows bulk selection, see selector<...>
@@ -63,5 +70,6 @@ struct rearrange
       }
     }
   }
-
 };
+
+#endif  // FILTEREXPRESSIONPARSERIMPL__REARRANGE_HPP_

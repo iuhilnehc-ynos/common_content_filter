@@ -16,8 +16,8 @@
  * @file FilterValue.hpp
  */
 
-#ifndef COMMON_CONTENT_FILTER__FILTERVALUE_HPP_
-#define COMMON_CONTENT_FILTER__FILTERVALUE_HPP_
+#ifndef FILTERVALUE_HPP_
+#define FILTERVALUE_HPP_
 
 #include <memory>
 #include <regex>
@@ -34,7 +34,6 @@ class FilterPredicate;
  */
 class FilterValue
 {
-
 public:
   // FilterPredicate needs to call protected method add_parent
   friend class FilterPredicate;
@@ -216,10 +215,9 @@ private:
   static int compare(
     const FilterValue & lhs,
     const FilterValue & rhs) noexcept;
-
 };
 
 }  // namespace SQLFilter
 }  // namespace common_content_filter
 
-#endif  // COMMON_CONTENT_FILTER__FILTERVALUE_HPP_
+#endif  // FILTERVALUE_HPP_

@@ -12,13 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include <gtest/gtest.h>
-#include <tuple>
-#include <vector>
-
 #include <rmw/rmw.h>
 #include <rmw/serialized_message.h>
 #include <test_msgs/msg/basic_types.h>
+
+#include <gtest/gtest.h>
+#include <tuple>
+#include <vector>
 
 #include <rosidl_typesupport_cpp/message_type_support.hpp>
 #include <test_content_filter_msgs/msg/complex.hpp>
@@ -429,7 +429,7 @@ TEST_F(TestComplexMsgCommonContentFilterAPI, set_and_evaluate) {
     // bound case, the size of bounded_float64_data is 2
     {"data.basic_array[0].bounded_float64_data[10]=%0", {"0"}, false, true},
 
-    // TODO. if bugs found, add new test cases and fix source code
+    // TODO(iuhilnehc-ynos): if bugs found, add new test cases and fix source code.
   };
 
   for (auto & item : expectation) {

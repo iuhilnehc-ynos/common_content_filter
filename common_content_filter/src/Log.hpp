@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef COMMON_CONTENT_FILTER__LOG_HPP_
-#define COMMON_CONTENT_FILTER__LOG_HPP_
+#ifndef LOG_HPP_
+#define LOG_HPP_
 
 #include <rcutils/logging_macros.h>
 #include <sstream>
@@ -30,4 +30,4 @@
 #define logWarning(cat, msg) common_content_filter_log_(WARN, cat, msg)
 #define logError(cat, msg) common_content_filter_log_(ERROR, cat, msg)
 
-#endif  // COMMON_CONTENT_FILTER__LOG_HPP_
+#endif  // LOG_HPP_

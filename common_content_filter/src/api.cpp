@@ -19,15 +19,16 @@
 #include <rmw/rmw.h>
 
 #include <rmw/subscription_content_filter_options.h>
-
 #include <rosidl_typesupport_introspection_c/identifier.h>
-#include <rosidl_typesupport_introspection_cpp/identifier.hpp>
 #include <rosidl_typesupport_introspection_c/message_introspection.h>
-#include <rosidl_typesupport_introspection_cpp/message_introspection.hpp>
-#include <rosidl_typesupport_introspection_cpp/field_types.hpp>
 
 #include <functional>
 #include <mutex>
+
+#include <rosidl_typesupport_introspection_cpp/identifier.hpp>
+#include <rosidl_typesupport_introspection_cpp/message_introspection.hpp>
+#include <rosidl_typesupport_introspection_cpp/field_types.hpp>
+
 #include <tao/pegtl.hpp>
 
 #include "FilterFactory.hpp"
@@ -97,7 +98,7 @@ auto get_message_buffer(const rosidl_message_type_support_t * type_support)
 class ContentFilterWrapper
 {
 public:
-  ContentFilterWrapper(const rosidl_message_type_support_t * type_support)
+  explicit ContentFilterWrapper(const rosidl_message_type_support_t * type_support)
   : type_support_(type_support)
   {}
 

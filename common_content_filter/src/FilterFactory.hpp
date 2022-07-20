@@ -16,8 +16,8 @@
  * @file FilterFactory.hpp
  */
 
-#ifndef COMMON_CONTENT_FILTER__FILTERFACTORY_HPP_
-#define COMMON_CONTENT_FILTER__FILTERFACTORY_HPP_
+#ifndef FILTERFACTORY_HPP_
+#define FILTERFACTORY_HPP_
 
 #include "IContentFilterFactory.hpp"
 
@@ -37,7 +37,6 @@ namespace SQLFilter
  */
 class FilterFactory final : public IContentFilterFactory
 {
-
 public:
   ~FilterFactory();
 
@@ -82,10 +81,9 @@ private:
   FilterEmptyExpression empty_expression_;
   /// Pool of FilterExpression objects
   ObjectPool<FilterExpression *> expression_pool_;
-
 };
 
 }  // namespace SQLFilter
 }  // namespace common_content_filter
 
-#endif  // COMMON_CONTENT_FILTER__FILTERFACTORY_HPP_
+#endif  // FILTERFACTORY_HPP_

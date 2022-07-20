@@ -21,12 +21,13 @@
 // header files needed by identifiers.hpp
 #include <rmw/error_handling.h>
 #include <rosidl_typesupport_introspection_c/identifier.h>
-#include <rosidl_typesupport_introspection_cpp/identifier.hpp>
 #include <rosidl_typesupport_introspection_c/message_introspection.h>
-#include <rosidl_typesupport_introspection_cpp/message_introspection.hpp>
-#include <rosidl_typesupport_introspection_cpp/field_types.hpp>
 
 #include <memory>
+#include <string>
+#include <rosidl_typesupport_introspection_cpp/identifier.hpp>
+#include <rosidl_typesupport_introspection_cpp/message_introspection.hpp>
+#include <rosidl_typesupport_introspection_cpp/field_types.hpp>
 
 #include <tao/pegtl.hpp>
 #include <tao/pegtl/contrib/parse_tree.hpp>
@@ -45,7 +46,7 @@ namespace SQLFilter
 namespace parser
 {
 
-using namespace tao::TAO_PEGTL_NAMESPACE;
+using namespace tao::TAO_PEGTL_NAMESPACE;  // NOLINT
 
 #include "FilterExpressionParserImpl/rearrange.hpp"
 #include "FilterExpressionParserImpl/literal_values.hpp"

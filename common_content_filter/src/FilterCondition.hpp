@@ -16,8 +16,8 @@
  * @file FilterCondition.hpp
  */
 
-#ifndef COMMON_CONTENT_FILTER__FILTERCONDITION_HPP_
-#define COMMON_CONTENT_FILTER__FILTERCONDITION_HPP_
+#ifndef FILTERCONDITION_HPP_
+#define FILTERCONDITION_HPP_
 
 #include "FilterConditionState.hpp"
 
@@ -31,7 +31,6 @@ namespace SQLFilter
  */
 class FilterCondition
 {
-
 public:
   friend class FilterCompoundCondition;
 
@@ -119,10 +118,9 @@ protected:
 private:
   FilterConditionState state_ = FilterConditionState::UNDECIDED;
   FilterCondition * parent_ = nullptr;
-
 };
 
 }  // namespace SQLFilter
 }  // namespace common_content_filter
 
-#endif  // COMMON_CONTENT_FILTER__FILTERCONDITION_HPP_
+#endif  // FILTERCONDITION_HPP_

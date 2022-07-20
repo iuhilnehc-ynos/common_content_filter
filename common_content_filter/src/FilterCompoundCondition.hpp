@@ -16,8 +16,8 @@
  * @file FilterCompoundCondition.hpp
  */
 
-#ifndef COMMON_CONTENT_FILTER__FILTERCOMPOUNDCONDITION_HPP_
-#define COMMON_CONTENT_FILTER__FILTERCOMPOUNDCONDITION_HPP_
+#ifndef FILTERCOMPOUNDCONDITION_HPP_
+#define FILTERCOMPOUNDCONDITION_HPP_
 
 #include <memory>
 
@@ -33,7 +33,6 @@ namespace SQLFilter
  */
 class FilterCompoundCondition final : public FilterCondition
 {
-
 public:
   /**
    * Possible kinds of logical operations
@@ -70,10 +69,9 @@ private:
   std::unique_ptr<FilterCondition> left_;
   std::unique_ptr<FilterCondition> right_;
   uint8_t num_children_decided_ = 0;
-
 };
 
 }  // namespace SQLFilter
 }  // namespace common_content_filter
 
-#endif  // COMMON_CONTENT_FILTER__FILTERCOMPOUNDCONDITION_HPP_
+#endif  // FILTERCOMPOUNDCONDITION_HPP_

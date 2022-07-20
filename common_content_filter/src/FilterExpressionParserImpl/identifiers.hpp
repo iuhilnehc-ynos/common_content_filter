@@ -19,7 +19,13 @@
  * FilterExpressionParser.hpp file of the parent folder.
  */
 
+#ifndef FILTEREXPRESSIONPARSERIMPL__IDENTIFIERS_HPP_
+#define FILTEREXPRESSIONPARSERIMPL__IDENTIFIERS_HPP_
 
+#include <limits>
+#include <memory>
+#include <string>
+#include <vector>
 struct CurrentIdentifierState
 {
   const rosidl_message_type_support_t * type_support;
@@ -34,7 +40,6 @@ struct CurrentIdentifierState
 struct identifier_processor
   : parse_tree::apply<identifier_processor>
 {
-
   template<typename MembersType>
   static void
   add_access_path(
@@ -178,5 +183,6 @@ struct identifier_processor
 
     n->children.clear();
   }
-
 };
+
+#endif  // FILTEREXPRESSIONPARSERIMPL__IDENTIFIERS_HPP_

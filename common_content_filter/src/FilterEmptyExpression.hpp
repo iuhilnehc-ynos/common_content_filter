@@ -16,8 +16,8 @@
  * @file FilterEmptyExpression.hpp
  */
 
-#ifndef COMMON_CONTENT_FILTER__FILTEREMPTYEXPRESSION_HPP_
-#define COMMON_CONTENT_FILTER__FILTEREMPTYEXPRESSION_HPP_
+#ifndef FILTEREMPTYEXPRESSION_HPP_
+#define FILTEREMPTYEXPRESSION_HPP_
 
 #include "IContentFilter.hpp"
 
@@ -31,7 +31,6 @@ namespace SQLFilter
  */
 class FilterEmptyExpression final : public IContentFilter
 {
-
 public:
   bool evaluate(
     const void * payload) const final
@@ -40,10 +39,9 @@ public:
 
     return true;
   }
-
 };
 
 }  // namespace SQLFilter
 }  // namespace common_content_filter
 
-#endif  // COMMON_CONTENT_FILTER__FILTEREMPTYEXPRESSION_HPP_
+#endif  // FILTEREMPTYEXPRESSION_HPP_

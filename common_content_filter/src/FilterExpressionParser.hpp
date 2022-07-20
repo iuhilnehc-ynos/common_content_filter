@@ -16,8 +16,8 @@
  * @file FilterExpressionParser.hpp
  */
 
-#ifndef COMMON_CONTENT_FILTER__FILTEREXPRESSIONPARSER_HPP_
-#define COMMON_CONTENT_FILTER__FILTEREXPRESSIONPARSER_HPP_
+#ifndef FILTEREXPRESSIONPARSER_HPP_
+#define FILTEREXPRESSIONPARSER_HPP_
 
 #include <rosidl_runtime_c/message_type_support_struct.h>
 #include <memory>
@@ -60,4 +60,4 @@ std::unique_ptr<ParseNode> parse_literal_value(
 }  // namespace SQLFilter
 }  // namespace common_content_filter
 
-#endif  // COMMON_CONTENT_FILTER__FILTEREXPRESSIONPARSER_HPP_
+#endif  // FILTEREXPRESSIONPARSER_HPP_

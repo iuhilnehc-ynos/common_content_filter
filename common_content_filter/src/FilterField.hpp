@@ -16,14 +16,14 @@
  * @file FilterField.hpp
  */
 
-#ifndef COMMON_CONTENT_FILTER__FILTERFIELD_HPP_
-#define COMMON_CONTENT_FILTER__FILTERFIELD_HPP_
+#ifndef FILTERFIELD_HPP_
+#define FILTERFIELD_HPP_
+
+#include <rosidl_runtime_c/message_type_support_struct.h>
 
 #include <cassert>
 #include <unordered_set>
 #include <vector>
-
-#include <rosidl_runtime_c/message_type_support_struct.h>
 
 #include "FilterPredicate.hpp"
 #include "FilterValue.hpp"
@@ -38,7 +38,6 @@ namespace SQLFilter
  */
 class FilterField final : public FilterValue
 {
-
 public:
   /**
    * An element on the access path to the final field.
@@ -106,7 +105,7 @@ public:
   inline bool set_value(
     const void * data_value)
   {
-    return set_value(data_value, (size_t)0);
+    return set_value(data_value, static_cast<size_t>(0));
   }
 
   /**
@@ -152,4 +151,4 @@ private:
 }  // namespace SQLFilter
 }  // namespace common_content_filter
 
-#endif  // COMMON_CONTENT_FILTER__FILTERFIELD_HPP_
+#endif  // FILTERFIELD_HPP_

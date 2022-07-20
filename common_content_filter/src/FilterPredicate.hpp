@@ -16,8 +16,8 @@
  * @file FilterPredicate.hpp
  */
 
-#ifndef COMMON_CONTENT_FILTER__FILTERPREDICATE_HPP_
-#define COMMON_CONTENT_FILTER__FILTERPREDICATE_HPP_
+#ifndef FILTERPREDICATE_HPP_
+#define FILTERPREDICATE_HPP_
 
 #include <memory>
 
@@ -34,7 +34,6 @@ namespace SQLFilter
  */
 class FilterPredicate final : public FilterCondition
 {
-
 public:
   /**
    * Possible kinds of binary operations
@@ -83,10 +82,9 @@ private:
   OperationKind op_;
   std::shared_ptr<FilterValue> left_;
   std::shared_ptr<FilterValue> right_;
-
 };
 
 }  // namespace SQLFilter
 }  // namespace common_content_filter
 
-#endif  // COMMON_CONTENT_FILTER__FILTERPREDICATE_HPP_
+#endif  // FILTERPREDICATE_HPP_

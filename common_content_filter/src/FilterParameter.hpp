@@ -16,8 +16,8 @@
  * @file FilterParameter.hpp
  */
 
-#ifndef COMMON_CONTENT_FILTER__FILTERPARAMETER_HPP_
-#define COMMON_CONTENT_FILTER__FILTERPARAMETER_HPP_
+#ifndef FILTERPARAMETER_HPP_
+#define FILTERPARAMETER_HPP_
 
 #include "FilterValue.hpp"
 
@@ -31,7 +31,6 @@ namespace SQLFilter
  */
 class FilterParameter final : public FilterValue
 {
-
 public:
   virtual ~FilterParameter() = default;
 
@@ -49,4 +48,4 @@ public:
 }  // namespace SQLFilter
 }  // namespace common_content_filter
 
-#endif  // COMMON_CONTENT_FILTER__FILTERPARAMETER_HPP_
+#endif  // FILTERPARAMETER_HPP_

@@ -19,21 +19,22 @@
 #include "FilterFactory.hpp"
 
 #include <cstring>
+#include <memory>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "IContentFilter.hpp"
 #include "IContentFilterFactory.hpp"
-#include "FilterGrammar.hpp"
-#include "FilterExpressionParser.hpp"
-#include "FilterParseNode.hpp"
-#include "FilterExpression.hpp"
 #include "FilterCompoundCondition.hpp"
 #include "FilterCondition.hpp"
 #include "FilterConditionState.hpp"
 #include "FilterEmptyExpression.hpp"
 #include "FilterExpression.hpp"
+#include "FilterExpressionParser.hpp"
 #include "FilterField.hpp"
+#include "FilterGrammar.hpp"
+#include "FilterParseNode.hpp"
 #include "FilterParameter.hpp"
 #include "FilterPredicate.hpp"
 #include "FilterValue.hpp"
@@ -51,8 +52,7 @@ static IContentFilterFactory::ReturnCode_t transform_enum(
   static_cast<void>(value);
   static_cast<void>(type);
   static_cast<void>(string_value);
-  // TODO. when enum supported in the rosidl
-
+  // TODO(iuhilnehc-ynos): when enum supported in the rosidl
   return IContentFilterFactory::ReturnCode_t::RETCODE_BAD_PARAMETER;
 }
 
@@ -387,7 +387,6 @@ IContentFilterFactory::ReturnCode_t FilterFactory::create_content_filter(
   const IContentFilterFactory::ParameterSeq & filter_parameters,
   IContentFilter * & filter_instance)
 {
-
   ReturnCode_t ret = ReturnCode_t::RETCODE_UNSUPPORTED;
 
   if (nullptr == filter_expression) {
