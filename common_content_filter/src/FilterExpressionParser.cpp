@@ -24,8 +24,12 @@
 #include <rosidl_typesupport_introspection_c/identifier.h>
 #include <rosidl_typesupport_introspection_c/message_introspection.h>
 
+#include <algorithm>
+#include <limits>
 #include <memory>
 #include <string>
+#include <utility>
+#include <vector>
 #include <rosidl_typesupport_introspection_cpp/identifier.hpp>
 #include <rosidl_typesupport_introspection_cpp/message_introspection.hpp>
 #include <rosidl_typesupport_introspection_cpp/field_types.hpp>
@@ -49,10 +53,10 @@ namespace parser
 
 using namespace tao::TAO_PEGTL_NAMESPACE;  // NOLINT
 
-#include "FilterExpressionParserImpl/rearrange.hpp"
-#include "FilterExpressionParserImpl/literal_values.hpp"
-#include "FilterExpressionParserImpl/identifiers.hpp"
-#include "FilterExpressionParserImpl/parameters.hpp"
+#include "FilterExpressionParserImpl/rearrange.inc"
+#include "FilterExpressionParserImpl/literal_values.inc"
+#include "FilterExpressionParserImpl/identifiers.inc"
+#include "FilterExpressionParserImpl/parameters.inc"
 
 // select which rules in the grammar will produce parse tree nodes:
 template<typename Rule>
